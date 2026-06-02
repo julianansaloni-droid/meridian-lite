@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Meridian">
+<title>Meridian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --navy:   #0D1117;
+  --navy2:  #131820;
+  --navy3:  #1A2130;
+  --yellow: #E8C840;
+  --yellow2:#F5D96B;
+  --yellow3:#C9A800;
+  --blue:   #2E6BE6;
+  --blue2:  #4D87FF;
+  --white:  #F4F4F0;
+  --grey1:  #8C96A8;
+  --grey2:  #3D4A5C;
+  --grey3:  #1E2738;
+  --green:  #2ECC8A;
+  --font-d: 'Bebas Neue', sans-serif;
+  --font-b: 'DM Sans', sans-serif;
+  --font-m: 'DM Mono', monospace;
+  --r: 10px;
+  --r2: 6px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── RESET ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--navy); color: var(--white); font-family: var(--font-b); overflow: hidden; }
+button { cursor: pointer; border: none; background: none; font-family: var(--font-b); color: inherit; }
+input, select, textarea { font-family: var(--font-b); color: var(--white); background: var(--navy3); border: 1px solid var(--grey2); border-radius: var(--r2); padding: 10px 14px; font-size: 14px; width: 100%; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--yellow3); }
+select option { background: var(--navy2); }
+textarea { resize: none; }
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* ── SCREENS ─────────────────────────────────────────────── */
+.screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* ── SCROLL AREA ─────────────────────────────────────────── */
+.scroll { flex: 1; overflow-y: auto; padding: 16px 16px 8px; -webkit-overflow-scrolling: touch; }
+.scroll::-webkit-scrollbar { display: none; }
+
+/* ── TOP BAR ─────────────────────────────────────────────── */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); flex-shrink: 0; }
+.topbar-logo { display: flex; align-items: center; gap: 8px; }
+.topbar-logo svg { width: 28px; height: 28px; }
+.topbar-title { font-family: var(--font-d); font-size: 22px; letter-spacing: 0.04em; color: var(--white); }
+.topbar-date { font-family: var(--font-m); font-size: 11px; color: var(--grey1); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── BOTTOM NAV ──────────────────────────────────────────── */
+#nav { display: flex; background: var(--navy2); border-top: 1px solid var(--grey3); flex-shrink: 0; padding-bottom: var(--safe-bottom); }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px; font-family: var(--font-m); font-size: 10px; color: var(--grey1); letter-spacing: 0.04em; transition: color .15s; }
+.nav-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.nav-btn.active { color: var(--yellow); }
+
+/* ── CARD ────────────────────────────────────────────────── */
+.card { background: var(--navy2); border-radius: var(--r); padding: 16px; margin-bottom: 12px; border: 1px solid var(--grey3); }
+.card-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+/* ── SECTION HEADING ─────────────────────────────────────── */
+.sec-head { font-family: var(--font-d); font-size: 28px; letter-spacing: 0.03em; color: var(--white); margin-bottom: 4px; }
+.sec-sub  { font-family: var(--font-m); font-size: 11px; color: var(--grey1); margin-bottom: 16px; }
+
+/* ── SLIDER ──────────────────────────────────────────────── */
+.slider-row { margin-bottom: 14px; }
+.slider-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.slider-label { font-family: var(--font-m); font-size: 11px; color: var(--grey1); text-transform: uppercase; letter-spacing: 0.06em; }
+.slider-val { font-family: var(--font-d); font-size: 22px; color: var(--yellow); }
+input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--grey2); border: none; padding: 0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--yellow); cursor: pointer; box-shadow: 0 0 0 3px rgba(232,200,64,.15); }
+
+/* ── BTN ─────────────────────────────────────────────────── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 13px 20px; border-radius: var(--r2); font-family: var(--font-b); font-size: 14px; font-weight: 500; transition: opacity .15s, transform .1s; width: 100%; }
+.btn:active { opacity: .85; transform: scale(.98); }
+.btn-primary { background: var(--yellow); color: var(--navy); }
+.btn-secondary { background: var(--navy3); color: var(--white); border: 1px solid var(--grey2); }
+.btn-ghost { background: transparent; color: var(--grey1); font-size: 13px; }
+.btn-sm { padding: 8px 14px; font-size: 13px; width: auto; border-radius: var(--r2); }
+
+/* ── TAG ─────────────────────────────────────────────────── */
+.tag { display: inline-block; font-family: var(--font-m); font-size: 10px; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em; }
+.tag-run      { background: rgba(46,107,230,.15); color: var(--blue2); }
+.tag-hyrox    { background: rgba(232,200,64,.12); color: var(--yellow); }
+.tag-strength { background: rgba(244,244,240,.08); color: var(--grey1); }
+.tag-cycle    { background: rgba(46,204,138,.1);  color: var(--green); }
+.tag-rest     { background: rgba(46,107,230,.08); color: var(--grey2); }
+
+/* ── SESSION CARD ────────────────────────────────────────── */
+.session-card { background: var(--navy2); border-radius: var(--r); padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--grey3); display: flex; align-items: flex-start; gap: 12px; }
+.session-card.done { opacity: .55; }
+.session-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--grey2); flex-shrink: 0; margin-top: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.session-check.checked { background: var(--yellow); border-color: var(--yellow); }
+.session-check.checked::after { content: ''; display: block; width: 6px; height: 10px; border: 2px solid var(--navy); border-top: none; border-left: none; transform: rotate(42deg) translateY(-1px); }
+.session-body { flex: 1; }
+.session-name { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+.session-detail { font-family: var(--font-m); font-size: 11px; color: var(--grey1); }
+.session-day { font-family: var(--font-m); font-size: 10px; color: var(--grey2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── ACTIVITY LIST ITEM ──────────────────────────────────── */
+.act-item { background: var(--navy2); border-radius: var(--r); padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--grey3); display: flex; align-items: center; gap: 12px; }
+.act-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.act-icon-run      { background: rgba(46,107,230,.12); }
+.act-icon-hyrox    { background: rgba(232,200,64,.1); }
+.act-icon-strength { background: rgba(244,244,240,.06); }
+.act-icon-cycle    { background: rgba(46,204,138,.08); }
+.act-info { flex: 1; }
+.act-name { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.act-meta { font-family: var(--font-m); font-size: 11px; color: var(--grey1); }
+.act-date { font-family: var(--font-m); font-size: 10px; color: var(--grey2); }
+
+/* ── CHART ───────────────────────────────────────────────── */
+.chart-wrap { margin-bottom: 4px; }
+.chart-bars { display: flex; align-items: flex-end; gap: 6px; height: 60px; margin-bottom: 6px; }
+.chart-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.chart-bar { width: 100%; border-radius: 3px 3px 0 0; background: var(--grey3); min-height: 3px; transition: height .3s ease; }
+.chart-bar.has-data { background: var(--yellow); opacity: .8; }
+.chart-bar.current { background: var(--yellow); opacity: 1; }
+.chart-xlabels { display: flex; gap: 6px; }
+.chart-xlabel { flex: 1; text-align: center; font-family: var(--font-m); font-size: 9px; color: var(--grey2); text-transform: uppercase; }
+
+/* ── FORM ────────────────────────────────────────────────── */
+.form-row { margin-bottom: 14px; }
+.form-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; display: block; }
+.form-hint { font-family: var(--font-m); font-size: 10px; color: var(--grey2); margin-top: 4px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── ONBOARDING ──────────────────────────────────────────── */
+#onboarding { position: fixed; inset: 0; background: var(--navy); z-index: 100; display: flex; flex-direction: column; overflow-y: auto; padding: 24px 20px; padding-top: calc(24px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+#onboarding.hidden { display: none; }
+.ob-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+.ob-logo svg { width: 36px; height: 36px; }
+.ob-brand { font-family: var(--font-d); font-size: 28px; letter-spacing: .05em; }
+.ob-step { display: none; flex-direction: column; flex: 1; }
+.ob-step.active { display: flex; }
+.ob-step-label { font-family: var(--font-m); font-size: 10px; color: var(--yellow); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+.ob-question { font-family: var(--font-d); font-size: 36px; letter-spacing: .02em; line-height: 1.1; margin-bottom: 8px; }
+.ob-hint { font-family: var(--font-b); font-size: 13px; color: var(--grey1); margin-bottom: 28px; }
+.ob-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.ob-option { background: var(--navy2); border: 1px solid var(--grey2); border-radius: var(--r); padding: 14px 16px; font-size: 14px; font-weight: 500; text-align: left; transition: all .15s; }
+.ob-option.selected { border-color: var(--yellow); background: rgba(232,200,64,.08); color: var(--yellow); }
+.ob-option-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); display: block; margin-top: 2px; font-weight: 400; }
+.ob-option.selected .ob-option-sub { color: var(--yellow3); }
+.ob-nav { display: flex; gap: 10px; margin-top: auto; }
+.ob-progress { display: flex; gap: 6px; margin-bottom: 32px; }
+.ob-dot { height: 3px; border-radius: 2px; background: var(--grey3); flex: 1; transition: background .3s; }
+.ob-dot.done { background: var(--yellow); }
+
+/* ── EMPTY STATE ─────────────────────────────────────────── */
+.empty { text-align: center; padding: 40px 20px; }
+.empty-icon { font-size: 32px; margin-bottom: 12px; }
+.empty-title { font-family: var(--font-d); font-size: 22px; margin-bottom: 6px; color: var(--grey1); }
+.empty-text { font-size: 13px; color: var(--grey2); line-height: 1.5; }
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--grey3); margin: 16px 0; }
+
+/* ── TOAST ───────────────────────────────────────────────── */
+#toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); font-family: var(--font-m); font-size: 12px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; z-index: 50; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; }
+.modal-bg.hidden { display: none; }
+.modal { background: var(--navy2); border-radius: var(--r) var(--r) 0 0; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-family: var(--font-d); font-size: 24px; letter-spacing: .03em; }
+.modal-close { width: 30px; height: 30px; border-radius: 50%; background: var(--grey3); color: var(--grey1); font-size: 18px; display: flex; align-items: center; justify-content: center; }
+
+/* ── CHECKIN STATUS ──────────────────────────────────────── */
+.checkin-done-bar { background: rgba(46,204,138,.08); border: 1px solid rgba(46,204,138,.2); border-radius: var(--r); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.checkin-done-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.checkin-done-text { font-family: var(--font-m); font-size: 11px; color: var(--green); }
+
+/* ── STATS ROW ───────────────────────────────────────────── */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat-card { background: var(--navy2); border: 1px solid var(--grey3); border-radius: var(--r); padding: 14px; }
+.stat-val { font-family: var(--font-d); font-size: 32px; color: var(--white); margin-bottom: 2px; }
+.stat-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── WEEK HEADER ─────────────────────────────────────────── */
+.week-header { background: var(--navy2); border: 1px solid var(--grey3); border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px; }
+.week-num { font-family: var(--font-d); font-size: 36px; color: var(--yellow); }
+.week-of  { font-family: var(--font-m); font-size: 11px; color: var(--grey1); margin-top: 2px; }
+.week-progress { height: 3px; background: var(--grey3); border-radius: 2px; margin-top: 12px; }
+.week-progress-bar { height: 100%; border-radius: 2px; background: var(--yellow); transition: width .4s ease; }
+
+/* ── PLAN INFO ───────────────────────────────────────────── */
+.plan-info { display: flex; align-items: center; justify-content: space-between; }
+.plan-name { font-size: 13px; font-weight: 500; }
+.plan-level { font-family: var(--font-m); font-size: 10px; color: var(--grey1); }
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-logo">
+    <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,2 38,14 20,26 2,14" fill="#E8C840" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 38,14 38,38 20,46" fill="#F5D96B" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 2,14 2,38 20,46" fill="#1A2130" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 38,38 20,46 2,38" fill="#131820" stroke="#3D4A5C" stroke-width="1"/>
+      <line x1="20" y1="2" x2="20" y2="46" stroke="#3D4A5C" stroke-width=".8"/>
+      <line x1="2" y1="14" x2="38" y2="14" stroke="#3D4A5C" stroke-width=".8"/>
+      <line x1="2" y1="38" x2="38" y2="38" stroke="#3D4A5C" stroke-width=".8"/>
+    </svg>
+    <span class="ob-brand">MERIDIAN</span>
+  </div>
+
+  <div class="ob-progress">
+    <div class="ob-dot" id="dot0"></div>
+    <div class="ob-dot" id="dot1"></div>
+    <div class="ob-dot" id="dot2"></div>
+    <div class="ob-dot" id="dot3"></div>
+  </div>
+
+  <!-- Step 0: Goal -->
+  <div class="ob-step active" id="ob-step-0">
+    <div class="ob-step-label">Step 1 of 4</div>
+    <div class="ob-question">What are you training for?</div>
+    <div class="ob-hint">We'll match you with the right plan.</div>
+    <div class="ob-options">
+      <button class="ob-option" data-val="5k">5K <span class="ob-option-sub">Build speed over 5 kilometres</span></button>
+      <button class="ob-option" data-val="10k">10K <span class="ob-option-sub">Push your endurance to 10km</span></button>
+      <button class="ob-option" data-val="half">Half Marathon <span class="ob-option-sub">13.1 miles of grit</span></button>
+      <button class="ob-option" data-val="marathon">Marathon <span class="ob-option-sub">The full 26.2</span></button>
+      <button class="ob-option" data-val="hyrox">Hyrox <span class="ob-option-sub">8km run + 8 functional stations</span></button>
+      <button class="ob-option" data-val="cycling">Cycling <span class="ob-option-sub">Road, gravel, or endurance</span></button>
+      <button class="ob-option" data-val="strength">General Strength <span class="ob-option-sub">Build muscle, move better</span></button>
+    </div>
+    <div class="ob-nav">
+      <button class="btn btn-primary" id="ob-next-0" onclick="obNext(0)" disabled>Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 1: Level -->
+  <div class="ob-step" id="ob-step-1">
+    <div class="ob-step-label">Step 2 of 4</div>
+    <div class="ob-question">Your fitness level?</div>
+    <div class="ob-hint">Be honest — the plan adapts to you.</div>
+    <div class="ob-options">
+      <button class="ob-option" data-val="beginner">Beginner <span class="ob-option-sub">New to structured training or returning after a break</span></button>
+      <button class="ob-option" data-val="intermediate">Intermediate <span class="ob-option-sub">Training consistently, completed events before</span></button>
+      <button class="ob-option" data-val="advanced">Advanced <span class="ob-option-sub">Experienced athlete chasing performance</span></button>
+    </div>
+    <div class="ob-nav">
+      <button class="btn btn-secondary btn-sm" onclick="obBack(1)" style="width:auto;padding:13px 20px;">Back</button>
+      <button class="btn btn-primary" id="ob-next-1" onclick="obNext(1)" disabled style="flex:1;">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Days/week -->
+  <div class="ob-step" id="ob-step-2">
+    <div class="ob-step-label">Step 3 of 4</div>
+    <div class="ob-question">Days per week to train?</div>
+    <div class="ob-hint">Be realistic — consistency beats heroics.</div>
+    <div class="ob-options">
+      <button class="ob-option" data-val="3">3 days <span class="ob-option-sub">Good base, balanced life</span></button>
+      <button class="ob-option" data-val="4">4 days <span class="ob-option-sub">Solid commitment, steady gains</span></button>
+      <button class="ob-option" data-val="5">5 days <span class="ob-option-sub">High volume, high reward</span></button>
+      <button class="ob-option" data-val="6">6 days <span class="ob-option-sub">Advanced athletes only</span></button>
+    </div>
+    <div class="ob-nav">
+      <button class="btn btn-secondary btn-sm" onclick="obBack(2)" style="width:auto;padding:13px 20px;">Back</button>
+      <button class="btn btn-primary" id="ob-next-2" onclick="obNext(2)" disabled style="flex:1;">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Race date -->
+  <div class="ob-step" id="ob-step-3">
+    <div class="ob-step-label">Step 4 of 4</div>
+    <div class="ob-question">Got a race date?</div>
+    <div class="ob-hint">Optional — helps us calculate your current week.</div>
+    <div style="margin-bottom:28px;">
+      <div class="form-row">
+        <label class="form-label">Race / goal date</label>
+        <input type="date" id="ob-race-date">
+        <div class="form-hint">Leave blank to start from week 1 today</div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Race name (optional)</label>
+        <input type="text" id="ob-race-name" placeholder="e.g. Dublin Marathon">
+      </div>
+    </div>
+    <div class="ob-nav">
+      <button class="btn btn-secondary btn-sm" onclick="obBack(3)" style="width:auto;padding:13px 20px;">Back</button>
+      <button class="btn btn-primary" onclick="obFinish()" style="flex:1;">Start training</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,2 38,14 20,26 2,14" fill="#E8C840" stroke="#3D4A5C" stroke-width="1.2"/>
+        <polygon points="20,26 38,14 38,38 20,46" fill="#F5D96B" stroke="#3D4A5C" stroke-width="1.2"/>
+        <polygon points="20,26 2,14 2,38 20,46" fill="#1A2130" stroke="#3D4A5C" stroke-width="1.2"/>
+        <polygon points="20,26 38,38 20,46 2,38" fill="#131820" stroke="#3D4A5C" stroke-width="1.2"/>
+        <line x1="20" y1="2" x2="20" y2="46" stroke="#3D4A5C" stroke-width=".8"/>
+        <line x1="2" y1="14" x2="38" y2="14" stroke="#3D4A5C" stroke-width=".8"/>
+        <line x1="2" y1="38" x2="38" y2="38" stroke="#3D4A5C" stroke-width=".8"/>
+      </svg>
+      <span class="topbar-title">MERIDIAN</span>
+    </div>
+    <span class="topbar-date" id="topbar-date"></span>
+  </div>
+
+  <!-- HOME screen -->
+  <div class="screen active" id="screen-home">
+    <div class="scroll" id="home-scroll">
+      <!-- Check-in section -->
+      <div id="checkin-section">
+        <div class="sec-head">CHECK-IN</div>
+        <div class="sec-sub" id="checkin-sub">How are you feeling today?</div>
+        <div id="checkin-done-bar" class="checkin-done-bar hidden" style="display:none;">
+          <div class="checkin-done-dot"></div>
+          <span class="checkin-done-text">Check-in complete · <span id="checkin-done-summary"></span></span>
+        </div>
+        <div id="checkin-form">
+          <div class="card">
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Energy</span><span class="slider-val" id="v-energy">5</span></div><input type="range" min="1" max="10" value="5" id="s-energy" oninput="updateSlider('energy',this.value)"></div>
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Sleep</span><span class="slider-val" id="v-sleep">5</span></div><input type="range" min="1" max="10" value="5" id="s-sleep" oninput="updateSlider('sleep',this.value)"></div>
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Mood</span><span class="slider-val" id="v-mood">5</span></div><input type="range" min="1" max="10" value="5" id="s-mood" oninput="updateSlider('mood',this.value)"></div>
+            <div class="slider-row" style="margin-bottom:0"><div class="slider-top"><span class="slider-label">Stress</span><span class="slider-val" id="v-stress">5</span></div><input type="range" min="1" max="10" value="5" id="s-stress" oninput="updateSlider('stress',this.value)"></div>
+          </div>
+          <button class="btn btn-primary" onclick="saveCheckin()">Save check-in</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Today's session -->
+      <div id="today-section">
+        <div class="sec-head">TODAY</div>
+        <div id="today-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK screen -->
+  <div class="screen" id="screen-week">
+    <div class="scroll">
+      <div class="sec-head">THIS WEEK</div>
+      <div id="week-header-card"></div>
+      <div id="week-sessions"></div>
+    </div>
+  </div>
+
+  <!-- LOG screen -->
+  <div class="screen" id="screen-log">
+    <div class="scroll">
+      <div class="sec-head">LOG ACTIVITY</div>
+      <div class="sec-sub">Record what you did</div>
+      <div class="card">
+        <div class="form-row">
+          <label class="form-label">Date</label>
+          <input type="date" id="log-date">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Activity type</label>
+          <select id="log-type" onchange="toggleDistanceField()">
+            <option value="run">Run</option>
+            <option value="cycle">Cycle</option>
+            <option value="hyrox">Hyrox</option>
+            <option value="strength">Strength</option>
+          </select>
+        </div>
+        <div class="row2">
+          <div class="form-row" id="log-dist-wrap">
+            <label class="form-label">Distance (km)</label>
+            <input type="number" id="log-distance" placeholder="0.0" step="0.1" min="0">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Duration (min)</label>
+            <input type="number" id="log-duration" placeholder="45" min="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Notes <span style="color:var(--grey2)">(optional)</span></label>
+          <textarea id="log-notes" rows="3" placeholder="How did it feel? Any adjustments?"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveActivity()">Log activity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY screen -->
+  <div class="screen" id="screen-history">
+    <div class="scroll">
+      <div class="sec-head">HISTORY</div>
+      <div class="sec-sub">Last 8 weeks</div>
+
+      <div class="card">
+        <div class="card-label">Sessions per week</div>
+        <div class="chart-wrap">
+          <div class="chart-bars" id="chart-bars"></div>
+          <div class="chart-xlabels" id="chart-labels"></div>
+        </div>
+      </div>
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <div style="margin-bottom:8px;">
+        <div class="card-label">Recent activities</div>
+      </div>
+      <div id="activity-list"></div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav id="nav">
+    <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" id="nav-week" onclick="switchTab('week')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+      Week
+    </button>
+    <button class="nav-btn" id="nav-log" onclick="switchTab('log')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="15"/><line x1="12" y1="16" x2="12" y2="16" stroke-linecap="round" stroke-width="2.5"/></svg>
+      Log
+    </button>
+    <button class="nav-btn" id="nav-history" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      History
+    </button>
+  </nav>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  PLAN LIBRARY
+// ═══════════════════════════════════════════════════════
+const PLANS = {
+
+  // ── RUNNING: 5K ──────────────────────────────────────
+  '5k': {
+    name: '5K Plan', totalWeeks: 8,
+    beginner: [
+      // W1
+      [{name:'Easy run',detail:'20 min easy pace',type:'run'},{name:'Rest',detail:'Full rest',type:'rest'},{name:'Walk/run intervals',detail:'3×5 min run + 2 min walk',type:'run'}],
+      // W2
+      [{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Rest',detail:'Full rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'}],
+      // W3
+      [{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Strides',detail:'5×20 sec pickups after easy 20 min',type:'run'},{name:'Long run',detail:'30 min easy',type:'run'}],
+      // W4 (recovery)
+      [{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Rest',detail:'Recovery week — rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'}],
+      // W5
+      [{name:'Interval run',detail:'4×400m at effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'35 min easy',type:'run'}],
+      // W6
+      [{name:'Tempo run',detail:'5 min warm-up, 10 min tempo, 5 min cool-down',type:'run'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      // W7
+      [{name:'Interval run',detail:'5×400m at effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      // W8 (taper)
+      [{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Rest',detail:'Taper — rest',type:'rest'},{name:'5K Race / Time trial',detail:'Go for it!',type:'run'}],
+    ],
+    intermediate: [
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'6×20 sec after 20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Interval run',detail:'4×800m at 5K effort, 2 min rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'5 min WU + 15 min tempo + 5 min CD',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'6×20 sec after 25 min easy',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Interval run',detail:'5×800m at 5K effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Tempo run',detail:'20 min at threshold',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Interval run',detail:'6×400m at faster than 5K, 60 sec rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'25 min threshold',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Interval run',detail:'4×1km at 5K effort, 2 min rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'8×20 sec pickups',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'15 min easy + strides',type:'run'},{name:'5K Race',detail:'Race day!',type:'run'}],
+    ],
+    advanced: [
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'VO2max intervals',detail:'6×1km at 5K effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Track session',detail:'8×400m at 3K pace, 60 sec',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'VO2max',detail:'5×1.2km at 5K effort, 2 min rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min easy',type:'run'},{name:'Strides',detail:'8×20 sec after 30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Track session',detail:'10×400m at mile effort, 60 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 5K effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Sharpener',detail:'4×400m at 3K pace, full rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Strides',detail:'4×20 sec pickups',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'15 min easy',type:'run'},{name:'5K Race',detail:'Race day!',type:'run'}],
+    ]
+  },
+
+  // ── RUNNING: 10K ─────────────────────────────────────
+  '10k': {
+    name: '10K Plan', totalWeeks: 10,
+    beginner: [
+      [{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Walk/run',detail:'4×5 min run + 1 min walk',type:'run'},{name:'Long run',detail:'35 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'5×20 sec pickups after 25 min easy',type:'run'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'WU + 10 min tempo + CD',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Intervals',detail:'4×800m at effort, 2 min rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'30 min easy',type:'run'}],
+      [{name:'Intervals',detail:'5×800m at effort, 90 sec rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'10K Race / Time trial',detail:'Race day!',type:'run'}],
+    ],
+    intermediate: [
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Strides',detail:'6×20 sec after 30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 15 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Intervals',detail:'5×800m at 10K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'20 min threshold',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Intervals',detail:'6×800m at 10K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'25 min threshold',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 25 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Intervals',detail:'5×1km at 10K pace, 2 min rest',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Intervals',detail:'6×1km at 10K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 20 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Intervals',detail:'4×1km at pace, 2 min rest',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Strides',detail:'4×20 sec',type:'run'},{name:'10K Race',detail:'Race day!',type:'run'}],
+    ],
+    advanced: [
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 5K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Track',detail:'8×800m at 10K pace, 60 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'VO2max',detail:'5×1.2km at 5K pace, 2 min rest',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min easy',type:'run'},{name:'Strides',detail:'8×20 sec after 35 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'10×400m at 3K pace, 60 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 5K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'4×2km at 10K pace, 2 min rest',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min easy',type:'run'},{name:'Strides',detail:'8×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Sharpener',detail:'5×1km at 10K pace, 90 sec rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo',detail:'25 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 25 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'},{name:'10K Race',detail:'Race day!',type:'run'}],
+    ]
+  },
+
+  // ── RUNNING: HALF MARATHON ────────────────────────────
+  'half': {
+    name: 'Half Marathon Plan', totalWeeks: 16,
+    beginner: [
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Strides',detail:'5×20 sec after 25 min easy',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 25 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'WU + 10 min tempo + CD',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Intervals',detail:'4×800m at effort, 2 min rest',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 15 min tempo + CD',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Intervals',detail:'5×800m at effort, 90 sec',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 20 min tempo + CD',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 25 min tempo + CD',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Intervals',detail:'5×1km at HM effort, 2 min rest',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 30 min easy',type:'run'},{name:'Strides',detail:'5×20 sec',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Half Marathon',detail:'Race day!',type:'run'}],
+    ],
+    intermediate: [
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Strides',detail:'6×20 sec after 35 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 15 min tempo + CD',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Intervals',detail:'5×800m at HM effort, 90 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'20 min threshold',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 20 min tempo + CD',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Intervals',detail:'5×1km at HM pace, 90 sec',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'25 min threshold',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Intervals',detail:'6×1km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 30 min tempo + CD',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'6×1km at HM pace, 90 sec',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Long run',detail:'105 min easy',type:'run'}],
+      [{name:'Intervals',detail:'4×2km at HM pace, 2 min rest',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'WU + 30 min tempo + CD',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'5×1km at HM pace, 90 sec',type:'run'},{name:'Long run',detail:'105 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Race-pace run',detail:'30 min at HM target pace',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 35 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Strides',detail:'4×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Half Marathon',detail:'Race day!',type:'run'}],
+    ],
+    advanced: [
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 5K pace, 90 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Track',detail:'8×800m at 10K pace, 60 sec',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'VO2max',detail:'5×1.5km at 10K pace, 2 min',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 40 min',type:'run'},{name:'Strides',detail:'8×20 sec after 35 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Intervals',detail:'5×2km at HM pace, 2 min',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 5K pace, 90 sec',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Long run',detail:'105 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Intervals',detail:'6×2km at HM pace, 2 min',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 40 min',type:'run'},{name:'Strides',detail:'8×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'Race-pace',detail:'5km WU + 12km at HM pace + 3km CD',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'115 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'Intervals',detail:'5×2km at HM pace, 2 min',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'VO2max',detail:'6×1.5km at 10K pace, 2 min',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Long run',detail:'115 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 40 min',type:'run'},{name:'Strides',detail:'8×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Intervals',detail:'4×3km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Race-pace run',detail:'45 min at HM target pace',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 40 min easy',type:'run'},{name:'Sharpener',detail:'4×1km at HM pace, 2 min rest',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 25 min easy',type:'run'},{name:'Strides',detail:'4×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Half Marathon',detail:'Race day!',type:'run'}],
+    ]
+  },
+
+  // ── RUNNING: MARATHON ────────────────────────────────
+  'marathon': {
+    name: 'Marathon Plan', totalWeeks: 16,
+    beginner: [
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Strides',detail:'5×20 sec after 30 min easy',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 25 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Tempo run',detail:'WU + 10 min tempo + CD',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Intervals',detail:'4×800m at effort, 2 min rest',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 15 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 20 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'130 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'WU + 25 min tempo + CD',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'140 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'130 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 35 min easy',type:'run'},{name:'Strides',detail:'5×20 sec',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Marathon',detail:'Race day!',type:'run'}],
+    ],
+    intermediate: [
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Strides',detail:'6×20 sec after 40 min easy',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'WU + 20 min tempo + CD',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'90 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'5×1km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Tempo run',detail:'25 min threshold',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'WU + 25 min tempo + CD',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Intervals',detail:'5×1km at HM pace, 90 sec',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Long run',detail:'115 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Intervals',detail:'6×1km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Race-pace run',detail:'8km at marathon target pace',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'130 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Intervals',detail:'5×1.5km at HM pace, 2 min',type:'run'},{name:'Long run',detail:'135 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Race-pace run',detail:'12km at marathon target pace',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'35 min threshold',type:'run'},{name:'Long run',detail:'140 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 40 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'95 min easy',type:'run'}],
+      [{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Race-pace run',detail:'16km at marathon target pace',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Tempo run',detail:'30 min threshold',type:'run'},{name:'Long run',detail:'145 min easy',type:'run'}],
+      [{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Race-pace run',detail:'10km at marathon target pace',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 40 min easy',type:'run'},{name:'Race-pace run',detail:'6km at marathon pace',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Strides',detail:'5×20 sec',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 25 min easy',type:'run'},{name:'Strides',detail:'4×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Marathon',detail:'Race day!',type:'run'}],
+    ],
+    advanced: [
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'VO2max',detail:'6×1km at 10K pace, 90 sec',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'Intervals',detail:'4×3km at HM pace, 2 min',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'110 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'VO2max',detail:'5×1.5km at 10K pace, 2 min',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 45 min',type:'run'},{name:'Strides',detail:'8×20 sec after 40 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Intervals',detail:'5×3km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'130 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Race-pace run',detail:'10km at marathon pace mid-run',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'135 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Intervals',detail:'6×3km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'140 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 45 min',type:'run'},{name:'Strides',detail:'8×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Long run',detail:'95 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Race-pace run',detail:'16km at marathon target pace',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'145 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Intervals',detail:'5×3km at HM pace, 90 sec',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'150 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Race-pace run',detail:'20km at marathon target pace',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'45 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'150 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 45 min',type:'run'},{name:'Strides',detail:'8×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'100 min easy',type:'run'}],
+      [{name:'Easy run',detail:'60 min easy',type:'run'},{name:'Race-pace run',detail:'22km at marathon target pace',type:'run'},{name:'Easy run',detail:'50 min easy',type:'run'},{name:'Tempo run',detail:'40 min threshold',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Long run',detail:'145 min easy',type:'run'}],
+      [{name:'Easy run',detail:'55 min easy',type:'run'},{name:'Race-pace run',detail:'12km at marathon pace',type:'run'},{name:'Easy run',detail:'45 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Long run',detail:'120 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 45 min easy',type:'run'},{name:'Race-pace run',detail:'8km at marathon pace',type:'run'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 30 min easy',type:'run'},{name:'Strides',detail:'4×20 sec',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Marathon',detail:'Race day!',type:'run'}],
+    ]
+  },
+
+  // ── HYROX ────────────────────────────────────────────
+  'hyrox': {
+    name: 'Hyrox Plan', totalWeeks: 12,
+    beginner: [
+      [{name:'Easy run',detail:'20 min easy',type:'run'},{name:'Functional strength',detail:'Squats, lunges, farmer carry — 3×12, moderate weight',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'30 min easy',type:'run'}],
+      [{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Station intro',detail:'SkiErg 4×250m + Row 4×250m — focus on form',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'35 min easy',type:'run'}],
+      [{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Functional strength',detail:'Wall balls 4×15, Sandbag lunges 4×10m, KB carry 4×30m',type:'hyrox'},{name:'Cardio',detail:'SkiErg 3×500m + Row 3×500m, 2 min rest between',type:'hyrox'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 20 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Functional strength',detail:'Recovery week — lighter load, same movements',type:'hyrox'},{name:'Long run',detail:'30 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Compromised workout',detail:'1km run + 15 wall balls × 4 rounds',type:'hyrox'},{name:'Strength',detail:'Sled push 4×12.5m + Sled pull 4×12.5m (bodyweight)',type:'hyrox'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Station circuit',detail:'SkiErg 500m → Row 500m → Farmer carry 100m × 3 rounds',type:'hyrox'},{name:'Compromised workout',detail:'1km run + 20 wall balls + 10 burpee broad jumps × 3 rounds',type:'hyrox'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Hyrox sim',detail:'2km run + all 8 stations at 50% race weight × 1 round',type:'hyrox'},{name:'Strength',detail:'Sled push/pull + farmer carry — progressive load',type:'hyrox'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 25 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Station practice',detail:'3 favourite stations × 3 sets, focus on form',type:'hyrox'},{name:'Long run',detail:'40 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Full sim',detail:'4km run split with: SkiErg 500m, Wall balls 25, Row 500m, Sandbag lunges 25m',type:'hyrox'},{name:'Strength',detail:'All sled work + carries — race-day weight',type:'hyrox'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Compromised workout',detail:'1km run + full station set × 4 rounds',type:'hyrox'},{name:'Cardio',detail:'SkiErg 1km + Row 1km — pace target',type:'hyrox'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Taper sim',detail:'3km run + 4 stations at race weight × 1 round',type:'hyrox'},{name:'Easy run',detail:'20 min easy + strides',type:'run'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Station walkthrough',detail:'Light — each station 1×5 reps to feel them',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Hyrox Race',detail:'Race day!',type:'hyrox'}],
+    ],
+    intermediate: [
+      [{name:'Tempo run',detail:'30 min easy + 10 min tempo',type:'run'},{name:'Functional strength',detail:'Squat 4×10, Deadlift 4×8, KB swing 4×15',type:'hyrox'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Station circuit',detail:'SkiErg 3×500m + Row 3×500m + Farmer carry 3×100m',type:'hyrox'},{name:'Strength',detail:'Sled push 5×12.5m + Sled pull 5×12.5m progressive load',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'35 min easy + 15 min tempo',type:'run'},{name:'Compromised workout',detail:'1km run + 20 wall balls + 15 burpee BJ × 4 rounds',type:'hyrox'},{name:'Cardio',detail:'SkiErg 1km + Row 1km at pace',type:'hyrox'},{name:'Strength',detail:'Full station set at 80% race weight',type:'hyrox'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Light station',detail:'4 stations × 2 sets at 60% weight',type:'hyrox'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Long run',detail:'45 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'35 min easy + 20 min tempo',type:'run'},{name:'Hyrox sim',detail:'4km run split + all 8 stations at 75% race weight',type:'hyrox'},{name:'Strength',detail:'Sled work + sandbag lunges — progressive load',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Compromised workout',detail:'1km run + full station × 5 rounds',type:'hyrox'},{name:'Cardio intervals',detail:'SkiErg 500m + Row 500m × 4 rounds, 90 sec rest',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'40 min easy + 20 min tempo',type:'run'},{name:'Full sim',detail:'8km run split + all 8 stations at race weight',type:'hyrox'},{name:'Strength',detail:'All sleds + carries at race weight',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 30 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Light station',detail:'4 stations × 3 sets — feel good',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'35 min easy + 20 min tempo',type:'run'},{name:'Race-pace sim',detail:'Full 8km run + all stations at race weight — pace target',type:'hyrox'},{name:'Strength',detail:'Race-weight sled work',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'40 min easy',type:'run'},{name:'Compromised workout',detail:'1km run + full station × 6 rounds',type:'hyrox'},{name:'Cardio',detail:'SkiErg 1km + Row 1km at race pace',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 30 min easy',type:'run'},{name:'Race sim',detail:'4km run + first 4 stations at race weight',type:'hyrox'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'50 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Light activation',detail:'Each station 1×8 reps — feel loose',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'15 min easy',type:'run'},{name:'Hyrox Race',detail:'Race day!',type:'hyrox'}],
+    ],
+    advanced: [
+      [{name:'Tempo run',detail:'45 min easy + 20 min tempo',type:'run'},{name:'Heavy strength',detail:'Squat 5×5, Deadlift 5×5, KB swing 5×15',type:'hyrox'},{name:'Station circuit',detail:'All 8 stations × 2 sets at 90% race weight',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'70 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'45 min easy + 25 min tempo',type:'run'},{name:'Full sim',detail:'8km run split + all stations at race weight',type:'hyrox'},{name:'Heavy station',detail:'Sled push/pull + farmer carry at race weight',type:'hyrox'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'50 min easy + 25 min tempo',type:'run'},{name:'Race pace sim',detail:'8km at race pace + stations at race weight',type:'hyrox'},{name:'EMOM 60',detail:'60 min EMOM — run 200m, 5 wall balls, 3 burpee BJ alternating',type:'hyrox'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Light station',detail:'All stations × 2 sets at 70% weight',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'60 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'50 min easy + 25 min tempo',type:'run'},{name:'Double sim',detail:'Full race sim × 2 — 30 min rest between',type:'hyrox'},{name:'Heavy sled',detail:'Sled push/pull at above-race weight',type:'hyrox'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'50 min easy + 25 min tempo',type:'run'},{name:'EMOM 60',detail:'60 min at race-level intensity — compromised sets',type:'hyrox'},{name:'Station circuit',detail:'All stations at race weight × 3 sets',type:'hyrox'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'50 min easy + 25 min tempo',type:'run'},{name:'Race pace full sim',detail:'Full 8km + all stations at race weight — target finish time',type:'hyrox'},{name:'Heavy sled',detail:'Sled work above race weight',type:'hyrox'},{name:'Easy run',detail:'35 min easy',type:'run'},{name:'Long run',detail:'85 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Recovery — 35 min',type:'run'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Light station',detail:'4 stations × 2 sets — feel fresh',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'65 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'45 min easy + 25 min tempo',type:'run'},{name:'Race pace sim',detail:'Full race at goal pace — test yourself',type:'hyrox'},{name:'Heavy station',detail:'Sled + carries at race weight',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'80 min easy',type:'run'}],
+      [{name:'Tempo run',detail:'45 min easy + 20 min tempo',type:'run'},{name:'Compromised work',detail:'1km run + full stations × 5 rounds at race pace',type:'hyrox'},{name:'Cardio',detail:'SkiErg 1km + Row 1km at race pace × 3',type:'hyrox'},{name:'Easy run',detail:'30 min easy',type:'run'},{name:'Long run',detail:'75 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 35 min easy',type:'run'},{name:'Race sim',detail:'5km run + first 5 stations at race weight',type:'hyrox'},{name:'Easy run',detail:'25 min easy',type:'run'},{name:'Strides',detail:'6×20 sec',type:'run'},{name:'Long run',detail:'55 min easy',type:'run'}],
+      [{name:'Easy run',detail:'Taper — 20 min easy',type:'run'},{name:'Activation',detail:'3 stations × 1 set — feel activated',type:'hyrox'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy run',detail:'15 min easy + strides',type:'run'},{name:'Hyrox Race',detail:'Race day!',type:'hyrox'}],
+    ]
+  },
+
+  // ── CYCLING ──────────────────────────────────────────
+  'cycling': {
+    name: 'Cycling Plan', totalWeeks: 12,
+    beginner: [
+      [{name:'Easy ride',detail:'30 min Zone 2 — conversational pace',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'30 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'35 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Cadence drill',detail:'4×5 min high cadence (90+ rpm) in Zone 2',type:'cycle'},{name:'Long ride',detail:'60 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 30 min easy',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'30 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Tempo intervals',detail:'3×8 min at Zone 3–4, 4 min rest',type:'cycle'},{name:'Long ride',detail:'75 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Tempo intervals',detail:'4×8 min at Zone 3–4, 4 min rest',type:'cycle'},{name:'Long ride',detail:'90 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'2×15 min at 88–93% FTP, 5 min rest',type:'cycle'},{name:'Long ride',detail:'100 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 35 min',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'35 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'3×12 min at sweet spot, 4 min rest',type:'cycle'},{name:'Long ride',detail:'110 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Threshold',detail:'2×20 min at threshold, 5 min rest',type:'cycle'},{name:'Long ride',detail:'115 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 35 min easy',type:'cycle'},{name:'Activator',detail:'30 min + 4×2 min at threshold',type:'cycle'},{name:'Long ride',detail:'90 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 25 min easy',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Goal event / Long ride',detail:'Target event or 120 min Zone 2',type:'cycle'}],
+    ],
+    intermediate: [
+      [{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Cadence + tempo',detail:'45 min including 3×10 min at Zone 3–4',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long ride',detail:'90 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'3×15 min at 88–93% FTP, 5 min rest',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Long ride',detail:'100 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'2×20 min at threshold, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'110 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 40 min',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'35 min Zone 2',type:'cycle'},{name:'Long ride',detail:'75 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'55 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'4×12 min at sweet spot, 4 min rest',type:'cycle'},{name:'Threshold',detail:'2×20 min at threshold',type:'cycle'},{name:'Long ride',detail:'120 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'55 min Zone 2',type:'cycle'},{name:'VO2max intervals',detail:'6×4 min at 110–120% FTP, 4 min rest',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'130 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'55 min Zone 2',type:'cycle'},{name:'Threshold',detail:'3×20 min at threshold, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'135 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 40 min',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'90 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'55 min Zone 2',type:'cycle'},{name:'VO2max',detail:'5×5 min at 110–120% FTP, 5 min rest',type:'cycle'},{name:'Sweet spot',detail:'4×12 min at sweet spot',type:'cycle'},{name:'Long ride',detail:'140 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'55 min Zone 2',type:'cycle'},{name:'Race pace',detail:'2×30 min at event goal intensity, 10 min rest',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'140 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 45 min easy',type:'cycle'},{name:'Activator',detail:'40 min + 3×5 min at threshold',type:'cycle'},{name:'Easy ride',detail:'35 min Zone 2',type:'cycle'},{name:'Long ride',detail:'100 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 30 min easy',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Activator',detail:'20 min + 4×1 min at threshold',type:'cycle'},{name:'Goal event',detail:'Target event day!',type:'cycle'}],
+    ],
+    advanced: [
+      [{name:'Easy ride',detail:'60 min Zone 2',type:'cycle'},{name:'VO2max',detail:'6×5 min at 110–120% FTP, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'2×30 min at threshold, 10 min rest',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'150 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'60 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'4×20 min at sweet spot, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'3×20 min at threshold',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'160 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'60 min Zone 2',type:'cycle'},{name:'VO2max',detail:'8×4 min at 115–120% FTP, 4 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Over-under',detail:'3×(10 min threshold + 5 min sweet spot), 5 min rest',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'165 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 50 min',type:'cycle'},{name:'Cadence work',detail:'45 min easy + 4×5 min high cadence',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'110 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'65 min Zone 2',type:'cycle'},{name:'VO2max',detail:'6×5 min at 115–120% FTP, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'3×25 min at threshold',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'175 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'65 min Zone 2',type:'cycle'},{name:'Race simulation',detail:'60 min at race effort with surges',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'5×15 min at sweet spot',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'180 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'65 min Zone 2',type:'cycle'},{name:'VO2max block',detail:'3 sets: 3×4 min at 120% FTP, 4 min rest, 10 min between sets',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'3×25 min at threshold',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'180 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Recovery — 50 min',type:'cycle'},{name:'Cadence work',detail:'45 min easy + 4×5 min high cadence',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Long ride',detail:'120 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'65 min Zone 2',type:'cycle'},{name:'Race pace',detail:'2×40 min at race pace, 10 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Threshold',detail:'3×25 min at threshold',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'175 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'65 min Zone 2',type:'cycle'},{name:'VO2max',detail:'6×5 min at 115% FTP, 5 min rest',type:'cycle'},{name:'Easy ride',detail:'50 min Zone 2',type:'cycle'},{name:'Sweet spot',detail:'4×20 min at sweet spot',type:'cycle'},{name:'Easy ride',detail:'45 min Zone 2',type:'cycle'},{name:'Long ride',detail:'175 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 55 min easy',type:'cycle'},{name:'Threshold',detail:'2×20 min at threshold',type:'cycle'},{name:'Easy ride',detail:'40 min Zone 2',type:'cycle'},{name:'Activator',detail:'30 min + 4×2 min at threshold',type:'cycle'},{name:'Easy ride',detail:'35 min Zone 2',type:'cycle'},{name:'Long ride',detail:'130 min Zone 2',type:'cycle'}],
+      [{name:'Easy ride',detail:'Taper — 40 min easy',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Activator',detail:'30 min + 3×2 min at threshold',type:'cycle'},{name:'Easy ride',detail:'30 min easy',type:'cycle'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Goal event',detail:'Target event day!',type:'cycle'}],
+    ]
+  },
+
+  // ── GENERAL STRENGTH ─────────────────────────────────
+  'strength': {
+    name: 'Strength Plan', totalWeeks: 12,
+    beginner: [
+      // Full body 3×week — linear progression
+      [{name:'Full body A',detail:'Squat 3×10, DB Row 3×10, Push-up 3×10, Deadlift 3×8',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Full body B',detail:'Goblet squat 3×10, Lat pull-down 3×10, DB Press 3×10, Hip hinge 3×10',type:'strength'},{name:'Rest + walk',detail:'20 min walk',type:'strength'}],
+      [{name:'Full body A',detail:'Squat 3×10 (+2.5kg), DB Row 3×10, Push-up 3×12, Deadlift 3×8 (+5kg)',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Full body B',detail:'Goblet squat 3×10, Lat pull-down 3×10 (+2.5kg), DB Press 3×10, Hip hinge 3×10',type:'strength'},{name:'Rest + walk',detail:'20 min walk',type:'strength'}],
+      [{name:'Full body A',detail:'Squat 3×12, DB Row 3×12, Push-up 3×12, Deadlift 3×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Full body B',detail:'Goblet squat 3×12, Lat pull-down 3×12, DB Press 3×10, Hip hinge 3×12',type:'strength'},{name:'Rest + walk',detail:'25 min walk',type:'strength'}],
+      [{name:'Full body A',detail:'Deload — same movements at 60% load, 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Full body B',detail:'Deload — same movements at 60% load, 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push day',detail:'Bench press 3×8, OHP 3×10, Lateral raise 3×15, Tricep push-down 3×12',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 3×8, Cable row 3×10, Face pull 3×15, Bicep curl 3×12',type:'strength'},{name:'Legs',detail:'Squat 3×8, Romanian DL 3×10, Leg press 3×12, Calf raise 3×15',type:'strength'}],
+      [{name:'Push day',detail:'Bench 3×8 (+2.5kg), OHP 3×10, Lateral raise 3×15, Tricep 3×12',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 3×8 (+2.5kg), Row 3×10, Face pull 3×15, Curl 3×12',type:'strength'},{name:'Legs',detail:'Squat 3×8 (+5kg), RDL 3×10, Leg press 3×12, Calf 3×15',type:'strength'}],
+      [{name:'Push day',detail:'Bench 3×10, OHP 3×10, Lateral raise 4×15, Tricep 3×15',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 3×10, Row 3×10, Face pull 4×15, Curl 3×15',type:'strength'},{name:'Legs',detail:'Squat 3×10, RDL 3×10, Leg press 3×15, Calf 3×20',type:'strength'}],
+      [{name:'Push day',detail:'Deload — Push at 60% load, 2 sets',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Deload — Pull at 60% load, 2 sets',type:'strength'},{name:'Legs',detail:'Deload — Legs at 60% load, 2 sets',type:'strength'}],
+      [{name:'Push day',detail:'Bench 4×8, OHP 3×10, Lateral raise 4×15, Tricep 4×12',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 4×8, Row 4×10, Face pull 4×15, Curl 4×12',type:'strength'},{name:'Legs',detail:'Squat 4×8, RDL 4×10, Leg press 4×12, Calf 4×15',type:'strength'}],
+      [{name:'Push day',detail:'Bench 4×8 (+2.5kg), OHP 4×8, Lateral raise 4×15, Tricep 4×12',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 4×8, Row 4×8, Face pull 4×15, Curl 4×12',type:'strength'},{name:'Legs',detail:'Squat 4×8 (+5kg), RDL 4×8, Leg press 4×12, Calf 4×15',type:'strength'}],
+      [{name:'Push day',detail:'Bench 4×10, OHP 4×8, Lateral raise 4×15, Tricep 4×15',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Lat pull-down 4×10, Row 4×8, Face pull 4×15, Curl 4×15',type:'strength'},{name:'Legs',detail:'Squat 4×10, RDL 4×8, Leg press 4×15, Calf 4×20',type:'strength'}],
+      [{name:'Push day',detail:'Final week — test your max on bench and OHP',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Pull day',detail:'Final week — test rows and pull-ups',type:'strength'},{name:'Legs',detail:'Final week — test squat',type:'strength'}],
+    ],
+    intermediate: [
+      [{name:'Push A',detail:'Bench 4×6–8, Incline DB 3×10, OHP 3×8, Lateral raise 3×15, Tricep dip 3×10',type:'strength'},{name:'Pull A',detail:'Barbell row 4×6–8, Lat pull-down 3×10, Face pull 3×15, Hammer curl 3×12',type:'strength'},{name:'Legs A',detail:'Squat 4×6–8, RDL 3×10, Leg press 3×12, Calf 4×15',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push B',detail:'Incline bench 4×8, OHP 4×8, Cable fly 3×12, Lateral raise 4×15, Skull crusher 3×12',type:'strength'},{name:'Pull B',detail:'Pull-up 4×6–8, Cable row 4×8, Face pull 3×15, EZ curl 3×12',type:'strength'},{name:'Legs B',detail:'Front squat 4×8, Leg curl 3×12, Bulgarian split squat 3×10, Calf 4×15',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 4×6–8, Incline DB 3×10, OHP 3×8',type:'strength'},{name:'Pull A',detail:'Add 2.5kg — Barbell row 4×6–8, Lat pull-down 3×10',type:'strength'},{name:'Legs A',detail:'Add 5kg — Squat 4×6–8, RDL 3×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push deload',detail:'All push movements at 60% — 2×10',type:'strength'},{name:'Pull deload',detail:'All pull movements at 60% — 2×10',type:'strength'},{name:'Legs deload',detail:'All leg movements at 60% — 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push A',detail:'Bench 4×5, Incline DB 4×8, OHP 3×8, Lateral raise 4×15, Tricep 3×12',type:'strength'},{name:'Pull A',detail:'Barbell row 4×5, Lat pull-down 4×8, Face pull 4×15, Curl 3×12',type:'strength'},{name:'Legs A',detail:'Squat 4×5, RDL 4×8, Leg press 4×10, Calf 4×20',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push B',detail:'Incline bench 4×8, OHP 4×6, Cable fly 4×12, Lateral raise 4×15, Tricep cable 3×15',type:'strength'},{name:'Pull B',detail:'Weighted pull-up 4×6, Cable row 4×8, Face pull 4×15, EZ curl 4×10',type:'strength'},{name:'Legs B',detail:'Front squat 4×6, Leg curl 4×10, Bulgarian 3×10, Calf 4×20',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 4×5, Incline 4×8, OHP 3×8',type:'strength'},{name:'Pull A',detail:'Add 2.5kg — Row 4×5, Lat pull-down 4×8',type:'strength'},{name:'Legs A',detail:'Add 5kg — Squat 4×5, RDL 4×8',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push deload',detail:'All push at 60% — 2×10',type:'strength'},{name:'Pull deload',detail:'All pull at 60% — 2×10',type:'strength'},{name:'Legs deload',detail:'All legs at 60% — 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push A',detail:'Bench 5×5, Incline 4×8, OHP 4×6, Lateral raise 4×15, Tricep 4×12',type:'strength'},{name:'Pull A',detail:'Row 5×5, Lat pull-down 4×8, Face pull 4×15, Curl 4×12',type:'strength'},{name:'Legs A',detail:'Squat 5×5, RDL 4×8, Leg press 4×10, Calf 4×20',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push B',detail:'Incline bench 5×5, OHP 4×6, Cable fly 4×12, Lateral raise 5×15, Tricep 4×12',type:'strength'},{name:'Pull B',detail:'Weighted pull-up 4×5, Cable row 5×6, Face pull 5×15, Curl 4×12',type:'strength'},{name:'Legs B',detail:'Front squat 4×5, Leg curl 4×8, Bulgarian 4×8, Calf 5×20',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 5×5, Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Add 2.5kg — Row 5×5, Lat pull-down 4×8',type:'strength'},{name:'Legs A',detail:'Add 5kg — Squat 5×5, RDL 4×8',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'}],
+      [{name:'Test week — Push',detail:'Max bench press (3 rep max) + best OHP',type:'strength'},{name:'Test week — Pull',detail:'Max pull-ups + max barbell row',type:'strength'},{name:'Test week — Legs',detail:'Max squat (3 rep max)',type:'strength'},{name:'Rest',detail:'Recovery — celebrate progress',type:'rest'}],
+    ],
+    advanced: [
+      [{name:'Push A',detail:'Bench 5×5 (85% 1RM), Incline 4×8, OHP 4×6, Lateral raise 5×15, Tricep 4×10',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×5, Barbell row 4×5, Face pull 4×15, Hammer curl 4×12',type:'strength'},{name:'Legs A',detail:'Squat 5×5 (85% 1RM), RDL 4×8, Leg press 4×10, Calf 5×15',type:'strength'},{name:'Push B',detail:'Incline bench 4×6, OHP 5×5, Cable fly 4×12, Lateral raise 4×15, Skull crusher 4×10',type:'strength'},{name:'Pull B',detail:'Pendlay row 4×5, Lat pull-down 4×8, Rear delt fly 4×15, EZ curl 4×10',type:'strength'},{name:'Legs B',detail:'Front squat 4×6, Leg curl 4×8, Bulgarian 4×8, Hip thrust 4×10, Calf 5×20',type:'strength'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 5×5, Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×5 (+2.5kg), Barbell row 4×5 (+2.5kg)',type:'strength'},{name:'Legs A',detail:'Squat 5×5 (+5kg), RDL 4×8, Leg press 4×10',type:'strength'},{name:'Push B',detail:'Incline 4×6 (+2.5kg), OHP 5×5 (+2.5kg)',type:'strength'},{name:'Pull B',detail:'Pendlay row 4×5 (+2.5kg), Lat pull-down 4×8',type:'strength'},{name:'Legs B',detail:'Front squat 4×6 (+2.5kg), Leg curl 4×8',type:'strength'}],
+      [{name:'Push A',detail:'Bench 5×4 (87.5% 1RM), Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×4 (+5kg), Barbell row 5×5',type:'strength'},{name:'Legs A',detail:'Squat 5×4 (87.5% 1RM), RDL 4×6',type:'strength'},{name:'Push B',detail:'Incline 5×5, OHP 5×4',type:'strength'},{name:'Pull B',detail:'Pendlay row 5×5, Lat pull-down 4×6',type:'strength'},{name:'Legs B',detail:'Front squat 5×5, Bulgarian 4×6',type:'strength'}],
+      [{name:'Push deload',detail:'All push at 60% — 2×10',type:'strength'},{name:'Pull deload',detail:'All pull at 60% — 2×10',type:'strength'},{name:'Legs deload',detail:'All legs at 60% — 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Active recovery',detail:'Light cardio or mobility — 30 min',type:'strength'}],
+      [{name:'Push A',detail:'Bench 5×5 (87.5% 1RM), Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×5 (+5kg), Barbell row 5×5',type:'strength'},{name:'Legs A',detail:'Squat 5×5 (87.5% 1RM), RDL 4×8',type:'strength'},{name:'Push B',detail:'Incline bench 4×6, OHP 5×5',type:'strength'},{name:'Pull B',detail:'Pendlay row 4×5, Lat pull-down 4×8',type:'strength'},{name:'Legs B',detail:'Front squat 4×6, Leg curl 4×8, Bulgarian 4×8',type:'strength'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 5×5, Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Weighted pull-up (+2.5kg), Row 5×5',type:'strength'},{name:'Legs A',detail:'Squat (+5kg) 5×5, RDL 4×8',type:'strength'},{name:'Push B',detail:'Incline (+2.5kg) 4×6, OHP 5×5',type:'strength'},{name:'Pull B',detail:'Pendlay row (+2.5kg) 4×5',type:'strength'},{name:'Legs B',detail:'Front squat (+2.5kg) 4×6, Leg curl 4×8',type:'strength'}],
+      [{name:'Push A',detail:'Bench 5×4 (90% 1RM), Incline 4×6, OHP 4×5',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×4 (+7.5kg), Row 5×4',type:'strength'},{name:'Legs A',detail:'Squat 5×4 (90% 1RM), RDL 4×6',type:'strength'},{name:'Push B',detail:'Incline 5×5, OHP 5×4',type:'strength'},{name:'Pull B',detail:'Pendlay row 5×4, Lat pull-down 4×6',type:'strength'},{name:'Legs B',detail:'Front squat 5×4, Bulgarian 4×6',type:'strength'}],
+      [{name:'Push deload',detail:'All push at 60% — 2×10',type:'strength'},{name:'Pull deload',detail:'All pull at 60% — 2×10',type:'strength'},{name:'Legs deload',detail:'All legs at 60% — 2×10',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Active recovery',detail:'Mobility session — 30 min',type:'strength'}],
+      [{name:'Push A',detail:'Bench 5×5 (90% 1RM), Incline 4×8, OHP 4×6',type:'strength'},{name:'Pull A',detail:'Weighted pull-up 5×5 (+7.5kg), Row 5×5',type:'strength'},{name:'Legs A',detail:'Squat 5×5 (90% 1RM), RDL 4×8',type:'strength'},{name:'Push B',detail:'Incline 4×5, OHP 5×5',type:'strength'},{name:'Pull B',detail:'Pendlay row 4×5, Lat pull-down 4×8',type:'strength'},{name:'Legs B',detail:'Front squat 4×5, Bulgarian 4×8',type:'strength'}],
+      [{name:'Push A',detail:'Add 2.5kg — Bench 5×5, Incline 4×6, OHP 4×5',type:'strength'},{name:'Pull A',detail:'Weighted pull-up (+2.5kg) 5×5, Row (+2.5kg) 5×5',type:'strength'},{name:'Legs A',detail:'Squat (+5kg) 5×5, RDL (+5kg) 4×8',type:'strength'},{name:'Push B',detail:'Incline (+2.5kg) 4×5, OHP (+2.5kg) 5×5',type:'strength'},{name:'Pull B',detail:'Row (+2.5kg) 4×5, Lat pull-down (+2.5kg) 4×6',type:'strength'},{name:'Legs B',detail:'Front squat (+2.5kg) 4×5',type:'strength'}],
+      [{name:'Push A',detail:'Taper — Bench 4×5 (87.5%), Incline 3×8, OHP 3×5',type:'strength'},{name:'Pull A',detail:'Taper — Weighted pull-up 3×5, Row 3×5',type:'strength'},{name:'Legs A',detail:'Taper — Squat 3×5 (87.5%), RDL 3×6',type:'strength'},{name:'Push B',detail:'Taper — Incline 3×6, OHP 3×5',type:'strength'},{name:'Pull B',detail:'Taper — Row 3×5, Lat pull-down 3×6',type:'strength'},{name:'Legs B',detail:'Taper — Front squat 3×5',type:'strength'}],
+      [{name:'Test week — Bench',detail:'1 rep max bench press',type:'strength'},{name:'Test week — Pull',detail:'1 rep max barbell row + max weighted pull-ups',type:'strength'},{name:'Test week — Squat',detail:'1 rep max squat',type:'strength'},{name:'Test week — OHP',detail:'1 rep max overhead press',type:'strength'},{name:'Rest',detail:'Rest',type:'rest'},{name:'Celebration',detail:'Active recovery — reflect on 12 weeks of gains',type:'strength'}],
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  STATE & STORAGE
+// ═══════════════════════════════════════════════════════
+const KEY = {
+  profile: 'mr_profile',
+  checkins: 'mr_checkins',
+  activities: 'mr_activities',
+  weekDone: 'mr_week_done'
+};
+
+function load(key) { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; } }
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+let profile = load(KEY.profile);
+let checkins = load(KEY.checkins) || {};
+let activities = load(KEY.activities) || [];
+let weekDone = load(KEY.weekDone) || {};
+
+// ═══════════════════════════════════════════════════════
+//  DATE UTILS
+// ═══════════════════════════════════════════════════════
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function dayOfWeek() { return new Date().getDay(); } // 0=Sun
+
+function currentWeekNum() {
+  if (!profile) return 1;
+  let start;
+  if (profile.raceDate) {
+    const plan = PLANS[profile.goal];
+    const raceDate = new Date(profile.raceDate);
+    const totalWeeks = plan ? plan.totalWeeks : 12;
+    const planStart = new Date(raceDate);
+    planStart.setDate(planStart.getDate() - totalWeeks * 7);
+    start = planStart;
+  } else {
+    start = new Date(profile.startDate || profile.createdAt);
+  }
+  const now = new Date();
+  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24 * 7));
+  const plan = PLANS[profile.goal];
+  const totalWeeks = plan ? plan.totalWeeks : 12;
+  return Math.min(Math.max(diff + 1, 1), totalWeeks);
+}
+
+function weekStartDate(weekNum) {
+  if (!profile) return new Date();
+  let start;
+  if (profile.raceDate) {
+    const plan = PLANS[profile.goal];
+    const raceDate = new Date(profile.raceDate);
+    const totalWeeks = plan ? plan.totalWeeks : 12;
+    const planStart = new Date(raceDate);
+    planStart.setDate(planStart.getDate() - totalWeeks * 7);
+    start = planStart;
+  } else {
+    start = new Date(profile.startDate || profile.createdAt);
+  }
+  const d = new Date(start);
+  d.setDate(d.getDate() + (weekNum - 1) * 7);
+  return d;
+}
+
+function formatDate(str) {
+  const d = new Date(str + 'T00:00:00');
+  return d.toLocaleDateString('en-IE', {weekday:'short', day:'numeric', month:'short'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  PLAN MATCHING
+// ═══════════════════════════════════════════════════════
+function getMatchedPlan() {
+  if (!profile) return null;
+  const plan = PLANS[profile.goal];
+  if (!plan) return null;
+  const level = profile.level; // beginner/intermediate/advanced
+  const days = parseInt(profile.days);
+  const sessions = plan[level];
+  if (!sessions) return null;
+  // Clamp sessions to user's available days
+  return sessions.map(week => {
+    const nonRest = week.filter(s => s.type !== 'rest');
+    const rest = week.filter(s => s.type === 'rest');
+    let chosen = nonRest.slice(0, days);
+    // Pad with rest if needed
+    while (chosen.length < days) chosen.push({name:'Rest', detail:'Active recovery or full rest', type:'rest'});
+    return chosen;
+  });
+}
+
+function getTodaySession() {
+  const plan = getMatchedPlan();
+  if (!plan) return null;
+  const week = currentWeekNum();
+  const weekSessions = plan[week - 1];
+  if (!weekSessions) return null;
+  // Map day of week to session index (Mon=0 first session, etc.)
+  const dow = new Date().getDay(); // 0=Sun
+  const idx = dow === 0 ? weekSessions.length - 1 : Math.min(dow - 1, weekSessions.length - 1);
+  return weekSessions[Math.max(0, idx)];
+}
+
+// ═══════════════════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════════════════
+let obData = {};
+
+function obSelectOption(step, val, btn) {
+  btn.closest('.ob-options').querySelectorAll('.ob-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  obData[step] = val;
+  document.getElementById('ob-next-' + step).disabled = false;
+}
+
+document.querySelectorAll('.ob-option').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const step = parseInt(this.closest('.ob-step').id.replace('ob-step-',''));
+    const val = this.dataset.val;
+    obSelectOption(step, val, this);
+  });
+});
+
+function obNext(step) {
+  document.getElementById('ob-step-' + step).classList.remove('active');
+  document.getElementById('ob-step-' + (step+1)).classList.add('active');
+  document.getElementById('dot' + step).classList.add('done');
+}
+
+function obBack(step) {
+  document.getElementById('ob-step-' + step).classList.remove('active');
+  document.getElementById('ob-step-' + (step-1)).classList.add('active');
+}
+
+function obFinish() {
+  const raceDate = document.getElementById('ob-race-date').value;
+  const raceName = document.getElementById('ob-race-name').value;
+  profile = {
+    goal: obData[0],
+    level: obData[1],
+    days: obData[2],
+    raceDate: raceDate || null,
+    raceName: raceName || null,
+    startDate: todayStr(),
+    createdAt: new Date().toISOString()
+  };
+  save(KEY.profile, profile);
+  document.getElementById('onboarding').classList.add('hidden');
+  initApp();
+  toast('Welcome to Meridian. Train at your peak.');
+}
+
+// ═══════════════════════════════════════════════════════
+//  APP INIT
+// ═══════════════════════════════════════════════════════
+function initApp() {
+  // Date in topbar
+  const d = new Date();
+  document.getElementById('topbar-date').textContent =
+    d.toLocaleDateString('en-IE', {weekday:'short', day:'numeric', month:'short'}).toUpperCase();
+
+  // Set log date to today
+  document.getElementById('log-date').value = todayStr();
+
+  renderHome();
+  renderWeek();
+  renderHistory();
+
+  if (profile) {
+    document.getElementById('onboarding').classList.add('hidden');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  CHECK-IN
+// ═══════════════════════════════════════════════════════
+function updateSlider(name, val) {
+  document.getElementById('v-' + name).textContent = val;
+}
+
+function saveCheckin() {
+  const today = todayStr();
+  checkins[today] = {
+    energy: parseInt(document.getElementById('s-energy').value),
+    sleep:  parseInt(document.getElementById('s-sleep').value),
+    mood:   parseInt(document.getElementById('s-mood').value),
+    stress: parseInt(document.getElementById('s-stress').value),
+    ts: new Date().toISOString()
+  };
+  save(KEY.checkins, checkins);
+  renderCheckinState();
+  toast('Check-in saved');
+}
+
+function renderCheckinState() {
+  const today = todayStr();
+  const ci = checkins[today];
+  const form = document.getElementById('checkin-form');
+  const bar  = document.getElementById('checkin-done-bar');
+  const sub  = document.getElementById('checkin-sub');
+  if (ci) {
+    form.style.display = 'none';
+    bar.style.display = 'flex';
+    document.getElementById('checkin-done-summary').textContent =
+      `Energy ${ci.energy} · Sleep ${ci.sleep} · Mood ${ci.mood} · Stress ${ci.stress}`;
+    sub.textContent = 'Today\'s readiness logged';
+  } else {
+    form.style.display = 'block';
+    bar.style.display = 'none';
+    sub.textContent = 'How are you feeling today?';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  TODAY SESSION
+// ═══════════════════════════════════════════════════════
+function getTodayDoneKey() { return 'home_done_' + todayStr(); }
+
+function renderHome() {
+  renderCheckinState();
+  const el = document.getElementById('today-content');
+  if (!profile) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏁</div><div class="empty-title">No plan yet</div><div class="empty-text">Complete setup to get your first session.</div></div>';
+    return;
+  }
+  const plan = PLANS[profile.goal];
+  const week = currentWeekNum();
+  const session = getTodaySession();
+  const done = weekDone[getTodayDoneKey()];
+  const ci = checkins[todayStr()];
+  const isLowEnergy = ci && (ci.energy <= 3 || ci.sleep <= 3);
+
+  let html = '';
+
+  // Adaptation notice
+  if (isLowEnergy && session && session.type !== 'rest') {
+    html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — consider an easy version or extra rest today</div>`;
+  }
+
+  if (session) {
+    html += `
+      <div class="session-card ${done ? 'done' : ''}">
+        <div class="session-check ${done ? 'checked' : ''}" onclick="toggleTodayDone()"></div>
+        <div class="session-body">
+          <div class="session-day">Week ${week} · ${plan.name}</div>
+          <span class="tag tag-${session.type}" style="margin-bottom:6px;display:inline-block;">${session.type.toUpperCase()}</span>
+          <div class="session-name">${session.name}</div>
+          <div class="session-detail">${session.detail}</div>
+        </div>
+      </div>
+      ${done ? '' : '<button class="btn btn-primary" onclick="goLog()" style="margin-top:4px;">Log this session</button>'}
+    `;
+  } else {
+    html += '<div class="card"><div class="session-name" style="color:var(--grey1);">Rest day — recover well</div></div>';
+  }
+  el.innerHTML = html;
+}
+
+function toggleTodayDone() {
+  const key = getTodayDoneKey();
+  weekDone[key] = !weekDone[key];
+  save(KEY.weekDone, weekDone);
+  renderHome();
+  if (weekDone[key]) toast('Session complete 🏆');
+}
+
+function goLog() { switchTab('log'); }
+
+// ═══════════════════════════════════════════════════════
+//  WEEK TAB
+// ═══════════════════════════════════════════════════════
+function renderWeek() {
+  const hEl = document.getElementById('week-header-card');
+  const sEl = document.getElementById('week-sessions');
+
+  if (!profile) {
+    hEl.innerHTML = '';
+    sEl.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No plan yet</div><div class="empty-text">Complete setup to see your week.</div></div>';
+    return;
+  }
+
+  const plan = PLANS[profile.goal];
+  const week = currentWeekNum();
+  const planSessions = getMatchedPlan();
+  if (!planSessions) return;
+  const weekSessions = planSessions[week - 1] || [];
+  const done = weekSessions.filter((_,i) => weekDone[`home_done_${todayStr()}_${i}`] || false).length;
+  const pct = weekSessions.length > 0 ? Math.round((done / weekSessions.length) * 100) : 0;
+  const startDate = weekStartDate(week);
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 6);
+
+  hEl.innerHTML = `
+    <div class="week-header">
+      <div class="plan-info">
+        <div>
+          <div class="plan-name">${plan.name}</div>
+          <div class="plan-level">${profile.level.charAt(0).toUpperCase() + profile.level.slice(1)}</div>
+        </div>
+        <div class="week-num">W${week}</div>
+      </div>
+      <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
+      <div class="week-progress"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+    </div>
+  `;
+
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let html = '';
+  weekSessions.forEach((s, i) => {
+    const doneKey = `home_done_${todayStr()}_${i}`;
+    const isDone = !!weekDone[doneKey];
+    html += `
+      <div class="session-card ${isDone ? 'done' : ''}">
+        <div class="session-check ${isDone ? 'checked' : ''}" onclick="toggleWeekSession(${i})"></div>
+        <div class="session-body">
+          <div class="session-day">${days[i] || 'Day ' + (i+1)}</div>
+          <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
+          <div class="session-name" style="margin-top:6px;">${s.name}</div>
+          <div class="session-detail">${s.detail}</div>
+        </div>
+      </div>
+    `;
+  });
+  sEl.innerHTML = html;
+}
+
+function toggleWeekSession(i) {
+  const key = `home_done_${todayStr()}_${i}`;
+  weekDone[key] = !weekDone[key];
+  save(KEY.weekDone, weekDone);
+  renderWeek();
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOG TAB
+// ═══════════════════════════════════════════════════════
+function toggleDistanceField() {
+  const type = document.getElementById('log-type').value;
+  const show = ['run','cycle','hyrox'].includes(type);
+  document.getElementById('log-dist-wrap').style.display = show ? 'block' : 'none';
+}
+
+function saveActivity() {
+  const date = document.getElementById('log-date').value;
+  const type = document.getElementById('log-type').value;
+  const distance = document.getElementById('log-distance').value;
+  const duration = document.getElementById('log-duration').value;
+  const notes = document.getElementById('log-notes').value;
+
+  if (!date || !duration) { toast('Please fill in date and duration'); return; }
+
+  const act = { id: Date.now(), date, type, duration: parseInt(duration), notes };
+  if (['run','cycle','hyrox'].includes(type) && distance) act.distance = parseFloat(distance);
+
+  activities.unshift(act);
+  save(KEY.activities, activities);
+
+  // Reset form
+  document.getElementById('log-date').value = todayStr();
+  document.getElementById('log-distance').value = '';
+  document.getElementById('log-duration').value = '';
+  document.getElementById('log-notes').value = '';
+
+  renderHistory();
+  toast('Activity logged');
+  switchTab('history');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HISTORY TAB
+// ═══════════════════════════════════════════════════════
+const ACT_ICONS = { run: '🏃', cycle: '🚴', hyrox: '⚡', strength: '🏋️' };
+
+function getWeekKey(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  return d.getFullYear() + '-W' + Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+}
+
+function renderHistory() {
+  // Build 8-week buckets
+  const now = new Date();
+  const weeks = [];
+  for (let i = 7; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i * 7);
+    const key = getWeekKey(d.toISOString().slice(0,10));
+    weeks.push({ key, label: i === 0 ? 'Now' : `W-${i}`, count: 0 });
+  }
+
+  activities.forEach(a => {
+    const key = getWeekKey(a.date);
+    const w = weeks.find(w => w.key === key);
+    if (w) w.count++;
+  });
+
+  const maxCount = Math.max(...weeks.map(w => w.count), 1);
+  const barsEl = document.getElementById('chart-bars');
+  const labelsEl = document.getElementById('chart-labels');
+
+  const currentWeekKey = getWeekKey(todayStr());
+  barsEl.innerHTML = weeks.map(w => {
+    const pct = Math.round((w.count / maxCount) * 100);
+    const isCurrent = w.key === currentWeekKey;
+    return `<div class="chart-bar-col"><div class="chart-bar ${w.count > 0 ? 'has-data' : ''} ${isCurrent ? 'current' : ''}" style="height:${Math.max(pct,3)}%"></div></div>`;
+  }).join('');
+  labelsEl.innerHTML = weeks.map(w => `<div class="chart-xlabel">${w.label}</div>`).join('');
+
+  // Stats
+  const totalSessions = activities.length;
+  const totalKm = activities.filter(a => a.distance).reduce((s,a) => s + (a.distance||0), 0);
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${totalSessions}</div><div class="stat-label">Total sessions</div></div>
+    <div class="stat-card"><div class="stat-val">${totalKm.toFixed(0)}</div><div class="stat-label">Total km</div></div>
+  `;
+
+  // Activity list
+  const listEl = document.getElementById('activity-list');
+  if (activities.length === 0) {
+    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No activities yet</div><div class="empty-text">Log your first session to see it here.</div></div>';
+    return;
+  }
+  listEl.innerHTML = activities.slice(0, 30).map(a => `
+    <div class="act-item">
+      <div class="act-icon act-icon-${a.type}">${ACT_ICONS[a.type] || '🏃'}</div>
+      <div class="act-info">
+        <div class="act-name">${a.type.charAt(0).toUpperCase() + a.type.slice(1)}${a.distance ? ` · ${a.distance}km` : ''}</div>
+        <div class="act-meta">${a.duration} min${a.notes ? ' · ' + a.notes.slice(0,40) : ''}</div>
+      </div>
+      <div class="act-date">${formatDate(a.date)}</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+  if (tab === 'week') renderWeek();
+  if (tab === 'history') renderHistory();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  PWA — INLINE MANIFEST via data URI
+// ═══════════════════════════════════════════════════════
+(function injectManifest() {
+  const manifest = {
+    name: 'Meridian',
+    short_name: 'Meridian',
+    description: 'Train at your peak',
+    start_url: '/meridian-lite/',
+    scope: '/meridian-lite/',
+    display: 'standalone',
+    orientation: 'portrait',
+    background_color: '#0D1117',
+    theme_color: '#0D1117',
+    icons: [
+      { src: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#0D1117"/><polygon points="96,20 172,60 96,100 20,60" fill="#E8C840"/><polygon points="96,100 172,60 172,140 96,180" fill="#F5D96B"/><polygon points="96,100 20,60 20,140 96,180" fill="#1A2130"/><polygon points="96,100 172,140 96,180 20,140" fill="#131820"/></svg>`), sizes: '192x192', type: 'image/svg+xml' },
+      { src: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0D1117"/><polygon points="256,40 460,140 256,240 52,140" fill="#E8C840"/><polygon points="256,240 460,140 460,360 256,460" fill="#F5D96B"/><polygon points="256,240 52,140 52,360 256,460" fill="#1A2130"/><polygon points="256,240 460,360 256,460 52,360" fill="#131820"/></svg>`), sizes: '512x512', type: 'image/svg+xml' }
+    ]
+  };
+  const content = encodeURIComponent(JSON.stringify(manifest));
+  const url = 'data:application/manifest+json,' + content;
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+// ═══════════════════════════════════════════════════════
+//  SERVICE WORKER REGISTRATION
+// ═══════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/meridian-lite/sw.js', { scope: '/meridian-lite/' })
+      .catch(err => console.log('SW reg failed:', err));
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  toggleDistanceField(); // Set correct initial state for log form
+  if (profile) {
+    document.getElementById('onboarding').classList.add('hidden');
+    initApp();
+  }
+  // else onboarding is shown by default
+});
+</script>
+</body>
+</html>
