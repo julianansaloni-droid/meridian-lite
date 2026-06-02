@@ -2,7 +2,7 @@
 // Scope: /meridian-lite/
 // Update CACHE_VERSION whenever index.html changes
 
-const CACHE_VERSION = 'meridian-lite-v1';
+const CACHE_VERSION = 'meridian-lite-v2';
 const CACHE_FILES = [
   '/meridian-lite/',
   '/meridian-lite/index.html',
