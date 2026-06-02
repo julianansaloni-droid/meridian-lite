@@ -81,8 +81,56 @@ textarea { resize: none; }
 .slider-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
 .slider-label { font-family: var(--font-m); font-size: 11px; color: var(--grey1); text-transform: uppercase; letter-spacing: 0.06em; }
 .slider-val { font-family: var(--font-d); font-size: 22px; color: var(--yellow); }
-input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--grey2); border: none; padding: 0; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--yellow); cursor: pointer; box-shadow: 0 0 0 3px rgba(232,200,64,.15); }
+input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--grey2); border: none; padding: 0; margin: 8px 0; display: block; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--yellow); cursor: pointer; box-shadow: 0 0 0 3px rgba(232,200,64,.15); margin-top: -9px; }
+input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--grey2); }
+
+/* ── BOTTOM SHEET ────────────────────────────────────────── */
+.sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; transition: opacity .2s; }
+.sheet-bg.hidden { display: none; }
+.sheet { background: var(--navy2); border-radius: var(--r) var(--r) 0 0; padding: 20px; width: 100%; max-height: 88vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); transform: translateY(0); transition: transform .25s ease; }
+.sheet-handle { width: 36px; height: 4px; background: var(--grey2); border-radius: 2px; margin: 0 auto 20px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.sheet-title { font-family: var(--font-d); font-size: 24px; letter-spacing: .03em; }
+.sheet-close { width: 30px; height: 30px; border-radius: 50%; background: var(--grey3); color: var(--grey1); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+/* ── SETTINGS ────────────────────────────────────────────── */
+.settings-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--navy3); border: 1px solid var(--grey3); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.settings-icon svg { width: 18px; height: 18px; stroke: var(--grey1); fill: none; stroke-width: 1.8; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--grey3); }
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-size: 14px; font-weight: 500; }
+.settings-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); margin-top: 2px; }
+.settings-action { font-family: var(--font-m); font-size: 12px; color: var(--yellow); cursor: pointer; padding: 6px 12px; border: 1px solid rgba(232,200,64,.3); border-radius: 20px; background: rgba(232,200,64,.06); white-space: nowrap; }
+.settings-action.danger { color: #FF6B6B; border-color: rgba(255,107,107,.3); background: rgba(255,107,107,.06); }
+.toggle-wrap { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-wrap input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; inset: 0; background: var(--grey3); border-radius: 12px; cursor: pointer; transition: .2s; }
+.toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: var(--grey1); border-radius: 50%; transition: .2s; }
+.toggle-wrap input:checked + .toggle-slider { background: var(--yellow); }
+.toggle-wrap input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--navy); }
+.settings-section-label { font-family: var(--font-m); font-size: 10px; color: var(--grey2); text-transform: uppercase; letter-spacing: .1em; margin: 16px 0 6px; }
+.gpx-drop { border: 2px dashed var(--grey2); border-radius: var(--r); padding: 28px 20px; text-align: center; margin-bottom: 16px; cursor: pointer; transition: border-color .15s; }
+.gpx-drop:hover, .gpx-drop.drag-over { border-color: var(--yellow3); }
+.gpx-drop-icon { font-size: 28px; margin-bottom: 8px; }
+.gpx-drop-text { font-family: var(--font-m); font-size: 12px; color: var(--grey1); }
+.gpx-result { background: var(--navy3); border: 1px solid var(--grey2); border-radius: var(--r2); padding: 12px 14px; margin-bottom: 12px; font-size: 13px; }
+.gpx-result-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.gpx-result-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); }
+.detail-type-badge { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.detail-section { margin-bottom: 16px; }
+.detail-section-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.detail-section-body { font-size: 14px; line-height: 1.6; color: var(--white); }
+.detail-tip { background: rgba(232,200,64,.06); border: 1px solid rgba(232,200,64,.15); border-radius: var(--r2); padding: 10px 12px; font-size: 13px; color: var(--yellow3); line-height: 1.5; margin-top: 8px; }
+
+/* ── REBALANCE ───────────────────────────────────────────── */
+.rebalance-option { background: var(--navy3); border: 1px solid var(--grey2); border-radius: var(--r); padding: 12px 14px; margin-bottom: 8px; cursor: pointer; transition: all .15s; }
+.rebalance-option.selected { border-color: var(--yellow); background: rgba(232,200,64,.06); }
+.rebalance-option-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.rebalance-option-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); }
+.session-logged-bar { background: rgba(46,204,138,.08); border: 1px solid rgba(46,204,138,.2); border-radius: var(--r); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.session-logged-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.session-logged-text { font-family: var(--font-m); font-size: 11px; color: var(--green); }
 
 /* ── BTN ─────────────────────────────────────────────────── */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 13px 20px; border-radius: var(--r2); font-family: var(--font-b); font-size: 14px; font-weight: 500; transition: opacity .15s, transform .1s; width: 100%; }
@@ -103,9 +151,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
 /* ── SESSION CARD ────────────────────────────────────────── */
 .session-card { background: var(--navy2); border-radius: var(--r); padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--grey3); display: flex; align-items: flex-start; gap: 12px; }
 .session-card.done { opacity: .55; }
-.session-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--grey2); flex-shrink: 0; margin-top: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
-.session-check.checked { background: var(--yellow); border-color: var(--yellow); }
-.session-check.checked::after { content: ''; display: block; width: 6px; height: 10px; border: 2px solid var(--navy); border-top: none; border-left: none; transform: rotate(42deg) translateY(-1px); }
+/* session-check removed — checkboxes replaced by tap-for-detail */
 .session-body { flex: 1; }
 .session-name { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
 .session-detail { font-family: var(--font-m); font-size: 11px; color: var(--grey1); }
@@ -139,6 +185,19 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
 .form-hint { font-family: var(--font-m); font-size: 10px; color: var(--grey2); margin-top: 4px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+/* ── LANDING ─────────────────────────────────────────────── */
+#landing { position: fixed; inset: 0; background: var(--navy); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; padding-top: calc(40px + env(safe-area-inset-top,0px)); padding-bottom: calc(40px + env(safe-area-inset-bottom,0px)); }
+#landing.hidden { display: none; }
+.landing-logo { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 16px; }
+.landing-logo svg { width: 64px; height: 74px; }
+.landing-brand { font-family: var(--font-d); font-size: 48px; letter-spacing: .08em; color: var(--white); }
+.landing-tagline { font-family: var(--font-m); font-size: 12px; color: var(--grey1); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 56px; }
+.landing-input-wrap { width: 100%; max-width: 320px; margin-bottom: 16px; }
+.landing-input-wrap input { background: var(--navy2); border: 1px solid var(--grey2); border-radius: var(--r); padding: 16px 18px; font-size: 16px; text-align: center; letter-spacing: .02em; }
+.landing-input-wrap input::placeholder { color: var(--grey2); }
+.landing-input-wrap input:focus { border-color: var(--yellow3); }
+.landing-btn { width: 100%; max-width: 320px; }
+
 /* ── ONBOARDING ──────────────────────────────────────────── */
 #onboarding { position: fixed; inset: 0; background: var(--navy); z-index: 100; display: flex; flex-direction: column; overflow-y: auto; padding: 24px 20px; padding-top: calc(24px + env(safe-area-inset-top, 0px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
 #onboarding.hidden { display: none; }
@@ -155,8 +214,15 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
 .ob-option.selected { border-color: var(--yellow); background: rgba(232,200,64,.08); color: var(--yellow); }
 .ob-option-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); display: block; margin-top: 2px; font-weight: 400; }
 .ob-option.selected .ob-option-sub { color: var(--yellow3); }
+.ob-priority { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--yellow); color: var(--navy); font-family: var(--font-d); font-size: 13px; flex-shrink: 0; margin-left: auto; }
+.ob-option-inner { display: flex; align-items: center; width: 100%; }
+.ob-option-text { flex: 1; }
 .ob-nav { display: flex; gap: 10px; margin-top: auto; }
-.ob-progress { display: flex; gap: 6px; margin-bottom: 32px; }
+.ob-days-display { font-family: var(--font-d); font-size: 72px; color: var(--yellow); text-align: center; line-height: 1; margin: 8px 0 4px; }
+.ob-days-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); text-align: center; margin-bottom: 24px; letter-spacing: .04em; text-transform: uppercase; }
+.ob-days-slider { width: 100%; margin-bottom: 8px; }
+.ob-days-ticks { display: flex; justify-content: space-between; padding: 0 2px; margin-bottom: 28px; }
+.ob-days-tick { font-family: var(--font-m); font-size: 10px; color: var(--grey2); }
 .ob-dot { height: 3px; border-radius: 2px; background: var(--grey3); flex: 1; transition: background .3s; }
 .ob-dot.done { background: var(--yellow); }
 
@@ -207,8 +273,29 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
 </head>
 <body>
 
+<!-- LANDING -->
+<div id="landing">
+  <div class="landing-logo">
+    <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,2 38,14 20,26 2,14" fill="#E8C840" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 38,14 38,38 20,46" fill="#F5D96B" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 2,14 2,38 20,46" fill="#1A2130" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="20,26 38,38 20,46 2,38" fill="#131820" stroke="#3D4A5C" stroke-width="1"/>
+      <line x1="20" y1="2" x2="20" y2="46" stroke="#3D4A5C" stroke-width=".8"/>
+      <line x1="2" y1="14" x2="38" y2="14" stroke="#3D4A5C" stroke-width=".8"/>
+      <line x1="2" y1="38" x2="38" y2="38" stroke="#3D4A5C" stroke-width=".8"/>
+    </svg>
+    <span class="landing-brand">MERIDIAN</span>
+  </div>
+  <div class="landing-tagline">Train at your peak</div>
+  <div class="landing-input-wrap">
+    <input type="text" id="landing-name" placeholder="Your first name" autocomplete="given-name" maxlength="32">
+  </div>
+  <button class="btn btn-primary landing-btn" onclick="landingStart()">Get Started</button>
+</div>
+
 <!-- ONBOARDING -->
-<div id="onboarding">
+<div id="onboarding" class="hidden">
   <div class="ob-logo">
     <svg viewBox="0 0 40 46" fill="none" xmlns="http://www.w3.org/2000/svg">
       <polygon points="20,2 38,14 20,26 2,14" fill="#E8C840" stroke="#3D4A5C" stroke-width="1"/>
@@ -229,19 +316,19 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
     <div class="ob-dot" id="dot3"></div>
   </div>
 
-  <!-- Step 0: Goal -->
+  <!-- Step 0: Goals (multi-select, priority ordered) -->
   <div class="ob-step active" id="ob-step-0">
     <div class="ob-step-label">Step 1 of 4</div>
     <div class="ob-question">What are you training for?</div>
-    <div class="ob-hint">We'll match you with the right plan.</div>
-    <div class="ob-options">
-      <button class="ob-option" data-val="5k">5K <span class="ob-option-sub">Build speed over 5 kilometres</span></button>
-      <button class="ob-option" data-val="10k">10K <span class="ob-option-sub">Push your endurance to 10km</span></button>
-      <button class="ob-option" data-val="half">Half Marathon <span class="ob-option-sub">13.1 miles of grit</span></button>
-      <button class="ob-option" data-val="marathon">Marathon <span class="ob-option-sub">The full 26.2</span></button>
-      <button class="ob-option" data-val="hyrox">Hyrox <span class="ob-option-sub">8km run + 8 functional stations</span></button>
-      <button class="ob-option" data-val="cycling">Cycling <span class="ob-option-sub">Road, gravel, or endurance</span></button>
-      <button class="ob-option" data-val="strength">General Strength <span class="ob-option-sub">Build muscle, move better</span></button>
+    <div class="ob-hint">Select all that apply — tap in priority order. First selected = Goal 1.</div>
+    <div class="ob-options" id="ob-goals-list">
+      <button class="ob-option" data-val="5k"><div class="ob-option-inner"><div class="ob-option-text">5K <span class="ob-option-sub">Build speed over 5 kilometres</span></div></div></button>
+      <button class="ob-option" data-val="10k"><div class="ob-option-inner"><div class="ob-option-text">10K <span class="ob-option-sub">Push your endurance to 10km</span></div></div></button>
+      <button class="ob-option" data-val="half"><div class="ob-option-inner"><div class="ob-option-text">Half Marathon <span class="ob-option-sub">13.1 miles of grit</span></div></div></button>
+      <button class="ob-option" data-val="marathon"><div class="ob-option-inner"><div class="ob-option-text">Marathon <span class="ob-option-sub">The full 26.2</span></div></div></button>
+      <button class="ob-option" data-val="hyrox"><div class="ob-option-inner"><div class="ob-option-text">Hyrox <span class="ob-option-sub">8km run + 8 functional stations</span></div></div></button>
+      <button class="ob-option" data-val="cycling"><div class="ob-option-inner"><div class="ob-option-text">Cycling <span class="ob-option-sub">Road, gravel, or endurance</span></div></div></button>
+      <button class="ob-option" data-val="strength"><div class="ob-option-inner"><div class="ob-option-text">General Strength <span class="ob-option-sub">Build muscle, move better</span></div></div></button>
     </div>
     <div class="ob-nav">
       <button class="btn btn-primary" id="ob-next-0" onclick="obNext(0)" disabled>Continue</button>
@@ -269,11 +356,15 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
     <div class="ob-step-label">Step 3 of 4</div>
     <div class="ob-question">Days per week to train?</div>
     <div class="ob-hint">Be realistic — consistency beats heroics.</div>
-    <div class="ob-options">
-      <button class="ob-option" data-val="3">3 days <span class="ob-option-sub">Good base, balanced life</span></button>
-      <button class="ob-option" data-val="4">4 days <span class="ob-option-sub">Solid commitment, steady gains</span></button>
-      <button class="ob-option" data-val="5">5 days <span class="ob-option-sub">High volume, high reward</span></button>
-      <button class="ob-option" data-val="6">6 days <span class="ob-option-sub">Advanced athletes only</span></button>
+    <div class="ob-days-display" id="ob-days-val">–</div>
+    <div class="ob-days-sub" id="ob-days-label">slide to choose</div>
+    <input type="range" min="2" max="6" step="1" value="2" class="ob-days-slider" id="ob-days-slider" oninput="obDaysChange(this.value)">
+    <div class="ob-days-ticks">
+      <span class="ob-days-tick">2</span>
+      <span class="ob-days-tick">3</span>
+      <span class="ob-days-tick">4</span>
+      <span class="ob-days-tick">5</span>
+      <span class="ob-days-tick">6</span>
     </div>
     <div class="ob-nav">
       <button class="btn btn-secondary btn-sm" onclick="obBack(2)" style="width:auto;padding:13px 20px;">Back</button>
@@ -281,25 +372,16 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
     </div>
   </div>
 
-  <!-- Step 3: Race date -->
+  <!-- Step 3: Goals (dates per goal) -->
   <div class="ob-step" id="ob-step-3">
     <div class="ob-step-label">Step 4 of 4</div>
-    <div class="ob-question">Got a race date?</div>
-    <div class="ob-hint">Optional — helps us calculate your current week.</div>
-    <div style="margin-bottom:28px;">
-      <div class="form-row">
-        <label class="form-label">Race / goal date</label>
-        <input type="date" id="ob-race-date">
-        <div class="form-hint">Leave blank to start from week 1 today</div>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Race name (optional)</label>
-        <input type="text" id="ob-race-name" placeholder="e.g. Dublin Marathon">
-      </div>
-    </div>
-    <div class="ob-nav">
-      <button class="btn btn-secondary btn-sm" onclick="obBack(3)" style="width:auto;padding:13px 20px;">Back</button>
-      <button class="btn btn-primary" onclick="obFinish()" style="flex:1;">Start training</button>
+    <div class="ob-question">Set your goals</div>
+    <div class="ob-hint">Add a target date for each goal. Helps us find your current week.</div>
+    <div id="ob-goal-entries" style="margin-bottom:20px;"></div>
+    <div class="ob-nav" style="flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="obFinish()" style="width:100%;">Start training</button>
+      <button class="btn btn-ghost" onclick="obFinish(true)" style="width:100%;">Skip — start from week 1</button>
+      <button class="btn btn-secondary btn-sm" onclick="obBack(3)" style="width:auto;align-self:flex-start;">Back</button>
     </div>
   </div>
 </div>
@@ -320,7 +402,12 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
       </svg>
       <span class="topbar-title">MERIDIAN</span>
     </div>
-    <span class="topbar-date" id="topbar-date"></span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="topbar-date" id="topbar-date"></span>
+      <button class="settings-icon" onclick="openSettings()" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </div>
 
   <!-- HOME screen -->
@@ -358,56 +445,29 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
   <!-- WEEK screen -->
   <div class="screen" id="screen-week">
     <div class="scroll">
-      <div class="sec-head">THIS WEEK</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="sec-head" style="margin-bottom:0;">THIS WEEK</div>
+        <button class="btn btn-secondary btn-sm" onclick="openRebalanceSheet()">Adjust week</button>
+      </div>
       <div id="week-header-card"></div>
       <div id="week-sessions"></div>
     </div>
   </div>
 
-  <!-- LOG screen -->
-  <div class="screen" id="screen-log">
+  <!-- ACTIVITIES screen -->
+  <div class="screen" id="screen-activities">
     <div class="scroll">
-      <div class="sec-head">LOG ACTIVITY</div>
-      <div class="sec-sub">Record what you did</div>
-      <div class="card">
-        <div class="form-row">
-          <label class="form-label">Date</label>
-          <input type="date" id="log-date">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Activity type</label>
-          <select id="log-type" onchange="toggleDistanceField()">
-            <option value="run">Run</option>
-            <option value="cycle">Cycle</option>
-            <option value="hyrox">Hyrox</option>
-            <option value="strength">Strength</option>
-          </select>
-        </div>
-        <div class="row2">
-          <div class="form-row" id="log-dist-wrap">
-            <label class="form-label">Distance (km)</label>
-            <input type="number" id="log-distance" placeholder="0.0" step="0.1" min="0">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Duration (min)</label>
-            <input type="number" id="log-duration" placeholder="45" min="1">
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="form-label">Notes <span style="color:var(--grey2)">(optional)</span></label>
-          <textarea id="log-notes" rows="3" placeholder="How did it feel? Any adjustments?"></textarea>
-        </div>
-        <button class="btn btn-primary" onclick="saveActivity()">Log activity</button>
-      </div>
+      <div class="sec-head">ACTIVITIES</div>
+      <div class="sec-sub">All sessions logged</div>
+      <div id="activities-list"></div>
     </div>
   </div>
 
-  <!-- HISTORY screen -->
-  <div class="screen" id="screen-history">
+  <!-- STATS screen (was History) -->
+  <div class="screen" id="screen-stats">
     <div class="scroll">
-      <div class="sec-head">HISTORY</div>
+      <div class="sec-head">STATS</div>
       <div class="sec-sub">Last 8 weeks</div>
-
       <div class="card">
         <div class="card-label">Sessions per week</div>
         <div class="chart-wrap">
@@ -415,17 +475,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
           <div class="chart-xlabels" id="chart-labels"></div>
         </div>
       </div>
-
       <div class="stats-row" id="stats-row"></div>
-
-      <div style="margin-bottom:8px;">
-        <div class="card-label">Recent activities</div>
-      </div>
-      <div id="activity-list"></div>
     </div>
   </div>
 
-  <!-- Bottom nav -->
+  <!-- Bottom nav: Home · Week · Activities · Stats -->
   <nav id="nav">
     <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
       <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
@@ -435,15 +489,199 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px;
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
       Week
     </button>
-    <button class="nav-btn" id="nav-log" onclick="switchTab('log')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="12" x2="15" y2="15"/><line x1="12" y1="16" x2="12" y2="16" stroke-linecap="round" stroke-width="2.5"/></svg>
-      Log
+    <button class="nav-btn" id="nav-activities" onclick="switchTab('activities')">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      Activities
     </button>
-    <button class="nav-btn" id="nav-history" onclick="switchTab('history')">
+    <button class="nav-btn" id="nav-stats" onclick="switchTab('stats')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      History
+      Stats
     </button>
   </nav>
+</div>
+
+<!-- SESSION DETAIL SHEET -->
+<div class="sheet-bg hidden" id="detail-sheet-bg" onclick="closeDetailSheet(event)">
+  <div class="sheet" id="detail-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title" id="detail-sheet-title">SESSION</span>
+      <button class="sheet-close" onclick="closeDetailSheet()">✕</button>
+    </div>
+    <div id="detail-sheet-body"></div>
+  </div>
+</div>
+
+<!-- REBALANCE SHEET -->
+<div class="sheet-bg hidden" id="rebalance-sheet-bg" onclick="closeRebalanceSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">REBALANCE WEEK</span>
+      <button class="sheet-close" onclick="closeRebalanceSheet()">✕</button>
+    </div>
+    <div class="sec-sub" style="margin-bottom:16px;">Adjust this week to fit your schedule</div>
+    <div class="form-row">
+      <label class="form-label">Available days this week</label>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+        <input type="range" min="1" max="6" step="1" value="4" id="rebalance-days-slider"
+          oninput="document.getElementById('rebalance-days-val').textContent=this.value">
+        <span id="rebalance-days-val" style="font-family:var(--font-d);font-size:28px;color:var(--yellow);min-width:24px;">4</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Focus this week</label>
+      <select id="rebalance-focus">
+        <option value="">Follow the plan</option>
+        <option value="easy">Lighter week — easy sessions only</option>
+        <option value="endurance">Prioritise endurance (long run/ride)</option>
+        <option value="intensity">Prioritise intensity (intervals/tempo)</option>
+        <option value="strength">Prioritise strength work</option>
+      </select>
+    </div>
+    <div class="detail-tip" style="margin-bottom:20px;">Changes apply to this week only. Your plan resumes normally next week.</div>
+    <button class="btn btn-primary" onclick="saveRebalance()">Apply</button>
+  </div>
+</div>
+
+<!-- LOG SHEET OVERLAY -->
+<div class="sheet-bg hidden" id="log-sheet-bg" onclick="closeLogSheet(event)">
+  <div class="sheet" id="log-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">LOG SESSION</span>
+      <button class="sheet-close" onclick="closeLogSheet()">✕</button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Date</label>
+      <input type="date" id="log-date">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Activity type</label>
+      <select id="log-type" onchange="toggleDistanceField()">
+        <option value="run">Run</option>
+        <option value="cycle">Cycle</option>
+        <option value="hyrox">Hyrox</option>
+        <option value="strength">Strength</option>
+      </select>
+    </div>
+    <div class="row2">
+      <div class="form-row" id="log-dist-wrap">
+        <label class="form-label">Distance (km)</label>
+        <input type="number" id="log-distance" placeholder="0.0" step="0.1" min="0">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Duration (min)</label>
+        <input type="number" id="log-duration" placeholder="45" min="1">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Notes <span style="color:var(--grey2)">(optional)</span></label>
+      <textarea id="log-notes" rows="3" placeholder="How did it feel?"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="saveActivity()" style="margin-top:4px;">Save</button>
+  </div>
+</div>
+
+<!-- ADJUST SHEET OVERLAY -->
+<div class="sheet-bg hidden" id="adjust-sheet-bg" onclick="closeAdjustSheet(event)">
+  <div class="sheet" id="adjust-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">ADJUST TODAY</span>
+      <button class="sheet-close" onclick="closeAdjustSheet()">✕</button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Change workout type</label>
+      <select id="adjust-type">
+        <option value="">Keep planned type</option>
+        <option value="run">Run</option>
+        <option value="cycle">Cycle</option>
+        <option value="hyrox">Hyrox</option>
+        <option value="strength">Strength</option>
+        <option value="rest">Rest — skip today</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Duration</label>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+        <input type="range" min="15" max="120" step="5" value="45" id="adjust-dur-slider" oninput="document.getElementById('adjust-dur-val').textContent=this.value+' min'">
+        <span id="adjust-dur-val" style="font-family:var(--font-d);font-size:22px;color:var(--yellow);white-space:nowrap;min-width:56px;">45 min</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveAdjust()" style="margin-top:8px;">Apply adjustment</button>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="sheet-bg hidden" id="settings-sheet-bg" onclick="closeSettings(event)">
+  <div class="sheet" id="settings-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">SETTINGS</span>
+      <button class="sheet-close" onclick="closeSettings()">✕</button>
+    </div>
+
+    <!-- DISPLAY -->
+    <div class="settings-section-label">Display</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Fullscreen</div><div class="settings-sub">Hide Android nav bar</div></div>
+      <label class="toggle-wrap"><input type="checkbox" id="setting-fullscreen" onchange="toggleFullscreen(this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Units</div><div class="settings-sub">Distance display</div></div>
+      <label class="toggle-wrap"><input type="checkbox" id="setting-units" onchange="toggleUnits(this.checked)"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="units-label" style="font-family:var(--font-m);font-size:11px;color:var(--grey1);margin-top:-10px;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--grey3);">km</div>
+
+    <!-- PROFILE -->
+    <div class="settings-section-label">Profile</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Name</div><div class="settings-sub" id="settings-name-display">—</div></div>
+      <button class="settings-action" onclick="editName()">Edit</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Fitness level</div><div class="settings-sub" id="settings-level-display">—</div></div>
+      <button class="settings-action" onclick="editLevel()">Change</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Training days</div><div class="settings-sub" id="settings-days-display">—</div></div>
+      <button class="settings-action" onclick="editDays()">Change</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Reset plan</div><div class="settings-sub">Re-run setup, keep activity log</div></div>
+      <button class="settings-action" onclick="resetPlan()">Reset</button>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="settings-section-label">Import</div>
+    <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:12px;padding-bottom:16px;">
+      <div><div class="settings-label">Import GPX file</div><div class="settings-sub">From Garmin Connect, Strava, etc.</div></div>
+      <div class="gpx-drop" id="gpx-drop" onclick="document.getElementById('gpx-file-input').click()">
+        <div class="gpx-drop-icon">📂</div>
+        <div class="gpx-drop-text">Tap to choose a .gpx file</div>
+      </div>
+      <input type="file" id="gpx-file-input" accept=".gpx" style="display:none" onchange="handleGPXFile(this)">
+      <div id="gpx-result" style="display:none;width:100%;"></div>
+    </div>
+
+    <!-- DATA -->
+    <div class="settings-section-label">Data</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Export data</div><div class="settings-sub">Download all activities as JSON</div></div>
+      <button class="settings-action" onclick="exportData()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Erase all data</div><div class="settings-sub">Cannot be undone</div></div>
+      <button class="settings-action danger" onclick="eraseData()">Erase</button>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="settings-section-label">About</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.0 · Train at your peak</div></div>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -902,15 +1140,60 @@ function getTodaySession() {
 }
 
 // ═══════════════════════════════════════════════════════
+//  LANDING
+// ═══════════════════════════════════════════════════════
+function landingStart() {
+  const name = document.getElementById('landing-name').value.trim();
+  if (!name) { document.getElementById('landing-name').focus(); return; }
+  localStorage.setItem('mr_name', name);
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('onboarding').classList.remove('hidden');
+}
+
+document.getElementById('landing-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') landingStart();
+});
+
+// ═══════════════════════════════════════════════════════
 //  ONBOARDING
 // ═══════════════════════════════════════════════════════
 let obData = {};
+let obGoals = []; // ordered array of selected goal vals
 
 function obSelectOption(step, val, btn) {
-  btn.closest('.ob-options').querySelectorAll('.ob-option').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  obData[step] = val;
-  document.getElementById('ob-next-' + step).disabled = false;
+  if (step === 0) {
+    // Multi-select with priority ordering
+    const idx = obGoals.indexOf(val);
+    if (idx > -1) {
+      // Deselect
+      obGoals.splice(idx, 1);
+      btn.classList.remove('selected');
+    } else {
+      // Select
+      obGoals.push(val);
+      btn.classList.add('selected');
+    }
+    // Update priority badges on all selected buttons
+    document.querySelectorAll('#ob-goals-list .ob-option').forEach(b => {
+      const existing = b.querySelector('.ob-priority');
+      if (existing) existing.remove();
+      const i = obGoals.indexOf(b.dataset.val);
+      if (i > -1) {
+        const badge = document.createElement('span');
+        badge.className = 'ob-priority';
+        badge.textContent = i + 1;
+        b.querySelector('.ob-option-inner').appendChild(badge);
+      }
+    });
+    obData[0] = [...obGoals];
+    document.getElementById('ob-next-0').disabled = obGoals.length === 0;
+  } else {
+    // Single-select for all other steps
+    btn.closest('.ob-options').querySelectorAll('.ob-option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    obData[step] = val;
+    document.getElementById('ob-next-' + step).disabled = false;
+  }
 }
 
 document.querySelectorAll('.ob-option').forEach(btn => {
@@ -925,6 +1208,47 @@ function obNext(step) {
   document.getElementById('ob-step-' + step).classList.remove('active');
   document.getElementById('ob-step-' + (step+1)).classList.add('active');
   document.getElementById('dot' + step).classList.add('done');
+  if (step + 1 === 3) renderObGoalEntries();
+}
+
+const GOAL_NAMES = { '5k':'5K', '10k':'10K', 'half':'Half Marathon', 'marathon':'Marathon', 'hyrox':'Hyrox', 'cycling':'Cycling', 'strength':'General Strength' };
+
+function renderObGoalEntries() {
+  const goals = obData[0] || [];
+  const container = document.getElementById('ob-goal-entries');
+  container.innerHTML = goals.map((g, i) => `
+    <div style="background:var(--navy2);border:1px solid var(--grey3);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-family:var(--font-d);font-size:13px;background:var(--yellow);color:var(--navy);width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">${i+1}</span>
+        <span style="font-size:14px;font-weight:500;">${GOAL_NAMES[g] || g}</span>
+      </div>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label class="form-label">Target date <span style="color:var(--grey2)">(optional)</span></label>
+        <input type="text" id="ob-goal-date-${g}" placeholder="DD-MM-YYYY" maxlength="10"
+          oninput="formatDateInput(this)" style="letter-spacing:.04em;">
+      </div>
+      <div class="form-row" style="margin-bottom:0;">
+        <label class="form-label">Event name <span style="color:var(--grey2)">(optional)</span></label>
+        <input type="text" id="ob-goal-name-${g}" placeholder="e.g. Dublin Marathon">
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatDateInput(el) {
+  // Auto-insert dashes: DD-MM-YYYY
+  let v = el.value.replace(/\D/g,'');
+  if (v.length > 2) v = v.slice(0,2) + '-' + v.slice(2);
+  if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5);
+  el.value = v.slice(0,10);
+}
+
+function parseDDMMYYYY(str) {
+  if (!str || str.length < 10) return null;
+  const [dd, mm, yyyy] = str.split('-');
+  if (!dd || !mm || !yyyy) return null;
+  const d = new Date(`${yyyy}-${mm}-${dd}`);
+  return isNaN(d) ? null : d.toISOString().slice(0,10); // returns YYYY-MM-DD for internal use
 }
 
 function obBack(step) {
@@ -932,22 +1256,49 @@ function obBack(step) {
   document.getElementById('ob-step-' + (step-1)).classList.add('active');
 }
 
-function obFinish() {
-  const raceDate = document.getElementById('ob-race-date').value;
-  const raceName = document.getElementById('ob-race-name').value;
+const OB_DAYS_LABELS = {
+  2: 'Minimal — great starting point',
+  3: 'Good base, balanced life',
+  4: 'Solid commitment, steady gains',
+  5: 'High volume, high reward',
+  6: 'Advanced athletes only'
+};
+
+function obDaysChange(val) {
+  const n = parseInt(val);
+  document.getElementById('ob-days-val').textContent = n;
+  document.getElementById('ob-days-label').textContent = OB_DAYS_LABELS[n] || '';
+  obData[2] = String(n);
+  document.getElementById('ob-next-2').disabled = false;
+}
+
+function obFinish(skip) {
+  const goals = obData[0] || [];
+  const goalData = goals.map(g => ({
+    key: g,
+    name: GOAL_NAMES[g] || g,
+    eventName: skip ? null : (document.getElementById('ob-goal-name-' + g)?.value.trim() || null),
+    targetDate: skip ? null : parseDDMMYYYY(document.getElementById('ob-goal-date-' + g)?.value || '')
+  }));
+
   profile = {
-    goal: obData[0],
+    goals: goals,
+    goal: goals[0],
+    goalData: goalData,
     level: obData[1],
     days: obData[2],
-    raceDate: raceDate || null,
-    raceName: raceName || null,
+    // backward compat — use primary goal's date if set
+    raceDate: goalData[0]?.targetDate || null,
+    raceName: goalData[0]?.eventName || null,
     startDate: todayStr(),
     createdAt: new Date().toISOString()
   };
   save(KEY.profile, profile);
+  const name = localStorage.getItem('mr_name') || '';
   document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
   initApp();
-  toast('Welcome to Meridian. Train at your peak.');
+  toast(`Welcome${name ? ', ' + name : ''}. Train at your peak.`);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -964,7 +1315,8 @@ function initApp() {
 
   renderHome();
   renderWeek();
-  renderHistory();
+  renderStats();
+  renderActivities();
 
   if (profile) {
     document.getElementById('onboarding').classList.add('hidden');
@@ -1026,7 +1378,6 @@ function renderHome() {
   const plan = PLANS[profile.goal];
   const week = currentWeekNum();
   const session = getTodaySession();
-  const done = weekDone[getTodayDoneKey()];
   const ci = checkins[todayStr()];
   const isLowEnergy = ci && (ci.energy <= 3 || ci.sleep <= 3);
 
@@ -1037,34 +1388,84 @@ function renderHome() {
     html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — consider an easy version or extra rest today</div>`;
   }
 
-  if (session) {
+  const todayLogged = activities.find(a => a.date === todayStr());
+  const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
+  const override = overrides[todayStr()];
+  let displaySession = session ? {...session} : null;
+  if (displaySession && override) {
+    if (override.type === 'rest') displaySession = {name:'Rest', detail:'Adjusted — rest today', type:'rest'};
+    else if (override.type) displaySession.type = override.type;
+    if (override.duration) displaySession.detail = `${override.duration} min (adjusted)`;
+  }
+
+  if (displaySession) {
     html += `
-      <div class="session-card ${done ? 'done' : ''}">
-        <div class="session-check ${done ? 'checked' : ''}" onclick="toggleTodayDone()"></div>
+      <div class="session-card">
         <div class="session-body">
           <div class="session-day">Week ${week} · ${plan.name}</div>
-          <span class="tag tag-${session.type}" style="margin-bottom:6px;display:inline-block;">${session.type.toUpperCase()}</span>
-          <div class="session-name">${session.name}</div>
-          <div class="session-detail">${session.detail}</div>
+          <span class="tag tag-${displaySession.type}" style="margin-bottom:6px;display:inline-block;">${displaySession.type.toUpperCase()}</span>
+          <div class="session-name">${displaySession.name}</div>
+          <div class="session-detail">${displaySession.detail}</div>
         </div>
-      </div>
-      ${done ? '' : '<button class="btn btn-primary" onclick="goLog()" style="margin-top:4px;">Log this session</button>'}
-    `;
+      </div>`;
+
+    if (todayLogged) {
+      html += `<div class="session-logged-bar"><div class="session-logged-dot"></div><span class="session-logged-text">Logged · ${todayLogged.duration} min${todayLogged.distance ? ' · ' + fmtDist(todayLogged.distance) : ''}</span></div>`;
+      html += `<button class="btn btn-secondary" onclick="openLogSheet('${displaySession.type}')" style="margin-top:10px;">Log another</button>`;
+    } else if (displaySession.type !== 'rest') {
+      html += `
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-primary" onclick="openLogSheet('${displaySession.type}')" style="flex:1;">Log session</button>
+          <button class="btn btn-secondary" onclick="openAdjustSheet()" style="flex:0 0 auto;padding:13px 16px;">Adjust</button>
+        </div>`;
+    }
   } else {
     html += '<div class="card"><div class="session-name" style="color:var(--grey1);">Rest day — recover well</div></div>';
   }
   el.innerHTML = html;
 }
 
-function toggleTodayDone() {
-  const key = getTodayDoneKey();
-  weekDone[key] = !weekDone[key];
-  save(KEY.weekDone, weekDone);
-  renderHome();
-  if (weekDone[key]) toast('Session complete 🏆');
+function toggleTodayDone() {} // deprecated — kept as safety stub
+
+function openLogSheet(prefillType) {
+  document.getElementById('log-date').value = todayStr();
+  if (prefillType) {
+    document.getElementById('log-type').value = prefillType;
+    toggleDistanceField();
+  }
+  document.getElementById('log-sheet-bg').classList.remove('hidden');
 }
 
-function goLog() { switchTab('log'); }
+function closeLogSheet(e) {
+  if (e && e.target !== document.getElementById('log-sheet-bg')) return;
+  document.getElementById('log-sheet-bg').classList.add('hidden');
+}
+
+function openAdjustSheet() {
+  const session = getTodaySession();
+  if (session) {
+    const sel = document.getElementById('adjust-type');
+    sel.value = '';
+  }
+  document.getElementById('adjust-sheet-bg').classList.remove('hidden');
+}
+
+function closeAdjustSheet(e) {
+  if (e && e.target !== document.getElementById('adjust-sheet-bg')) return;
+  document.getElementById('adjust-sheet-bg').classList.add('hidden');
+}
+
+function saveAdjust() {
+  const type = document.getElementById('adjust-type').value;
+  const dur = document.getElementById('adjust-dur-slider').value;
+  const today = todayStr();
+  const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
+  overrides[today] = { type: type || null, duration: parseInt(dur) };
+  localStorage.setItem('mr_overrides', JSON.stringify(overrides));
+  closeAdjustSheet();
+  renderHome();
+  toast('Today\'s session adjusted');
+}
 
 // ═══════════════════════════════════════════════════════
 //  WEEK TAB
@@ -1084,11 +1485,18 @@ function renderWeek() {
   const planSessions = getMatchedPlan();
   if (!planSessions) return;
   const weekSessions = planSessions[week - 1] || [];
-  const done = weekSessions.filter((_,i) => weekDone[`home_done_${todayStr()}_${i}`] || false).length;
-  const pct = weekSessions.length > 0 ? Math.round((done / weekSessions.length) * 100) : 0;
+
+  // Progress: count logged activities this week
+  const weekStart = weekStartDate(week).toISOString().slice(0,10);
+  const weekEnd = new Date(weekStartDate(week));
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekEndStr = weekEnd.toISOString().slice(0,10);
+  const loggedThisWeek = activities.filter(a => a.date >= weekStart && a.date <= weekEndStr).length;
+  const pct = weekSessions.length > 0 ? Math.min(Math.round((loggedThisWeek / weekSessions.length) * 100), 100) : 0;
+
   const startDate = weekStartDate(week);
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 6);
+  const endDateDisp = new Date(startDate);
+  endDateDisp.setDate(endDateDisp.getDate() + 6);
 
   hEl.innerHTML = `
     <div class="week-header">
@@ -1099,37 +1507,141 @@ function renderWeek() {
         </div>
         <div class="week-num">W${week}</div>
       </div>
-      <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
-      <div class="week-progress"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+      <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDateDisp.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+        <div class="week-progress" style="flex:1;"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${loggedThisWeek}/${weekSessions.length}</span>
+      </div>
     </div>
   `;
 
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const rebalance = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
+  const activeDays = rebalance ? rebalance.days : weekSessions.length;
+
   let html = '';
-  weekSessions.forEach((s, i) => {
-    const doneKey = `home_done_${todayStr()}_${i}`;
-    const isDone = !!weekDone[doneKey];
+  weekSessions.slice(0, activeDays).forEach((s, i) => {
+    const tip = getSessionTip(s);
     html += `
-      <div class="session-card ${isDone ? 'done' : ''}">
-        <div class="session-check ${isDone ? 'checked' : ''}" onclick="toggleWeekSession(${i})"></div>
+      <div class="session-card" onclick="openDetailSheet(${i})" style="cursor:pointer;">
         <div class="session-body">
           <div class="session-day">${days[i] || 'Day ' + (i+1)}</div>
           <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
           <div class="session-name" style="margin-top:6px;">${s.name}</div>
           <div class="session-detail">${s.detail}</div>
+          ${tip ? `<div class="detail-tip" style="margin-top:8px;">${tip}</div>` : ''}
         </div>
+        <div style="color:var(--grey2);font-size:18px;padding-left:4px;">›</div>
       </div>
     `;
   });
+
+  if (rebalance && rebalance.focus && rebalance.focus !== '') {
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week adjusted: ${rebalance.focusLabel}</div>`;
+  }
+
   sEl.innerHTML = html;
 }
 
-function toggleWeekSession(i) {
-  const key = `home_done_${todayStr()}_${i}`;
-  weekDone[key] = !weekDone[key];
-  save(KEY.weekDone, weekDone);
+function toggleWeekSession(i) {} // kept for safety, no longer used
+
+// ═══════════════════════════════════════════════════════
+//  WEEK DETAIL & REBALANCE
+// ═══════════════════════════════════════════════════════
+const SESSION_TIPS = {
+  'Easy run': 'Keep your pace conversational — you should be able to hold a full sentence. This is Zone 2 aerobic base work.',
+  'Long run': 'The cornerstone of endurance training. Stay easy (Zone 2). Fuelling matters from 75 min onward.',
+  'Tempo run': 'Comfortably hard — you can speak a few words, not full sentences. Builds lactate threshold.',
+  'Interval run': 'Hard effort on the work intervals. Full recovery between reps is what makes the quality possible.',
+  'Strides': 'Short accelerations to activate fast-twitch fibres. Not sprints — controlled and smooth.',
+  'Easy ride': 'Zone 2 only — keep heart rate conversational. This builds aerobic capacity and fat metabolism.',
+  'Sweet spot': '88–93% of FTP. The most training-efficient zone for cycling — hard enough to adapt, sustainable enough to repeat.',
+  'Threshold': 'One-hour race pace. Builds your ability to sustain hard efforts. Keep form tight.',
+  'VO2max': 'Pushing near your maximum aerobic capacity. Short intervals, maximum effort, full recovery.',
+  'Full body A': 'Compound movements first while fresh. Control the eccentric (lowering) phase — 2-3 sec down.',
+  'Push day': 'Chest, shoulders, triceps. Keep shoulder blades retracted on pressing movements.',
+  'Pull day': 'Back and biceps. Initiate pulls with the lats, not the arms.',
+  'Legs A': 'Squat depth matters more than load. Break parallel if mobility allows.',
+};
+
+function getSessionTip(session) {
+  for (const [key, tip] of Object.entries(SESSION_TIPS)) {
+    if (session.name.includes(key)) return tip;
+  }
+  return null;
+}
+
+let currentWeekSessions = [];
+
+function openDetailSheet(idx) {
+  const planSessions = getMatchedPlan();
+  const week = currentWeekNum();
+  if (!planSessions) return;
+  const sessions = planSessions[week - 1] || [];
+  currentWeekSessions = sessions;
+  const s = sessions[idx];
+  if (!s) return;
+
+  const tip = getSessionTip(s);
+  document.getElementById('detail-sheet-title').textContent = s.name.toUpperCase();
+  document.getElementById('detail-sheet-body').innerHTML = `
+    <div class="detail-type-badge">
+      <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Session</div>
+      <div class="detail-section-body">${s.detail}</div>
+    </div>
+    ${tip ? `<div class="detail-section">
+      <div class="detail-section-label">Coach's note</div>
+      <div class="detail-tip">${tip}</div>
+    </div>` : ''}
+    <div style="margin-top:20px;">
+      <button class="btn btn-primary" onclick="openLogSheet('${s.type}');closeDetailSheet();">Log this session</button>
+    </div>
+  `;
+  document.getElementById('detail-sheet-bg').classList.remove('hidden');
+}
+
+function closeDetailSheet(e) {
+  if (e && e.target !== document.getElementById('detail-sheet-bg')) return;
+  document.getElementById('detail-sheet-bg').classList.add('hidden');
+}
+
+function openRebalanceSheet() {
+  const week = currentWeekNum();
+  const existing = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
+  if (existing) {
+    document.getElementById('rebalance-days-slider').value = existing.days;
+    document.getElementById('rebalance-days-val').textContent = existing.days;
+    document.getElementById('rebalance-focus').value = existing.focus || '';
+  }
+  document.getElementById('rebalance-sheet-bg').classList.remove('hidden');
+}
+
+function closeRebalanceSheet(e) {
+  if (e && e.target !== document.getElementById('rebalance-sheet-bg')) return;
+  document.getElementById('rebalance-sheet-bg').classList.add('hidden');
+}
+
+const FOCUS_LABELS = {
+  '': 'Following the plan',
+  'easy': 'Lighter week',
+  'endurance': 'Endurance focus',
+  'intensity': 'Intensity focus',
+  'strength': 'Strength focus'
+};
+
+function saveRebalance() {
+  const week = currentWeekNum();
+  const days = parseInt(document.getElementById('rebalance-days-slider').value);
+  const focus = document.getElementById('rebalance-focus').value;
+  localStorage.setItem('mr_rebalance_' + week, JSON.stringify({
+    days, focus, focusLabel: FOCUS_LABELS[focus] || ''
+  }));
+  closeRebalanceSheet();
   renderWeek();
-  renderHome();
+  toast('Week adjusted');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1162,9 +1674,11 @@ function saveActivity() {
   document.getElementById('log-duration').value = '';
   document.getElementById('log-notes').value = '';
 
-  renderHistory();
-  toast('Activity logged');
-  switchTab('history');
+  closeLogSheet();
+  renderHome();
+  renderActivities();
+  renderStats();
+  toast('Activity logged ✓');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1178,7 +1692,43 @@ function getWeekKey(dateStr) {
   return d.getFullYear() + '-W' + Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
 }
 
-function renderHistory() {
+function fmtDist(km) {
+  if (!km) return null;
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  if (useMiles) return (km * 0.621371).toFixed(1) + ' mi';
+  return km + ' km';
+}
+
+function fmtDistVal(km) {
+  if (!km) return 0;
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  return useMiles ? (km * 0.621371).toFixed(1) : km;
+}
+
+function distUnit() {
+  return localStorage.getItem('mr_units') === 'miles' ? 'mi' : 'km';
+}
+
+function renderActivities() {
+  const el = document.getElementById('activities-list');
+  if (!el) return;
+  if (activities.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No activities yet</div><div class="empty-text">Log your first session to see it here.</div></div>';
+    return;
+  }
+  el.innerHTML = activities.map(a => `
+    <div class="act-item">
+      <div class="act-icon act-icon-${a.type}">${ACT_ICONS[a.type] || '🏃'}</div>
+      <div class="act-info">
+        <div class="act-name">${a.type.charAt(0).toUpperCase() + a.type.slice(1)}${a.distance ? ' · ' + fmtDist(a.distance) : ''}</div>
+        <div class="act-meta">${a.duration} min${a.notes ? ' · ' + a.notes.slice(0,40) : ''}</div>
+      </div>
+      <div class="act-date">${formatDate(a.date)}</div>
+    </div>
+  `).join('');
+}
+
+function renderStats() {
   // Build 8-week buckets
   const now = new Date();
   const weeks = [];
@@ -1207,30 +1757,15 @@ function renderHistory() {
   }).join('');
   labelsEl.innerHTML = weeks.map(w => `<div class="chart-xlabel">${w.label}</div>`).join('');
 
-  // Stats
+  // Stats cards
   const totalSessions = activities.length;
   const totalKm = activities.filter(a => a.distance).reduce((s,a) => s + (a.distance||0), 0);
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  const totalDist = useMiles ? (totalKm * 0.621371).toFixed(1) : totalKm.toFixed(0);
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-val">${totalSessions}</div><div class="stat-label">Total sessions</div></div>
-    <div class="stat-card"><div class="stat-val">${totalKm.toFixed(0)}</div><div class="stat-label">Total km</div></div>
+    <div class="stat-card"><div class="stat-val">${totalDist}</div><div class="stat-label">Total ${distUnit()}</div></div>
   `;
-
-  // Activity list
-  const listEl = document.getElementById('activity-list');
-  if (activities.length === 0) {
-    listEl.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No activities yet</div><div class="empty-text">Log your first session to see it here.</div></div>';
-    return;
-  }
-  listEl.innerHTML = activities.slice(0, 30).map(a => `
-    <div class="act-item">
-      <div class="act-icon act-icon-${a.type}">${ACT_ICONS[a.type] || '🏃'}</div>
-      <div class="act-info">
-        <div class="act-name">${a.type.charAt(0).toUpperCase() + a.type.slice(1)}${a.distance ? ` · ${a.distance}km` : ''}</div>
-        <div class="act-meta">${a.duration} min${a.notes ? ' · ' + a.notes.slice(0,40) : ''}</div>
-      </div>
-      <div class="act-date">${formatDate(a.date)}</div>
-    </div>
-  `).join('');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1242,7 +1777,8 @@ function switchTab(tab) {
   document.getElementById('screen-' + tab).classList.add('active');
   document.getElementById('nav-' + tab).classList.add('active');
   if (tab === 'week') renderWeek();
-  if (tab === 'history') renderHistory();
+  if (tab === 'activities') renderActivities();
+  if (tab === 'stats') renderStats();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1295,15 +1831,249 @@ if ('serviceWorker' in navigator) {
 }
 
 // ═══════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════
+function openSettings() {
+  const name = localStorage.getItem('mr_name') || '—';
+  document.getElementById('settings-name-display').textContent = name;
+  if (profile) {
+    const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '—';
+    document.getElementById('settings-level-display').textContent = cap(profile.level);
+    document.getElementById('settings-days-display').textContent = (profile.days || '—') + ' days/week';
+  }
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  document.getElementById('setting-units').checked = useMiles;
+  document.getElementById('units-label').textContent = useMiles ? 'miles' : 'km';
+  document.getElementById('gpx-result').style.display = 'none';
+  document.getElementById('settings-sheet-bg').classList.remove('hidden');
+}
+
+function closeSettings(e) {
+  if (e && e.target !== document.getElementById('settings-sheet-bg')) return;
+  document.getElementById('settings-sheet-bg').classList.add('hidden');
+}
+
+function toggleFullscreen(on) {
+  if (on) {
+    document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+  } else {
+    document.fullscreenElement && document.exitFullscreen && document.exitFullscreen();
+  }
+}
+
+function toggleUnits(useMiles) {
+  localStorage.setItem('mr_units', useMiles ? 'miles' : 'km');
+  document.getElementById('units-label').textContent = useMiles ? 'miles' : 'km';
+  renderActivities();
+  renderStats();
+  toast('Units set to ' + (useMiles ? 'miles' : 'km'));
+}
+
+function editName() {
+  const current = localStorage.getItem('mr_name') || '';
+  const name = prompt('Your name:', current);
+  if (name !== null && name.trim()) {
+    localStorage.setItem('mr_name', name.trim());
+    document.getElementById('settings-name-display').textContent = name.trim();
+    toast('Name updated');
+  }
+}
+
+function editLevel() {
+  if (!profile) return;
+  const levels = ['beginner', 'intermediate', 'advanced'];
+  const current = levels.indexOf(profile.level);
+  const choice = prompt('Fitness level (1=Beginner, 2=Intermediate, 3=Advanced):', current + 1);
+  const idx = parseInt(choice) - 1;
+  if (idx >= 0 && idx < 3) {
+    profile.level = levels[idx];
+    save(KEY.profile, profile);
+    document.getElementById('settings-level-display').textContent = levels[idx].charAt(0).toUpperCase() + levels[idx].slice(1);
+    renderHome();
+    renderWeek();
+    toast('Level updated');
+  }
+}
+
+function editDays() {
+  if (!profile) return;
+  const choice = prompt('Training days per week (2–6):', profile.days);
+  const n = parseInt(choice);
+  if (n >= 2 && n <= 6) {
+    profile.days = String(n);
+    save(KEY.profile, profile);
+    document.getElementById('settings-days-display').textContent = n + ' days/week';
+    renderHome();
+    renderWeek();
+    toast('Training days updated');
+  }
+}
+
+function resetPlan() {
+  if (!confirm('Reset your training plan? Your activity log will be kept.')) return;
+  localStorage.removeItem(KEY.profile);
+  profile = null;
+  obData = {};
+  obGoals = [];
+  closeSettings();
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('onboarding').classList.remove('hidden');
+  // Reset onboarding to step 0
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob-step-0').classList.add('active');
+  document.querySelectorAll('.ob-dot').forEach(d => d.classList.remove('done'));
+  document.querySelectorAll('.ob-option').forEach(b => { b.classList.remove('selected'); const badge = b.querySelector('.ob-priority'); if (badge) badge.remove(); });
+  toast('Plan reset — complete setup again');
+}
+
+function exportData() {
+  const data = {
+    exportDate: new Date().toISOString(),
+    profile: profile,
+    activities: activities,
+    checkins: checkins
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'meridian-export-' + todayStr() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Data exported');
+}
+
+function eraseData() {
+  if (!confirm('Erase ALL data? This cannot be undone.')) return;
+  if (!confirm('Are you sure? All activities, check-ins and profile will be deleted.')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+// ── GPX IMPORT ─────────────────────────────────────────
+function handleGPXFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => parseGPX(e.target.result, file.name);
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function parseGPX(xmlStr, filename) {
+  const resultEl = document.getElementById('gpx-result');
+  try {
+    const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
+    const trkpts = doc.querySelectorAll('trkpt');
+    if (!trkpts.length) { resultEl.style.display='block'; resultEl.innerHTML='<div style="color:#FF6B6B;font-size:13px;">No track points found in file.</div>'; return; }
+
+    let distKm = 0;
+    let prevLat = null, prevLon = null;
+    let firstTime = null, lastTime = null;
+    const typeGuess = filename.toLowerCase();
+
+    trkpts.forEach(pt => {
+      const lat = parseFloat(pt.getAttribute('lat'));
+      const lon = parseFloat(pt.getAttribute('lon'));
+      if (prevLat !== null) distKm += haversineKm(prevLat, prevLon, lat, lon);
+      prevLat = lat; prevLon = lon;
+      const timeEl = pt.querySelector('time');
+      if (timeEl) {
+        const t = new Date(timeEl.textContent);
+        if (!firstTime) firstTime = t;
+        lastTime = t;
+      }
+    });
+
+    const durationMin = firstTime && lastTime ? Math.round((lastTime - firstTime) / 60000) : null;
+    const distRounded = Math.round(distKm * 10) / 10;
+
+    // Guess activity type
+    let actType = 'run';
+    if (typeGuess.includes('ride') || typeGuess.includes('cycl') || typeGuess.includes('bike')) actType = 'cycle';
+    else if (typeGuess.includes('hyrox')) actType = 'hyrox';
+    const nameEl = doc.querySelector('name');
+    const actName = nameEl ? nameEl.textContent : filename.replace('.gpx','');
+
+    // Get date from first track point or file name
+    const actDate = firstTime ? firstTime.toISOString().slice(0,10) : todayStr();
+
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+      <div class="gpx-result">
+        <div style="font-weight:500;margin-bottom:8px;">${actName}</div>
+        <div class="gpx-result-row"><span class="gpx-result-label">TYPE</span><span>${actType}</span></div>
+        <div class="gpx-result-row"><span class="gpx-result-label">DATE</span><span>${formatDate(actDate)}</span></div>
+        <div class="gpx-result-row"><span class="gpx-result-label">DISTANCE</span><span>${distRounded} km</span></div>
+        ${durationMin ? `<div class="gpx-result-row"><span class="gpx-result-label">DURATION</span><span>${durationMin} min</span></div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="confirmGPXImport('${actDate}','${actType}',${distRounded},${durationMin||0},'${actName.replace(/'/g,"\\'")}')">Import</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('gpx-result').style.display='none'">Cancel</button>
+      </div>
+    `;
+  } catch(err) {
+    resultEl.style.display='block';
+    resultEl.innerHTML='<div style="color:#FF6B6B;font-size:13px;">Could not parse GPX file.</div>';
+  }
+}
+
+function confirmGPXImport(date, type, distance, duration, name) {
+  const act = { id: Date.now(), date, type, distance, duration, notes: name };
+  activities.unshift(act);
+  save(KEY.activities, activities);
+  document.getElementById('gpx-result').style.display = 'none';
+  renderActivities();
+  renderStats();
+  renderHome();
+  closeSettings();
+  toast('Activity imported from GPX ✓');
+}
+
+// Drag-and-drop on GPX drop zone
+// ═══════════════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  toggleDistanceField(); // Set correct initial state for log form
-  if (profile) {
+  // GPX drag-and-drop
+  const drop = document.getElementById('gpx-drop');
+  if (drop) {
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault();
+      drop.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.gpx')) {
+        const reader = new FileReader();
+        reader.onload = ev => parseGPX(ev.target.result, file.name);
+        reader.readAsText(file);
+      }
+    });
+  }
+
+  // Initial log form state
+  toggleDistanceField();
+
+  // Route to correct screen
+  const name = localStorage.getItem('mr_name');
+  if (profile && name) {
+    document.getElementById('landing').classList.add('hidden');
     document.getElementById('onboarding').classList.add('hidden');
     initApp();
+  } else if (name && !profile) {
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('onboarding').classList.remove('hidden');
   }
-  // else onboarding is shown by default
+  // else: no name → landing stays visible (default)
 });
 </script>
 </body>
