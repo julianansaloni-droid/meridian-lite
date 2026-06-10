@@ -133,6 +133,20 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 .rebalance-option.selected { border-color: var(--yellow); background: rgba(232,200,64,.06); }
 .rebalance-option-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
 .rebalance-option-sub { font-family: var(--font-m); font-size: 11px; color: var(--grey1); }
+
+/* ── SESSION DETAIL: ZONE GRAPH & META ───────────────────── */
+.zone-graph { display: flex; align-items: flex-end; gap: 2px; height: 64px; margin: 2px 0 4px; }
+.zone-seg { border-radius: 3px 3px 0 0; min-width: 3px; flex-shrink: 1; }
+.zone-axis { display: flex; justify-content: space-between; font-family: var(--font-m); font-size: 9px; color: var(--grey2); margin-bottom: 6px; }
+.zone-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.zone-key { display: flex; align-items: center; gap: 4px; font-family: var(--font-m); font-size: 9px; color: var(--grey1); }
+.zone-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.meta-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.chip { font-family: var(--font-m); font-size: 10px; padding: 4px 9px; border-radius: 6px; background: var(--navy3); border: 1px solid var(--grey2); color: var(--grey1); white-space: nowrap; }
+.chip.hl { color: var(--yellow); border-color: rgba(232,200,64,.3); background: rgba(232,200,64,.06); }
+.ex-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--grey3); font-size: 13px; }
+.ex-row:last-child { border-bottom: none; }
+.ex-chip { font-family: var(--font-m); font-size: 11px; color: var(--yellow); white-space: nowrap; }
 .session-logged-bar { background: rgba(46,204,138,.08); border: 1px solid rgba(46,204,138,.2); border-radius: var(--r); padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .session-logged-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
 .session-logged-text { font-family: var(--font-m); font-size: 11px; color: var(--green); }
@@ -636,6 +650,14 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
       <button class="sheet-close" onclick="closeSettings()">✕</button>
     </div>
 
+    <!-- APP -->
+    <div class="settings-section-label">App</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Install Meridian</div><div class="settings-sub" id="install-sub">Add Meridian to your home screen</div></div>
+      <button class="settings-action" id="install-btn" onclick="installApp()">Install</button>
+    </div>
+    <div class="detail-tip" id="install-howto" style="display:none;margin-bottom:10px;"></div>
+
     <!-- DISPLAY -->
     <div class="settings-section-label">Display</div>
     <div class="settings-row">
@@ -698,7 +720,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.2 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.4 · Train at your peak</div></div>
     </div>
   </div>
 </div>
@@ -1268,8 +1290,13 @@ function applyRebalance(sessions, reb) {
   if (!reb || !sessions.length) return sessions;
   let out = [...sessions];
 
-  // Fewer days: cut the least important sessions, never the long run or key quality work
-  if (reb.days && reb.days < out.length) out = selectSessions(out, reb.days);
+  // Days change: cut the least important sessions (never the long run or key
+  // quality work), or pad with goal-appropriate top-ups when training more
+  if (reb.days && reb.days !== out.length) {
+    out = reb.days < out.length
+      ? selectSessions(out, reb.days)
+      : padSessions(out, Math.min(reb.days, 7), profile ? profile.goal : '');
+  }
 
   if (reb.focus === 'easy') {
     // Recovery week: swap intensity for easy volume, reduce everything ~30%
@@ -1669,16 +1696,19 @@ function renderHome() {
     html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — today can flex.<button onclick="applyEasyToday()" style="display:block;margin-top:8px;background:none;border:1px solid rgba(232,200,64,.4);border-radius:6px;color:var(--yellow);font-family:var(--font-m);font-size:11px;padding:6px 10px;cursor:pointer;">Switch to an easy version</button></div>`;
   }
 
+  lastTodaySession = displaySession;
   if (displaySession) {
+    const tappable = displaySession.type !== 'rest';
     html += `
-      <div class="session-card">
+      <div class="session-card"${tappable ? ' onclick="openTodayDetail()" style="cursor:pointer;"' : ''}>
         <div class="session-body">
           <div class="session-day">Week ${info.week} · ${plan.name}</div>
           <span class="tag tag-${displaySession.type}" style="margin-bottom:6px;display:inline-block;">${displaySession.type.toUpperCase()}</span>
           <div class="session-name">${displaySession.name}</div>
           <div class="session-detail">${displaySession.detail}</div>
-          ${adjusted ? `<div style="margin-top:8px;"><span style="font-family:var(--font-m);font-size:10px;color:var(--yellow3);letter-spacing:.5px;">⚡ ADJUSTED</span><button onclick="clearTodayOverride()" style="background:none;border:none;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;cursor:pointer;padding:0;margin-left:10px;">revert</button></div>` : ''}
+          ${adjusted ? `<div style="margin-top:8px;"><span style="font-family:var(--font-m);font-size:10px;color:var(--yellow3);letter-spacing:.5px;">⚡ ADJUSTED</span><button onclick="event.stopPropagation();clearTodayOverride()" style="background:none;border:none;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;cursor:pointer;padding:0;margin-left:10px;">revert</button></div>` : ''}
         </div>
+        ${tappable ? '<div style="color:var(--grey2);font-size:18px;padding-left:4px;">›</div>' : ''}
       </div>`;
 
     const logType = displaySession.type === 'rest' ? '' : displaySession.type;
@@ -1850,9 +1880,8 @@ function renderWeek() {
 
   const base = (getMatchedPlan() || [])[week - 1] || [];
   const reb = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
-  if (reb && (reb.focus || reb.days < base.length)) {
-    const note = reb.focus ? (FOCUS_LABELS[reb.focus] || '') : (reb.days + ' days this week');
-    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week adjusted: ${note}</div>`;
+  if (reb && (reb.focus || reb.days !== base.length)) {
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week rebalanced: ${reb.days} day${reb.days === 1 ? '' : 's'}${reb.focus ? ' · ' + (FOCUS_LABELS[reb.focus] || '') : ''}<button onclick="clearRebalance()" style="background:none;border:none;color:var(--grey1);font-family:var(--font-m);font-size:10px;text-decoration:underline;cursor:pointer;padding:0;margin-left:8px;">clear</button></div>`;
   }
 
   const authoredCount = ((PLANS[profile.goal][profile.level] || [])[week - 1] || []).filter(s => s.type !== 'rest').length;
@@ -1890,30 +1919,244 @@ function getSessionTip(session) {
   return null;
 }
 
-function openDetailSheet(idx) {
-  const sessions = getWeekSessions(currentWeekNum()) || [];
-  const s = sessions[idx];
-  if (!s) return;
+// ═══════════════════════════════════════════════════════
+//  SESSION INTELLIGENCE — classify, parse, visualize
+// ═══════════════════════════════════════════════════════
+const ZONE_COLORS = { 1: '#3D4A5C', 2: '#2E6BE6', 3: '#2ECC8A', 4: '#E8C840', 5: '#FF6B6B' };
+const ZONE_NAMES  = { 1: 'Recovery', 2: 'Easy', 3: 'Steady', 4: 'Threshold', 5: 'Max' };
 
+function classifySession(s) {
+  const t = s.name + ' ' + s.detail;
+  if (/race day|go for it|event day/i.test(t)) return 'race';
+  if (s.type === 'strength') return 'strength';
+  if (s.type === 'hyrox') return /sim|compromised|EMOM/i.test(t) ? 'hyroxsim' : 'hyrox';
+  if (/strides|pickups/i.test(t)) return 'strides';
+  if (/VO2|track|3K|mile effort|faster than/i.test(t)) return 'vo2';
+  if (/tempo|threshold|sweet spot|over-under|activator/i.test(t)) return 'tempo';
+  if (/interval|sharpener/i.test(t)) return 'interval';
+  if (/race[- ]?pace|marathon (target )?pace|HM pace|race effort|goal pace|race sim/i.test(t)) return 'racepace';
+  if (/walk\/run/i.test(t)) return 'walkrun';
+  if (/cadence/i.test(t)) return 'cadence';
+  if (/recovery|mobility|taper/i.test(t)) return 'recovery';
+  if (/\bLong\b/i.test(s.name)) return 'long';
+  return 'easy';
+}
+
+const PURPOSE = {
+  easy: 'Aerobic base work: more mitochondria, denser capillaries, better fat metabolism. The unglamorous volume that makes every hard session land.',
+  long: 'The endurance cornerstone — teaches your body to store and spare glycogen, builds fatigue resistance, and rehearses pacing and fuelling.',
+  tempo: 'Raises your lactate threshold: the fastest effort you can sustain. The most race-relevant adaptation for endurance events.',
+  vo2: 'Develops VO2max — your aerobic ceiling. Short, hard, fully recovered: the quality comes from hitting every rep, not surviving them.',
+  interval: 'Repeated efforts at goal pace build speed endurance and teach your legs the exact rhythm of race effort.',
+  racepace: 'Pace-specific practice: locks in goal rhythm, fuelling and mental reference points under realistic fatigue.',
+  strides: 'Neuromuscular sharpening — improves running economy and recruits fast-twitch fibres with almost no fatigue cost.',
+  walkrun: 'Run/walk progression builds aerobic capacity while protecting joints and tendons, which adapt more slowly than your lungs.',
+  cadence: 'Higher cadence at easy effort improves pedalling economy and smoothness without adding training stress.',
+  recovery: 'Active recovery promotes blood flow and clears the legs without adding load. Discipline here pays off in the next quality session.',
+  strength: 'Force production and durability — more power per stride or pedal stroke, plus the structural resilience that prevents injury.',
+  hyrox: 'Station-specific strength and skill at race weights — movement efficiency here saves whole minutes on race day.',
+  hyroxsim: 'Compromised-running practice: the defining Hyrox skill of running well on heavy legs straight off a station.',
+  race: 'Everything converges here. Trust the taper, execute the pacing plan, and enjoy it — the work is already done.'
+};
+
+const FEEL = {
+  1: 'RPE 2–3 · effortless. Full conversation, nasal breathing — you should finish fresher than you started.',
+  2: 'RPE 3–4 · fully conversational. If you can\'t chat in full sentences, slow down — easy means easy.',
+  3: 'RPE 5–6 · short sentences. Controlled and purposeful, never straining.',
+  4: 'RPE 7–8 · a few words at a time. Comfortably hard — strong, not racing.',
+  5: 'RPE 9 · single words only. Hard but repeatable — the last rep should match the first.'
+};
+const FEEL_STRENGTH = 'Leave 1–2 reps in reserve on every set. Form before load — the last rep should look like the first.';
+
+function paceZone(t) {
+  t = t || '';
+  if (/110|115|120\s*%|VO2|3K|mile|faster than|\b5K\b/i.test(t)) return 5;
+  if (/threshold|tempo|sweet spot|FTP|10K|HM\b|half/i.test(t)) return 4;
+  if (/Zone 3|marathon|steady/i.test(t)) return 3;
+  if (/high cadence|Zone 2|easy|conversational/i.test(t)) return 2;
+  if (/race|goal|event|\beffort\b|hard|pace/i.test(t)) return 4;
+  return 4;
+}
+
+// Parse a prescription into segments [{label, mins, zone}] — null means no time graph
+function parseSegments(s) {
+  try {
+    if (s.type === 'strength' || s.type === 'hyrox' || s.type === 'rest') return null;
+    const cls = classifySession(s);
+    if (cls === 'race') return null;
+    const d = s.detail.replace(/^(Recovery|Taper)\s*—\s*/i, '');
+    const segs = [];
+    const push = (label, mins, zone) => { if (mins > 0.1) segs.push({ label, mins, zone }); };
+    const toMin = (v, u) => u === 'sec' ? v / 60 : u === 'min' ? v : u === 'km' ? v * 5 : v * 0.005; // m ≈ 5 min/km
+
+    // Over-under: "3×(10 min threshold + 5 min sweet spot), 5 min rest"
+    const ou = d.match(/(\d+)\s*×\s*\(([^)]+)\)(?:,\s*(\d+)\s*(min|sec))?/);
+    if (ou) {
+      push('Warm-up', 10, 1);
+      const inner = ou[2].split('+').map(x => x.trim());
+      for (let i = 0; i < +ou[1]; i++) {
+        inner.forEach(part => {
+          const m = part.match(/(\d+(?:\.\d+)?)\s*(min|sec|km|m)\b/);
+          if (m) push(part, toMin(+m[1], m[2]), paceZone(part));
+        });
+        if (ou[3] && i < +ou[1] - 1) push('Rest', toMin(+ou[3], ou[4]), 1);
+      }
+      push('Cool-down', 8, 1);
+      return segs;
+    }
+
+    // Repeats: "N×X unit [at …][, R unit rest]"
+    const iv = d.match(/(\d+)\s*×\s*(\d+(?:\.\d+)?)\s*(min|sec|km|m)\b/);
+    if (iv) {
+      const reps = +iv[1], work = toMin(+iv[2], iv[3]);
+      const after = d.slice(iv.index + iv[0].length);
+      const atClause = after.match(/at\s+([^,]+)/i);
+      const workZone = atClause ? paceZone(atClause[1])
+        : ({ strides: 5, walkrun: 3, cadence: 2, vo2: 5, interval: 4, tempo: 4 }[cls] || 4);
+      const rec = after.match(/[,+]\s*(\d+(?:\.\d+)?)\s*(min|sec)\b/);
+      const recMin = rec ? toMin(+rec[1], rec[2]) : Math.min(2, Math.max(0.5, work / 2));
+
+      // Total-with-embedded-work: "45 min including 3×10 min at Zone 3–4"
+      const incl = d.match(/(\d+)\s*min\s+including/i);
+      // Pre-block: "…after 40 min easy" or "40 min easy + N×…" / "20 min + N×…"
+      const afterPre = d.match(/after\s+(?:easy\s+)?(\d+)\s*min/i);
+      const plusPre = d.match(/^(\d+)\s*min(?:\s*easy| Zone 2)?\s*\+/i);
+
+      if (incl) {
+        const workTotal = reps * work + (reps - 1) * recMin;
+        const pad = Math.max(4, (+incl[1] - workTotal) / 2);
+        push('Easy', pad, 2);
+        for (let i = 0; i < reps; i++) { push('Work', work, workZone); if (i < reps - 1) push('Rec', recMin, 1); }
+        push('Easy', pad, 2);
+        return segs;
+      }
+      if (afterPre || plusPre) push('Easy', +(afterPre || plusPre)[1], 2);
+      else push('Warm-up', 10, workZone >= 4 ? 1 : 2);
+      for (let i = 0; i < reps; i++) { push('Work', work, workZone); if (i < reps - 1) push('Rec', recMin, 1); }
+      push('Cool-down', afterPre ? 5 : 8, 1);
+      return segs;
+    }
+
+    // WU/CD structure: "WU + 20 min tempo + CD", "5 min warm-up, 10 min tempo, 5 min cool-down", "5km WU + 12km at HM pace + 3km CD"
+    if (/WU|warm/i.test(d)) {
+      const wu = d.match(/(\d+)\s*(min|km)\s*(?:WU|warm)/i);
+      const cd = d.match(/(\d+)\s*(min|km)\s*(?:CD|cool)/i);
+      push('Warm-up', wu ? toMin(+wu[1], wu[2]) : 10, 1);
+      [...d.matchAll(/(\d+(?:\.\d+)?)\s*(min|km)\s+(?:at\s+)?([A-Za-z][^,+]*)/g)]
+        .filter(m => !/WU|warm|CD|cool/i.test(m[3]))
+        .forEach(m => push(m[3].trim(), toMin(+m[1], m[2]), paceZone(m[3])));
+      push('Cool-down', cd ? toMin(+cd[1], cd[2]) : 10, 1);
+      return segs.length > 2 ? segs : null;
+    }
+
+    // Combo: "40 min easy + 20 min tempo"
+    const combo = d.match(/(\d+)\s*min\s*easy\s*\+\s*(\d+)\s*min\s*(\w[\w\s-]*)/i);
+    if (combo) {
+      push('Easy', +combo[1], 2);
+      push(combo[3].trim(), +combo[2], paceZone(combo[3]));
+      push('Cool-down', 5, 1);
+      return segs;
+    }
+
+    // Steady distance: "12km at marathon target pace"
+    const distSteady = d.match(/(\d+(?:\.\d+)?)\s*km\s+at\s+(.+)$/i);
+    if (distSteady) {
+      push('Warm-up', 10, 1);
+      push('At pace', toMin(+distSteady[1], 'km'), paceZone(distSteady[2]));
+      push('Cool-down', 10, 1);
+      return segs;
+    }
+
+    // Steady time: "45 min easy", "60 min Zone 2", "25 min threshold", "30 min at HM target pace"
+    const single = d.match(/(\d+)\s*min\b\s*(?:at\s+)?(.*)$/i);
+    if (single) {
+      const ref = (single[2] || '') + ' ' + s.name + ' ' + s.detail;
+      const zone = /threshold|tempo|HM|race|goal/i.test(single[2] || '') ? paceZone(single[2])
+        : (/easy|Zone 2|recovery|long|mobility|taper/i.test(ref) ? 2 : paceZone(single[2]));
+      if (zone >= 4) { push('Warm-up', 10, 1); push(s.name, +single[1], zone); push('Cool-down', 5, 1); }
+      else push(s.name, +single[1], zone);
+      return segs;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+// Strength / Hyrox prescriptions become an exercise list: "Squat 4×10, Deadlift 4×8"
+function parseExercises(detail) {
+  return detail.split(/\s*(?:,|\s\+\s|→)\s*/).map(x => x.trim()).filter(Boolean).map(item => {
+    const m = item.match(/^(.*?)\s+(\d+\s*×\s*[\d.]+\s*(?:m|km|sec|min|reps)?)\s*(.*)$/i);
+    if (m && m[1]) return { name: (m[1] + (m[3] ? ' ' + m[3] : '')).trim(), chip: m[2].replace(/\s+/g, '') };
+    return { name: item, chip: null };
+  });
+}
+
+function phaseLabel(week, total, goal) {
+  if (week >= total) return goal === 'strength' ? 'Final week' : 'Race week';
+  const r = week / total;
+  if (r <= 0.45) return 'Base';
+  if (r <= 0.8) return 'Build';
+  return total - week <= 1 ? 'Taper' : 'Peak';
+}
+
+function zoneGraphHTML(segs) {
+  const total = segs.reduce((a, x) => a + x.mins, 0);
+  if (!total) return '';
+  const bars = segs.map(x =>
+    `<div class="zone-seg" style="width:${Math.max(1.4, x.mins / total * 100).toFixed(2)}%;height:${x.zone * 20}%;background:${ZONE_COLORS[x.zone]};" title="${esc(x.label)} · ${Math.round(x.mins)} min"></div>`
+  ).join('');
+  const legend = [...new Set(segs.map(x => x.zone))].sort()
+    .map(z => `<span class="zone-key"><span class="zone-dot" style="background:${ZONE_COLORS[z]}"></span>Z${z} ${ZONE_NAMES[z]}</span>`).join('');
+  return `<div class="zone-graph">${bars}</div><div class="zone-axis"><span>0 min</span><span>~${Math.round(total / 5) * 5} min</span></div><div class="zone-legend">${legend}</div>`;
+}
+
+function sessionDetailHTML(s, opts) {
+  opts = opts || {};
+  const cls = classifySession(s);
+  const segs = parseSegments(s);
+  const exList = (!segs && (s.type === 'strength' || s.type === 'hyrox') && cls !== 'race') ? parseExercises(s.detail) : null;
+  const peak = segs ? Math.max(...segs.map(x => x.zone))
+    : ({ easy: 2, long: 2, recovery: 1, strides: 5, vo2: 5, tempo: 4, interval: 4, racepace: 4, walkrun: 3, cadence: 2, hyroxsim: 4 }[cls] || null);
+  const total = segs ? Math.round(segs.reduce((a, x) => a + x.mins, 0) / 5) * 5 : primaryMins(s.detail);
+  const info = currentWeekInfo();
+  const plan = profile && PLANS[profile.goal];
+  const chips = [];
+  if (plan) chips.push(`<span class="chip hl">Week ${info.week}/${plan.totalWeeks} · ${phaseLabel(info.week, plan.totalWeeks, profile.goal)}</span>`);
+  if (total) chips.push(`<span class="chip">~${total} min</span>`);
+  if (peak) chips.push(`<span class="chip">Peak Z${peak} · ${ZONE_NAMES[peak]}</span>`);
+  const feel = (s.type === 'strength' || cls === 'hyrox') ? FEEL_STRENGTH : (peak ? FEEL[peak] : null);
   const tip = getSessionTip(s);
-  document.getElementById('detail-sheet-title').textContent = s.name.toUpperCase();
-  document.getElementById('detail-sheet-body').innerHTML = `
-    <div class="detail-type-badge">
-      <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
-    </div>
+  return `
+    <div class="detail-type-badge"><span class="tag tag-${s.type}">${s.type.toUpperCase()}</span></div>
+    ${chips.length ? `<div class="meta-chips">${chips.join('')}</div>` : ''}
+    ${segs ? zoneGraphHTML(segs) : ''}
+    ${exList ? `<div class="detail-section"><div class="detail-section-label">Stations / exercises</div>${exList.map(e => `<div class="ex-row"><span>${esc(e.name)}</span>${e.chip ? `<span class="ex-chip">${esc(e.chip)}</span>` : ''}</div>`).join('')}</div>` : ''}
     <div class="detail-section">
       <div class="detail-section-label">Session</div>
       <div class="detail-section-body">${s.detail}</div>
     </div>
-    ${tip ? `<div class="detail-section">
-      <div class="detail-section-label">Coach's note</div>
-      <div class="detail-tip">${tip}</div>
-    </div>` : ''}
-    <div style="margin-top:20px;">
-      <button class="btn btn-primary" onclick="openLogSheet('${s.type}');closeDetailSheet();">Log this session</button>
-    </div>
-  `;
+    ${PURPOSE[cls] ? `<div class="detail-section"><div class="detail-section-label">Why this session</div><div class="detail-section-body" style="font-size:13px;color:var(--grey1);line-height:1.55;">${PURPOSE[cls]}</div></div>` : ''}
+    ${feel ? `<div class="detail-section"><div class="detail-section-label">How it should feel</div><div class="detail-section-body" style="font-size:13px;line-height:1.55;">${feel}</div></div>` : ''}
+    ${tip ? `<div class="detail-section"><div class="detail-section-label">Coach's note</div><div class="detail-tip">${tip}</div></div>` : ''}
+    <div style="margin-top:18px;display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="openLogSheet('${s.type}');closeDetailSheet();" style="flex:1;">Log this session</button>
+      ${opts.today ? `<button class="btn btn-secondary" onclick="closeDetailSheet();openAdjustSheet();" style="flex:0 0 auto;width:auto;padding:13px 16px;">Adjust</button>` : ''}
+    </div>`;
+}
+
+function showSessionDetail(s, opts) {
+  document.getElementById('detail-sheet-title').textContent = s.name.toUpperCase();
+  document.getElementById('detail-sheet-body').innerHTML = sessionDetailHTML(s, opts);
   document.getElementById('detail-sheet-bg').classList.remove('hidden');
+}
+
+function openDetailSheet(idx) {
+  const sessions = getWeekSessions(currentWeekNum()) || [];
+  if (sessions[idx]) showSessionDetail(sessions[idx]);
+}
+
+let lastTodaySession = null;
+function openTodayDetail() {
+  if (lastTodaySession && lastTodaySession.type !== 'rest') showSessionDetail(lastTodaySession, { today: true });
 }
 
 function closeDetailSheet(e) {
@@ -1955,7 +2198,15 @@ function saveRebalance() {
   closeRebalanceSheet();
   renderWeek();
   renderHome();
-  toast('Week adjusted');
+  const n = (getWeekSessions(week) || []).length;
+  toast('Week rebalanced — ' + n + ' session' + (n === 1 ? '' : 's'));
+}
+
+function clearRebalance() {
+  localStorage.removeItem('mr_rebalance_' + currentWeekNum());
+  renderWeek();
+  renderHome();
+  toast('Back to the planned week');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2158,6 +2409,65 @@ if ('serviceWorker' in navigator) {
 }
 
 // ═══════════════════════════════════════════════════════
+//  INSTALL TO HOME SCREEN
+// ═══════════════════════════════════════════════════════
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();             // keep the prompt for our Settings button
+  deferredInstallPrompt = e;
+  refreshInstallRow();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  refreshInstallRow();
+  toast('Meridian installed on your device');
+});
+
+function isStandalone() {
+  return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+}
+
+function refreshInstallRow() {
+  const sub = document.getElementById('install-sub');
+  const btn = document.getElementById('install-btn');
+  if (!sub || !btn) return;
+  if (isStandalone()) {
+    sub.textContent = 'Running as an installed app';
+    btn.textContent = 'Installed ✓';
+    btn.disabled = true;
+    btn.style.opacity = '.5';
+  } else {
+    sub.textContent = 'Add Meridian to your home screen';
+    btn.textContent = deferredInstallPrompt ? 'Install' : 'How to';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+async function installApp() {
+  if (isStandalone()) { toast('Already installed'); return; }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    try {
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice && choice.outcome === 'accepted') toast('Installing Meridian…');
+    } catch (e) {}
+    deferredInstallPrompt = null;
+    refreshInstallRow();
+  } else {
+    // No native prompt available (iOS, or criteria not yet met) — show instructions
+    const box = document.getElementById('install-howto');
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    box.innerHTML = ios
+      ? 'On iPhone / iPad: open this page in <b>Safari</b>, tap the <b>Share</b> button, then <b>Add to Home Screen</b>.'
+      : 'Open your browser menu (⋮) and choose <b>Add to home screen</b> / <b>Install app</b>. In Chrome, an install icon may also appear in the address bar.';
+    box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 //  SETTINGS
 // ═══════════════════════════════════════════════════════
 function openSettings() {
@@ -2173,6 +2483,8 @@ function openSettings() {
   document.getElementById('units-label').textContent = useMiles ? 'miles' : 'km';
   document.getElementById('setting-fullscreen').checked = !!document.fullscreenElement;
   document.getElementById('gpx-result').style.display = 'none';
+  document.getElementById('install-howto').style.display = 'none';
+  refreshInstallRow();
   document.getElementById('settings-sheet-bg').classList.remove('hidden');
 }
 
