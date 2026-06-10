@@ -598,6 +598,14 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
       <button class="sheet-close" onclick="closeAdjustSheet()">✕</button>
     </div>
     <div class="form-row">
+      <label class="form-label">Intensity</label>
+      <select id="adjust-intensity">
+        <option value="">As planned</option>
+        <option value="easier">Easier — reduce effort &amp; volume</option>
+        <option value="harder">Harder — add volume / quality</option>
+      </select>
+    </div>
+    <div class="form-row">
       <label class="form-label">Change workout type</label>
       <select id="adjust-type">
         <option value="">Keep planned type</option>
@@ -690,7 +698,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.1 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.2 · Train at your peak</div></div>
     </div>
   </div>
 </div>
@@ -1135,34 +1143,162 @@ const DAY_SPREAD = {
 };
 const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
+// ── Session classification ──────────────────────────────
+const INTENSE_RE = /Interval|Tempo|VO2|Track|Sharpener|Threshold|Sweet spot|Race pace|Hill|Strides/i;
+const LONG_RE = /\bLong\b/i;
+
+function isIntense(s) { return INTENSE_RE.test(s.name + ' ' + s.detail); }
+
+// What survives when days get cut: long run > quality/strength > easy filler
+function sessionPriority(s) {
+  if (LONG_RE.test(s.name)) return 3;
+  if (isIntense(s)) return 2;
+  if (s.type === 'strength' || s.type === 'hyrox') return 2;
+  return 1;
+}
+
+// Keep the n most important sessions, then restore authored order
+// (so the hard/easy rhythm and the weekend long run survive the cut)
+function selectSessions(sessions, n) {
+  if (n >= sessions.length) return [...sessions];
+  return sessions
+    .map((s, i) => ({ s, i, p: sessionPriority(s) }))
+    .sort((a, b) => b.p - a.p || a.i - b.i)
+    .slice(0, n)
+    .sort((a, b) => a.i - b.i)
+    .map(x => x.s);
+}
+
+// Goal-appropriate easy volume for athletes training more days than the plan authors
+function fillerSession(goal) {
+  if (goal === 'cycling') return { name: 'Easy ride', detail: '40 min Zone 2 · optional top-up', type: 'cycle' };
+  if (goal === 'strength') return { name: 'Recovery cardio', detail: '30 min easy cardio + 10 min mobility · optional top-up', type: 'run' };
+  return { name: 'Easy run', detail: '30 min easy · optional top-up', type: 'run' };
+}
+
+// Pad to n sessions, inserting before the final session so the long run keeps the weekend slot
+function padSessions(sessions, n, goal) {
+  const out = [...sessions];
+  while (out.length < n) out.splice(Math.max(out.length - 1, 0), 0, fillerSession(goal));
+  return out;
+}
+
+// ── Session transformation helpers ──────────────────────
+function primaryMins(detail) {
+  const m = [...detail.matchAll(/(\d+)\s*min/g)].map(x => parseInt(x[1]));
+  return m.length ? Math.max(...m) : null;
+}
+
+// Scale every "N min" figure and "N×" rep count in a prescription
+function scaleDetail(detail, f) {
+  return detail
+    .replace(/(\d+)(\s*min)/g, (m, n, u) => Math.max(5, Math.round(n * f / 5) * 5) + u)
+    .replace(/(\d+)(\s*×)/g, (m, n, x) => Math.max(1, Math.round(n * f)) + x);
+}
+
+// Replace the largest "N min" block (the session's main work) with an exact figure
+function setPrimaryDuration(detail, mins) {
+  const matches = [...detail.matchAll(/(\d+)\s*min/g)];
+  if (!matches.length) return detail + ' · ~' + mins + ' min';
+  const big = matches.reduce((a, b) => (parseInt(b[1]) > parseInt(a[1]) ? b : a));
+  return detail.slice(0, big.index) + mins + ' min' + detail.slice(big.index + big[0].length);
+}
+
+// Easier version: intense work becomes genuine easy volume, everything else shrinks
+function easyEquivalent(s, f) {
+  f = f || 0.75;
+  if (isIntense(s) && !LONG_RE.test(s.name)) {
+    const mins = Math.max(20, Math.round((primaryMins(s.detail) || 40) * f / 5) * 5);
+    const label = s.type === 'cycle' ? 'Easy ride' : 'Easy run';
+    return { name: label, detail: mins + ' min easy — swapped from ' + s.name.toLowerCase(), type: s.type === 'cycle' ? 'cycle' : 'run' };
+  }
+  return { name: s.name, detail: scaleDetail(s.detail, f), type: s.type };
+}
+
+function makeHarder(s) {
+  if (s.type === 'rest') return s;
+  if (s.type === 'run' && !isIntense(s) && !LONG_RE.test(s.name)) {
+    return { ...s, detail: s.detail + ' + 4×20 sec strides' };
+  }
+  return { ...s, detail: scaleDetail(s.detail, 1.2) + ' · extended' };
+}
+
+// Translate a session into another modality at equivalent stimulus
+function translateType(s, newType) {
+  const mins = primaryMins(s.detail) || 45;
+  const long = LONG_RE.test(s.name), intense = isIntense(s);
+  if (newType === 'rest') return { name: 'Rest', detail: 'Adjusted — recovery day', type: 'rest' };
+  if (newType === 'cycle') {
+    if (long) return { name: 'Long ride', detail: Math.round(mins * 1.5 / 5) * 5 + ' min Zone 2', type: 'cycle' };
+    if (intense) return { name: 'Sweet spot', detail: 'WU + 3×8 min @ 88–93% FTP + CD', type: 'cycle' };
+    return { name: 'Easy ride', detail: mins + ' min Zone 2', type: 'cycle' };
+  }
+  if (newType === 'run') {
+    if (long) return { name: 'Long run', detail: Math.max(40, Math.round(mins / 1.5 / 5) * 5) + ' min easy', type: 'run' };
+    if (intense) return { name: 'Tempo run', detail: 'WU + ' + Math.min(30, Math.max(15, Math.round(mins * 0.4 / 5) * 5)) + ' min tempo + CD', type: 'run' };
+    return { name: 'Easy run', detail: mins + ' min easy', type: 'run' };
+  }
+  if (newType === 'strength') {
+    return { name: 'Full body strength', detail: 'Squat 4×8, hinge 4×8, push 3×10, pull 3×10, core — ~' + mins + ' min', type: 'strength' };
+  }
+  if (newType === 'hyrox') {
+    return { name: 'Hyrox engine', detail: '4 rounds: 500 m run/row + 15 wall balls + 10 burpees + 20 lunges — ~' + mins + ' min', type: 'hyrox' };
+  }
+  return s;
+}
+
+// ── Plan generation ──────────────────────────────────────
 function getMatchedPlan() {
   if (!profile) return null;
   const plan = PLANS[profile.goal];
   if (!plan) return null;
-  const sessions = plan[profile.level];
-  if (!sessions) return null;
+  const weeks = plan[profile.level];
+  if (!weeks) return null;
   const days = parseInt(profile.days);
-  // Training sessions only — the day spread above schedules them with recovery gaps
-  return sessions.map(week => week.filter(s => s.type !== 'rest').slice(0, days));
+  return weeks.map(week => {
+    const training = week.filter(s => s.type !== 'rest');
+    if (days < training.length) return selectSessions(training, days);   // keep long run + quality
+    if (days > training.length) return padSessions(training, days, profile.goal);
+    return training;
+  });
 }
 
-const INTENSE_RE = /Interval|Tempo|VO2|Track|Sharpener|Threshold|Sweet spot/i;
-
+// ── Weekly rebalance: transforms, not reorders ───────────
 function applyRebalance(sessions, reb) {
   if (!reb || !sessions.length) return sessions;
   let out = [...sessions];
+
+  // Fewer days: cut the least important sessions, never the long run or key quality work
+  if (reb.days && reb.days < out.length) out = selectSessions(out, reb.days);
+
   if (reb.focus === 'easy') {
-    out = out.map(s => INTENSE_RE.test(s.name + ' ' + s.detail)
-      ? { name: 'Easy ' + (s.type === 'cycle' ? 'ride' : s.type === 'run' ? 'run' : 'session'), detail: 'Swapped for recovery — keep effort light and conversational', type: s.type }
-      : s);
+    // Recovery week: swap intensity for easy volume, reduce everything ~30%
+    out = out.map(s => easyEquivalent(s, 0.7));
   } else if (reb.focus === 'endurance') {
-    out.sort((a, b) => (/Long/i.test(b.name) ? 1 : 0) - (/Long/i.test(a.name) ? 1 : 0));
+    // Extend the long session ~25%; if the week has none, grow the last session into one
+    const li = out.findIndex(s => LONG_RE.test(s.name));
+    if (li > -1) out[li] = { ...out[li], detail: scaleDetail(out[li].detail, 1.25) + ' · extended' };
+    else {
+      const last = out[out.length - 1];
+      const t = last.type === 'cycle' ? 'cycle' : 'run';
+      out[out.length - 1] = { name: t === 'cycle' ? 'Long ride' : 'Long run', detail: Math.round((primaryMins(last.detail) || 45) * 1.5 / 5) * 5 + ' min easy', type: t };
+    }
   } else if (reb.focus === 'intensity') {
-    out.sort((a, b) => (INTENSE_RE.test(b.name + b.detail) ? 1 : 0) - (INTENSE_RE.test(a.name + a.detail) ? 1 : 0));
+    // Guarantee a quality session: upgrade the first plain easy session if the week lacks one
+    if (!out.some(isIntense)) {
+      const i = out.findIndex(s => !LONG_RE.test(s.name) && s.type !== 'strength' && s.type !== 'hyrox');
+      if (i > -1) out[i] = out[i].type === 'cycle'
+        ? { name: 'Sweet spot', detail: 'WU + 3×8 min @ 88–93% FTP + CD', type: 'cycle' }
+        : { name: 'Tempo run', detail: 'WU + 20 min tempo + CD', type: 'run' };
+    }
   } else if (reb.focus === 'strength') {
-    out.sort((a, b) => (b.type === 'strength' ? 1 : 0) - (a.type === 'strength' ? 1 : 0));
+    // Guarantee strength work: swap the first plain easy session if none is present
+    if (!out.some(s => s.type === 'strength' || s.type === 'hyrox')) {
+      const i = out.findIndex(s => !LONG_RE.test(s.name) && !isIntense(s));
+      if (i > -1) out[i] = { name: 'Functional strength', detail: 'Squat 4×8, hinge 4×8, lunge 3×12, core circuit', type: 'strength' };
+    }
   }
-  return out.slice(0, Math.min(reb.days || out.length, out.length));
+  return out;
 }
 
 // Final session list for a plan week, after the days clamp + any rebalance —
@@ -1513,16 +1649,24 @@ function renderHome() {
   const override = overrides[todayStr()];
 
   let displaySession = session ? {...session} : null;
+  let adjusted = false;
   if (displaySession && override) {
-    if (override.type === 'rest') displaySession = {name:'Rest', detail:'Adjusted — rest today', type:'rest'};
-    else if (override.type) displaySession.type = override.type;
-    if (override.duration) displaySession.detail += ' · adjusted to ' + override.duration + ' min';
+    if (override.session) {
+      displaySession = { ...override.session };
+      adjusted = true;
+    } else {
+      // Legacy override shape from v1.1
+      if (override.type === 'rest') displaySession = {name:'Rest', detail:'Adjusted — rest today', type:'rest'};
+      else if (override.type) displaySession.type = override.type;
+      if (override.duration) displaySession.detail += ' · adjusted to ' + override.duration + ' min';
+      adjusted = true;
+    }
   }
 
-  // Adaptation notice (based on what's actually shown today)
+  // Readiness adaptation: offer a one-tap easy version on low-energy days
   const isLowEnergy = ci && (ci.energy <= 3 || ci.sleep <= 3);
-  if (isLowEnergy && displaySession && displaySession.type !== 'rest') {
-    html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — consider an easy version or extra rest today</div>`;
+  if (isLowEnergy && displaySession && displaySession.type !== 'rest' && !adjusted) {
+    html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — today can flex.<button onclick="applyEasyToday()" style="display:block;margin-top:8px;background:none;border:1px solid rgba(232,200,64,.4);border-radius:6px;color:var(--yellow);font-family:var(--font-m);font-size:11px;padding:6px 10px;cursor:pointer;">Switch to an easy version</button></div>`;
   }
 
   if (displaySession) {
@@ -1533,6 +1677,7 @@ function renderHome() {
           <span class="tag tag-${displaySession.type}" style="margin-bottom:6px;display:inline-block;">${displaySession.type.toUpperCase()}</span>
           <div class="session-name">${displaySession.name}</div>
           <div class="session-detail">${displaySession.detail}</div>
+          ${adjusted ? `<div style="margin-top:8px;"><span style="font-family:var(--font-m);font-size:10px;color:var(--yellow3);letter-spacing:.5px;">⚡ ADJUSTED</span><button onclick="clearTodayOverride()" style="background:none;border:none;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;cursor:pointer;padding:0;margin-left:10px;">revert</button></div>` : ''}
         </div>
       </div>`;
 
@@ -1544,7 +1689,7 @@ function renderHome() {
       html += `
         <div style="display:flex;gap:8px;margin-top:10px;">
           <button class="btn btn-primary" onclick="openLogSheet('${logType}')" style="flex:1;">Log session</button>
-          <button class="btn btn-secondary" onclick="openAdjustSheet()" style="flex:0 0 auto;padding:13px 16px;">Adjust</button>
+          <button class="btn btn-secondary" onclick="openAdjustSheet()" style="flex:0 0 auto;width:auto;padding:13px 18px;">Adjust</button>
         </div>`;
     }
   } else {
@@ -1576,10 +1721,14 @@ function closeLogSheet(e) {
 let adjustDurTouched = false;
 
 function openAdjustSheet() {
+  document.getElementById('adjust-intensity').value = '';
   document.getElementById('adjust-type').value = '';
   const slider = document.getElementById('adjust-dur-slider');
-  slider.value = 45;
-  document.getElementById('adjust-dur-val').textContent = '45 min';
+  // Start the slider at the planned session's actual main duration
+  const base = getTodaySession();
+  const mins = base ? (primaryMins(base.detail) || 45) : 45;
+  slider.value = Math.min(120, Math.max(15, Math.round(mins / 5) * 5));
+  document.getElementById('adjust-dur-val').textContent = slider.value + ' min';
   adjustDurTouched = false;
   document.getElementById('adjust-sheet-bg').classList.remove('hidden');
 }
@@ -1590,16 +1739,45 @@ function closeAdjustSheet(e) {
 }
 
 function saveAdjust() {
+  const base = getTodaySession();
+  if (!base) { closeAdjustSheet(); return; }
+  const intensity = document.getElementById('adjust-intensity').value;
   const type = document.getElementById('adjust-type').value;
   const dur = parseInt(document.getElementById('adjust-dur-slider').value);
-  if (!type && !adjustDurTouched) { closeAdjustSheet(); return; }
+  if (!intensity && !type && !adjustDurTouched) { closeAdjustSheet(); return; }
+
+  // Resolve the adjusted session as a real, rewritten prescription
+  let s = { ...base };
+  if (type && type !== s.type) s = translateType(s, type);
+  if (intensity === 'easier') s = easyEquivalent(s, 0.75);
+  else if (intensity === 'harder') s = makeHarder(s);
+  if (adjustDurTouched && s.type !== 'rest') s = { ...s, detail: setPrimaryDuration(s.detail, dur) };
+
   const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
-  // Duration only applies if the slider was actually moved
-  overrides[todayStr()] = { type: type || null, duration: adjustDurTouched ? dur : null };
+  overrides[todayStr()] = { session: s };
   localStorage.setItem('mr_overrides', JSON.stringify(overrides));
   closeAdjustSheet();
   renderHome();
-  toast('Today\'s session adjusted');
+  toast('Today\'s session adapted');
+}
+
+function clearTodayOverride() {
+  const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
+  delete overrides[todayStr()];
+  localStorage.setItem('mr_overrides', JSON.stringify(overrides));
+  renderHome();
+  toast('Back to the planned session');
+}
+
+// One-tap adaptation offered when readiness is low
+function applyEasyToday() {
+  const base = getTodaySession();
+  if (!base) return;
+  const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
+  overrides[todayStr()] = { session: easyEquivalent(base, 0.7) };
+  localStorage.setItem('mr_overrides', JSON.stringify(overrides));
+  renderHome();
+  toast('Adapted to an easy session');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1677,8 +1855,10 @@ function renderWeek() {
     html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week adjusted: ${note}</div>`;
   }
 
-  if (parseInt(profile.days) > base.length) {
-    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--grey1);margin-top:8px;padding:0 4px;">This plan peaks at ${base.length} quality sessions per week — extra days are best spent on easy recovery work.</div>`;
+  const authoredCount = ((PLANS[profile.goal][profile.level] || [])[week - 1] || []).filter(s => s.type !== 'rest').length;
+  const extra = parseInt(profile.days) - authoredCount;
+  if (extra > 0) {
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--grey1);margin-top:8px;padding:0 4px;">Includes ${extra} optional easy top-up session${extra > 1 ? 's' : ''} to match your ${profile.days}-day week — skip ${extra > 1 ? 'them' : 'it'} guilt-free when life is heavy.</div>`;
   }
 
   sEl.innerHTML = html;
