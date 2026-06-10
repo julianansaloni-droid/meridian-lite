@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0D1117">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Meridian">
+<link rel="apple-touch-icon" href="/meridian-lite/icon-180.png">
 <title>Meridian</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -46,6 +48,7 @@ textarea { resize: none; }
 
 /* ── LAYOUT ──────────────────────────────────────────────── */
 #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+#app.hidden { display: none; }
 
 /* ── SCREENS ─────────────────────────────────────────────── */
 .screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
@@ -84,6 +87,8 @@ textarea { resize: none; }
 input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--grey2); border: none; padding: 0; margin: 8px 0; display: block; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--yellow); cursor: pointer; box-shadow: 0 0 0 3px rgba(232,200,64,.15); margin-top: -9px; }
 input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--grey2); }
+input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border: none; border-radius: 50%; background: var(--yellow); cursor: pointer; box-shadow: 0 0 0 3px rgba(232,200,64,.15); }
+input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--grey2); }
 
 /* ── BOTTOM SHEET ────────────────────────────────────────── */
 .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; transition: opacity .2s; }
@@ -223,6 +228,7 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
 .ob-days-slider { width: 100%; margin-bottom: 8px; }
 .ob-days-ticks { display: flex; justify-content: space-between; padding: 0 2px; margin-bottom: 28px; }
 .ob-days-tick { font-family: var(--font-m); font-size: 10px; color: var(--grey2); }
+.ob-progress { display: flex; gap: 6px; margin-bottom: 28px; }
 .ob-dot { height: 3px; border-radius: 2px; background: var(--grey3); flex: 1; transition: background .3s; }
 .ob-dot.done { background: var(--yellow); }
 
@@ -358,7 +364,7 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
     <div class="ob-hint">Be realistic — consistency beats heroics.</div>
     <div class="ob-days-display" id="ob-days-val">–</div>
     <div class="ob-days-sub" id="ob-days-label">slide to choose</div>
-    <input type="range" min="2" max="6" step="1" value="2" class="ob-days-slider" id="ob-days-slider" oninput="obDaysChange(this.value)">
+    <input type="range" min="2" max="6" step="1" value="3" class="ob-days-slider" id="ob-days-slider" oninput="obDaysChange(this.value)" aria-label="Training days per week">
     <div class="ob-days-ticks">
       <span class="ob-days-tick">2</span>
       <span class="ob-days-tick">3</span>
@@ -417,16 +423,16 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
       <div id="checkin-section">
         <div class="sec-head">CHECK-IN</div>
         <div class="sec-sub" id="checkin-sub">How are you feeling today?</div>
-        <div id="checkin-done-bar" class="checkin-done-bar hidden" style="display:none;">
+        <div id="checkin-done-bar" class="checkin-done-bar" style="display:none;">
           <div class="checkin-done-dot"></div>
           <span class="checkin-done-text">Check-in complete · <span id="checkin-done-summary"></span></span>
         </div>
         <div id="checkin-form">
           <div class="card">
-            <div class="slider-row"><div class="slider-top"><span class="slider-label">Energy</span><span class="slider-val" id="v-energy">5</span></div><input type="range" min="1" max="10" value="5" id="s-energy" oninput="updateSlider('energy',this.value)"></div>
-            <div class="slider-row"><div class="slider-top"><span class="slider-label">Sleep</span><span class="slider-val" id="v-sleep">5</span></div><input type="range" min="1" max="10" value="5" id="s-sleep" oninput="updateSlider('sleep',this.value)"></div>
-            <div class="slider-row"><div class="slider-top"><span class="slider-label">Mood</span><span class="slider-val" id="v-mood">5</span></div><input type="range" min="1" max="10" value="5" id="s-mood" oninput="updateSlider('mood',this.value)"></div>
-            <div class="slider-row" style="margin-bottom:0"><div class="slider-top"><span class="slider-label">Stress</span><span class="slider-val" id="v-stress">5</span></div><input type="range" min="1" max="10" value="5" id="s-stress" oninput="updateSlider('stress',this.value)"></div>
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Energy</span><span class="slider-val" id="v-energy">5</span></div><input type="range" min="1" max="10" value="5" id="s-energy" oninput="updateSlider('energy',this.value)" aria-label="Energy"></div>
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Sleep</span><span class="slider-val" id="v-sleep">5</span></div><input type="range" min="1" max="10" value="5" id="s-sleep" oninput="updateSlider('sleep',this.value)" aria-label="Sleep"></div>
+            <div class="slider-row"><div class="slider-top"><span class="slider-label">Mood</span><span class="slider-val" id="v-mood">5</span></div><input type="range" min="1" max="10" value="5" id="s-mood" oninput="updateSlider('mood',this.value)" aria-label="Mood"></div>
+            <div class="slider-row" style="margin-bottom:0"><div class="slider-top"><span class="slider-label">Stress</span><span class="slider-val" id="v-stress">5</span></div><input type="range" min="1" max="10" value="5" id="s-stress" oninput="updateSlider('stress',this.value)" aria-label="Stress"></div>
           </div>
           <button class="btn btn-primary" onclick="saveCheckin()">Save check-in</button>
         </div>
@@ -525,7 +531,7 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
       <label class="form-label">Available days this week</label>
       <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
         <input type="range" min="1" max="6" step="1" value="4" id="rebalance-days-slider"
-          oninput="document.getElementById('rebalance-days-val').textContent=this.value">
+          oninput="document.getElementById('rebalance-days-val').textContent=this.value" aria-label="Available days this week">
         <span id="rebalance-days-val" style="font-family:var(--font-d);font-size:28px;color:var(--yellow);min-width:24px;">4</span>
       </div>
     </div>
@@ -605,7 +611,7 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
     <div class="form-row">
       <label class="form-label">Duration</label>
       <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
-        <input type="range" min="15" max="120" step="5" value="45" id="adjust-dur-slider" oninput="document.getElementById('adjust-dur-val').textContent=this.value+' min'">
+        <input type="range" min="15" max="120" step="5" value="45" id="adjust-dur-slider" oninput="adjustDurTouched=true;document.getElementById('adjust-dur-val').textContent=this.value+' min'" aria-label="Adjusted duration">
         <span id="adjust-dur-val" style="font-family:var(--font-d);font-size:22px;color:var(--yellow);white-space:nowrap;min-width:56px;">45 min</span>
       </div>
     </div>
@@ -668,8 +674,13 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
     <!-- DATA -->
     <div class="settings-section-label">Data</div>
     <div class="settings-row">
-      <div><div class="settings-label">Export data</div><div class="settings-sub">Download all activities as JSON</div></div>
+      <div><div class="settings-label">Export data</div><div class="settings-sub">Download all data as JSON</div></div>
       <button class="settings-action" onclick="exportData()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Import data</div><div class="settings-sub">Restore from a JSON export</div></div>
+      <button class="settings-action" onclick="document.getElementById('import-file-input').click()">Import</button>
+      <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" onchange="importData(this)">
     </div>
     <div class="settings-row">
       <div><div class="settings-label">Erase all data</div><div class="settings-sub">Cannot be undone</div></div>
@@ -679,7 +690,7 @@ input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.0 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.1 · Train at your peak</div></div>
     </div>
   </div>
 </div>
@@ -1044,58 +1055,61 @@ const PLANS = {
 const KEY = {
   profile: 'mr_profile',
   checkins: 'mr_checkins',
-  activities: 'mr_activities',
-  weekDone: 'mr_week_done'
+  activities: 'mr_activities'
 };
 
 function load(key) { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; } }
 function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
 
+// Escape user-provided text before inserting into HTML
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 let profile = load(KEY.profile);
 let checkins = load(KEY.checkins) || {};
 let activities = load(KEY.activities) || [];
-let weekDone = load(KEY.weekDone) || {};
 
 // ═══════════════════════════════════════════════════════
-//  DATE UTILS
+//  DATE UTILS  (always local time — toISOString shifts to UTC
+//  and breaks dates between midnight and 1am in Irish summer)
 // ═══════════════════════════════════════════════════════
-function todayStr() { return new Date().toISOString().slice(0,10); }
-function dayOfWeek() { return new Date().getDay(); } // 0=Sun
+function localDateStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function todayStr() { return localDateStr(new Date()); }
 
-function currentWeekNum() {
-  if (!profile) return 1;
-  let start;
-  if (profile.raceDate) {
-    const plan = PLANS[profile.goal];
-    const raceDate = new Date(profile.raceDate);
-    const totalWeeks = plan ? plan.totalWeeks : 12;
-    const planStart = new Date(raceDate);
-    planStart.setDate(planStart.getDate() - totalWeeks * 7);
-    start = planStart;
-  } else {
-    start = new Date(profile.startDate || profile.createdAt);
-  }
-  const now = new Date();
-  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24 * 7));
-  const plan = PLANS[profile.goal];
-  const totalWeeks = plan ? plan.totalWeeks : 12;
-  return Math.min(Math.max(diff + 1, 1), totalWeeks);
+function mondayOf(date) {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
-function weekStartDate(weekNum) {
-  if (!profile) return new Date();
-  let start;
+// Plan weeks are Monday-anchored so weekday labels line up with real days
+function planStartMonday() {
+  if (!profile) return mondayOf(new Date());
+  const plan = PLANS[profile.goal];
+  const totalWeeks = plan ? plan.totalWeeks : 12;
   if (profile.raceDate) {
-    const plan = PLANS[profile.goal];
-    const raceDate = new Date(profile.raceDate);
-    const totalWeeks = plan ? plan.totalWeeks : 12;
-    const planStart = new Date(raceDate);
-    planStart.setDate(planStart.getDate() - totalWeeks * 7);
-    start = planStart;
-  } else {
-    start = new Date(profile.startDate || profile.createdAt);
+    const raceMon = mondayOf(new Date(profile.raceDate + 'T00:00:00'));
+    raceMon.setDate(raceMon.getDate() - (totalWeeks - 1) * 7); // race lands in the final plan week
+    return raceMon;
   }
-  const d = new Date(start);
+  const startStr = profile.startDate || (profile.createdAt || '').slice(0, 10) || todayStr();
+  return mondayOf(new Date(startStr + 'T00:00:00'));
+}
+
+function currentWeekInfo() {
+  if (!profile) return { week: 1, complete: false };
+  const plan = PLANS[profile.goal];
+  const totalWeeks = plan ? plan.totalWeeks : 12;
+  const raw = Math.floor((new Date() - planStartMonday()) / (1000 * 60 * 60 * 24 * 7)) + 1;
+  return { week: Math.min(Math.max(raw, 1), totalWeeks), complete: raw > totalWeeks };
+}
+function currentWeekNum() { return currentWeekInfo().week; }
+
+function weekStartDate(weekNum) {
+  const d = planStartMonday();
   d.setDate(d.getDate() + (weekNum - 1) * 7);
   return d;
 }
@@ -1106,37 +1120,71 @@ function formatDate(str) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  PLAN MATCHING
+//  PLAN MATCHING & WEEKLY SCHEDULE
 // ═══════════════════════════════════════════════════════
+// Which weekdays (0=Mon … 6=Sun) sessions land on, by session count.
+// Rest days are implied by the gaps, preserving the authored hard/easy order.
+const DAY_SPREAD = {
+  1: [2],
+  2: [1, 4],
+  3: [0, 2, 5],
+  4: [0, 1, 3, 5],
+  5: [0, 1, 2, 4, 5],
+  6: [0, 1, 2, 3, 4, 5],
+  7: [0, 1, 2, 3, 4, 5, 6]
+};
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
 function getMatchedPlan() {
   if (!profile) return null;
   const plan = PLANS[profile.goal];
   if (!plan) return null;
-  const level = profile.level; // beginner/intermediate/advanced
-  const days = parseInt(profile.days);
-  const sessions = plan[level];
+  const sessions = plan[profile.level];
   if (!sessions) return null;
-  // Clamp sessions to user's available days
-  return sessions.map(week => {
-    const nonRest = week.filter(s => s.type !== 'rest');
-    const rest = week.filter(s => s.type === 'rest');
-    let chosen = nonRest.slice(0, days);
-    // Pad with rest if needed
-    while (chosen.length < days) chosen.push({name:'Rest', detail:'Active recovery or full rest', type:'rest'});
-    return chosen;
-  });
+  const days = parseInt(profile.days);
+  // Training sessions only — the day spread above schedules them with recovery gaps
+  return sessions.map(week => week.filter(s => s.type !== 'rest').slice(0, days));
+}
+
+const INTENSE_RE = /Interval|Tempo|VO2|Track|Sharpener|Threshold|Sweet spot/i;
+
+function applyRebalance(sessions, reb) {
+  if (!reb || !sessions.length) return sessions;
+  let out = [...sessions];
+  if (reb.focus === 'easy') {
+    out = out.map(s => INTENSE_RE.test(s.name + ' ' + s.detail)
+      ? { name: 'Easy ' + (s.type === 'cycle' ? 'ride' : s.type === 'run' ? 'run' : 'session'), detail: 'Swapped for recovery — keep effort light and conversational', type: s.type }
+      : s);
+  } else if (reb.focus === 'endurance') {
+    out.sort((a, b) => (/Long/i.test(b.name) ? 1 : 0) - (/Long/i.test(a.name) ? 1 : 0));
+  } else if (reb.focus === 'intensity') {
+    out.sort((a, b) => (INTENSE_RE.test(b.name + b.detail) ? 1 : 0) - (INTENSE_RE.test(a.name + a.detail) ? 1 : 0));
+  } else if (reb.focus === 'strength') {
+    out.sort((a, b) => (b.type === 'strength' ? 1 : 0) - (a.type === 'strength' ? 1 : 0));
+  }
+  return out.slice(0, Math.min(reb.days || out.length, out.length));
+}
+
+// Final session list for a plan week, after the days clamp + any rebalance —
+// the single source of truth used by Today, Week, and the detail sheet
+function getWeekSessions(weekNum) {
+  const plan = getMatchedPlan();
+  if (!plan) return null;
+  const base = plan[weekNum - 1];
+  if (!base) return null;
+  const reb = JSON.parse(localStorage.getItem('mr_rebalance_' + weekNum) || 'null');
+  return applyRebalance(base, reb);
 }
 
 function getTodaySession() {
-  const plan = getMatchedPlan();
-  if (!plan) return null;
-  const week = currentWeekNum();
-  const weekSessions = plan[week - 1];
-  if (!weekSessions) return null;
-  // Map day of week to session index (Mon=0 first session, etc.)
-  const dow = new Date().getDay(); // 0=Sun
-  const idx = dow === 0 ? weekSessions.length - 1 : Math.min(dow - 1, weekSessions.length - 1);
-  return weekSessions[Math.max(0, idx)];
+  const info = currentWeekInfo();
+  if (info.complete) return null;
+  const weekSessions = getWeekSessions(info.week);
+  if (!weekSessions || !weekSessions.length) return null;
+  const spread = DAY_SPREAD[weekSessions.length] || DAY_SPREAD[7];
+  const mi = (new Date().getDay() + 6) % 7; // 0 = Mon
+  const si = spread.indexOf(mi);
+  return si > -1 ? weekSessions[si] : null; // null = rest day
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1246,9 +1294,12 @@ function formatDateInput(el) {
 function parseDDMMYYYY(str) {
   if (!str || str.length < 10) return null;
   const [dd, mm, yyyy] = str.split('-');
-  if (!dd || !mm || !yyyy) return null;
-  const d = new Date(`${yyyy}-${mm}-${dd}`);
-  return isNaN(d) ? null : d.toISOString().slice(0,10); // returns YYYY-MM-DD for internal use
+  const day = parseInt(dd), mon = parseInt(mm), yr = parseInt(yyyy);
+  if (!day || !mon || !yr || mon < 1 || mon > 12 || yr < 2000 || yr > 2100) return null;
+  const d = new Date(yr, mon - 1, day, 12);
+  // Reject rolled-over dates like 31-02 (which JS silently turns into 3 March)
+  if (d.getDate() !== day || d.getMonth() !== mon - 1) return null;
+  return localDateStr(d); // YYYY-MM-DD for internal use
 }
 
 function obBack(step) {
@@ -1271,9 +1322,12 @@ function obDaysChange(val) {
   obData[2] = String(n);
   document.getElementById('ob-next-2').disabled = false;
 }
+// Initialise so the default can be confirmed without wiggling the slider
+obDaysChange(document.getElementById('ob-days-slider').value);
 
 function obFinish(skip) {
   const goals = obData[0] || [];
+  if (!goals.length || !obData[1] || !obData[2]) { toast('Please complete all setup steps'); return; }
   const goalData = goals.map(g => ({
     key: g,
     name: GOAL_NAMES[g] || g,
@@ -1304,7 +1358,12 @@ function obFinish(skip) {
 // ═══════════════════════════════════════════════════════
 //  APP INIT
 // ═══════════════════════════════════════════════════════
+let lastRenderedDay = todayStr();
+
 function initApp() {
+  lastRenderedDay = todayStr();
+  pruneOldKeys();
+
   // Date in topbar
   const d = new Date();
   document.getElementById('topbar-date').textContent =
@@ -1320,6 +1379,36 @@ function initApp() {
 
   if (profile) {
     document.getElementById('onboarding').classList.add('hidden');
+  }
+}
+
+// Installed PWAs stay open for days — re-render when the day changes
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && profile && todayStr() !== lastRenderedDay) {
+    initApp();
+  }
+});
+
+// Housekeeping: drop stale per-day/per-week keys and legacy dead keys
+function pruneOldKeys() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 14);
+  const cutoffStr = localDateStr(cutoff);
+  const week = currentWeekNum();
+
+  const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
+  let changed = false;
+  for (const k of Object.keys(overrides)) {
+    if (k < cutoffStr) { delete overrides[k]; changed = true; }
+  }
+  if (changed) localStorage.setItem('mr_overrides', JSON.stringify(overrides));
+
+  for (const k of Object.keys(localStorage)) {
+    if (k.startsWith('home_done_') || k === 'mr_week_done') localStorage.removeItem(k);
+    else if (k.startsWith('mr_rebalance_')) {
+      const n = parseInt(k.slice('mr_rebalance_'.length));
+      if (!isNaN(n) && n < week) localStorage.removeItem(k);
+    }
   }
 }
 
@@ -1341,6 +1430,7 @@ function saveCheckin() {
   };
   save(KEY.checkins, checkins);
   renderCheckinState();
+  renderHome();
   toast('Check-in saved');
 }
 
@@ -1366,7 +1456,37 @@ function renderCheckinState() {
 // ═══════════════════════════════════════════════════════
 //  TODAY SESSION
 // ═══════════════════════════════════════════════════════
-function getTodayDoneKey() { return 'home_done_' + todayStr(); }
+function actMetaParts(a) {
+  return [a.duration ? a.duration + ' min' : null, a.distance ? fmtDist(a.distance) : null]
+    .filter(Boolean).join(' · ');
+}
+
+function upcomingEventsHTML() {
+  if (!profile || !Array.isArray(profile.goalData)) return '';
+  const items = profile.goalData
+    .map((g, i) => ({ ...g, pri: i + 1 }))
+    .filter(g => g.targetDate || g.eventName)
+    .map(g => {
+      let when = '';
+      if (g.targetDate) {
+        const days = Math.ceil((new Date(g.targetDate + 'T12:00:00') - new Date()) / 86400000);
+        when = days < 0 ? 'passed' : days === 0 ? 'today' : days + (days === 1 ? ' day' : ' days');
+      }
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--grey3);">
+        <span style="font-family:var(--font-d);font-size:12px;background:var(--yellow);color:var(--navy);width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${g.pri}</span>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:500;">${esc(g.eventName || g.name)}</div>
+          ${g.eventName ? `<div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);margin-top:1px;">${esc(g.name)}</div>` : ''}
+        </div>
+        ${g.targetDate ? `<div style="text-align:right;">
+          <div style="font-family:var(--font-m);font-size:11px;color:var(--yellow);">${when}</div>
+          <div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${formatDate(g.targetDate)}</div>
+        </div>` : ''}
+      </div>`;
+    });
+  if (!items.length) return '';
+  return `<div class="card" style="margin-top:14px;"><div class="card-label">Your goals</div>${items.join('')}</div>`;
+}
 
 function renderHome() {
   renderCheckinState();
@@ -1376,63 +1496,75 @@ function renderHome() {
     return;
   }
   const plan = PLANS[profile.goal];
-  const week = currentWeekNum();
-  const session = getTodaySession();
-  const ci = checkins[todayStr()];
-  const isLowEnergy = ci && (ci.energy <= 3 || ci.sleep <= 3);
-
+  const info = currentWeekInfo();
   let html = '';
 
-  // Adaptation notice
-  if (isLowEnergy && session && session.type !== 'rest') {
-    html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — consider an easy version or extra rest today</div>`;
+  if (info.complete) {
+    html += `<div class="card"><div class="session-name">Plan complete 🎉</div><div class="session-detail" style="margin-top:6px;">You've reached the end of ${plan ? 'the ' + plan.name : 'your plan'}. Reset your plan in Settings to chase the next goal.</div></div>`;
+    html += upcomingEventsHTML();
+    el.innerHTML = html;
+    return;
   }
 
+  const session = getTodaySession();
+  const ci = checkins[todayStr()];
   const todayLogged = activities.find(a => a.date === todayStr());
   const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
   const override = overrides[todayStr()];
+
   let displaySession = session ? {...session} : null;
   if (displaySession && override) {
     if (override.type === 'rest') displaySession = {name:'Rest', detail:'Adjusted — rest today', type:'rest'};
     else if (override.type) displaySession.type = override.type;
-    if (override.duration) displaySession.detail = `${override.duration} min (adjusted)`;
+    if (override.duration) displaySession.detail += ' · adjusted to ' + override.duration + ' min';
+  }
+
+  // Adaptation notice (based on what's actually shown today)
+  const isLowEnergy = ci && (ci.energy <= 3 || ci.sleep <= 3);
+  if (isLowEnergy && displaySession && displaySession.type !== 'rest') {
+    html += `<div style="background:rgba(232,200,64,.06);border:1px solid rgba(232,200,64,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;font-family:var(--font-m);font-size:11px;color:var(--yellow3);">⚡ Low energy detected — consider an easy version or extra rest today</div>`;
   }
 
   if (displaySession) {
     html += `
       <div class="session-card">
         <div class="session-body">
-          <div class="session-day">Week ${week} · ${plan.name}</div>
+          <div class="session-day">Week ${info.week} · ${plan.name}</div>
           <span class="tag tag-${displaySession.type}" style="margin-bottom:6px;display:inline-block;">${displaySession.type.toUpperCase()}</span>
           <div class="session-name">${displaySession.name}</div>
           <div class="session-detail">${displaySession.detail}</div>
         </div>
       </div>`;
 
+    const logType = displaySession.type === 'rest' ? '' : displaySession.type;
     if (todayLogged) {
-      html += `<div class="session-logged-bar"><div class="session-logged-dot"></div><span class="session-logged-text">Logged · ${todayLogged.duration} min${todayLogged.distance ? ' · ' + fmtDist(todayLogged.distance) : ''}</span></div>`;
-      html += `<button class="btn btn-secondary" onclick="openLogSheet('${displaySession.type}')" style="margin-top:10px;">Log another</button>`;
+      html += `<div class="session-logged-bar"><div class="session-logged-dot"></div><span class="session-logged-text">Logged · ${actMetaParts(todayLogged) || 'session'}</span></div>`;
+      html += `<button class="btn btn-secondary" onclick="openLogSheet('${logType}')" style="margin-top:10px;">Log another</button>`;
     } else if (displaySession.type !== 'rest') {
       html += `
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn btn-primary" onclick="openLogSheet('${displaySession.type}')" style="flex:1;">Log session</button>
+          <button class="btn btn-primary" onclick="openLogSheet('${logType}')" style="flex:1;">Log session</button>
           <button class="btn btn-secondary" onclick="openAdjustSheet()" style="flex:0 0 auto;padding:13px 16px;">Adjust</button>
         </div>`;
     }
   } else {
-    html += '<div class="card"><div class="session-name" style="color:var(--grey1);">Rest day — recover well</div></div>';
+    html += '<div class="card"><div class="session-name" style="color:var(--grey1);">Rest day — recover well</div><div class="session-detail" style="margin-top:4px;">Easy movement, mobility or full rest.</div></div>';
+    if (todayLogged) {
+      html += `<div class="session-logged-bar"><div class="session-logged-dot"></div><span class="session-logged-text">Logged · ${actMetaParts(todayLogged) || 'session'}</span></div>`;
+    }
+    html += `<button class="btn btn-secondary" onclick="openLogSheet()" style="margin-top:10px;">Log a session anyway</button>`;
   }
+
+  html += upcomingEventsHTML();
   el.innerHTML = html;
 }
 
-function toggleTodayDone() {} // deprecated — kept as safety stub
-
 function openLogSheet(prefillType) {
   document.getElementById('log-date').value = todayStr();
-  if (prefillType) {
+  if (prefillType && ['run','cycle','hyrox','strength'].includes(prefillType)) {
     document.getElementById('log-type').value = prefillType;
-    toggleDistanceField();
   }
+  toggleDistanceField();
   document.getElementById('log-sheet-bg').classList.remove('hidden');
 }
 
@@ -1441,12 +1573,14 @@ function closeLogSheet(e) {
   document.getElementById('log-sheet-bg').classList.add('hidden');
 }
 
+let adjustDurTouched = false;
+
 function openAdjustSheet() {
-  const session = getTodaySession();
-  if (session) {
-    const sel = document.getElementById('adjust-type');
-    sel.value = '';
-  }
+  document.getElementById('adjust-type').value = '';
+  const slider = document.getElementById('adjust-dur-slider');
+  slider.value = 45;
+  document.getElementById('adjust-dur-val').textContent = '45 min';
+  adjustDurTouched = false;
   document.getElementById('adjust-sheet-bg').classList.remove('hidden');
 }
 
@@ -1457,10 +1591,11 @@ function closeAdjustSheet(e) {
 
 function saveAdjust() {
   const type = document.getElementById('adjust-type').value;
-  const dur = document.getElementById('adjust-dur-slider').value;
-  const today = todayStr();
+  const dur = parseInt(document.getElementById('adjust-dur-slider').value);
+  if (!type && !adjustDurTouched) { closeAdjustSheet(); return; }
   const overrides = JSON.parse(localStorage.getItem('mr_overrides') || '{}');
-  overrides[today] = { type: type || null, duration: parseInt(dur) };
+  // Duration only applies if the slider was actually moved
+  overrides[todayStr()] = { type: type || null, duration: adjustDurTouched ? dur : null };
   localStorage.setItem('mr_overrides', JSON.stringify(overrides));
   closeAdjustSheet();
   renderHome();
@@ -1481,22 +1616,24 @@ function renderWeek() {
   }
 
   const plan = PLANS[profile.goal];
-  const week = currentWeekNum();
-  const planSessions = getMatchedPlan();
-  if (!planSessions) return;
-  const weekSessions = planSessions[week - 1] || [];
+  const info = currentWeekInfo();
+  const week = info.week;
+  const weekSessions = getWeekSessions(week) || [];
 
-  // Progress: count logged activities this week
-  const weekStart = weekStartDate(week).toISOString().slice(0,10);
-  const weekEnd = new Date(weekStartDate(week));
-  weekEnd.setDate(weekEnd.getDate() + 6);
-  const weekEndStr = weekEnd.toISOString().slice(0,10);
-  const loggedThisWeek = activities.filter(a => a.date >= weekStart && a.date <= weekEndStr).length;
-  const pct = weekSessions.length > 0 ? Math.min(Math.round((loggedThisWeek / weekSessions.length) * 100), 100) : 0;
+  if (info.complete || !plan) {
+    hEl.innerHTML = '';
+    sEl.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-title">Plan complete</div><div class="empty-text">Reset your plan in Settings to start the next goal.</div></div>';
+    return;
+  }
 
+  // Progress: unique days trained this week vs planned sessions
   const startDate = weekStartDate(week);
+  const weekStart = localDateStr(startDate);
   const endDateDisp = new Date(startDate);
   endDateDisp.setDate(endDateDisp.getDate() + 6);
+  const weekEndStr = localDateStr(endDateDisp);
+  const loggedDays = new Set(activities.filter(a => a.date >= weekStart && a.date <= weekEndStr).map(a => a.date)).size;
+  const pct = weekSessions.length > 0 ? Math.min(Math.round((loggedDays / weekSessions.length) * 100), 100) : 0;
 
   hEl.innerHTML = `
     <div class="week-header">
@@ -1510,22 +1647,19 @@ function renderWeek() {
       <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDateDisp.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
         <div class="week-progress" style="flex:1;"><div class="week-progress-bar" style="width:${pct}%"></div></div>
-        <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${loggedThisWeek}/${weekSessions.length}</span>
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${loggedDays}/${weekSessions.length}</span>
       </div>
     </div>
   `;
 
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const rebalance = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
-  const activeDays = rebalance ? rebalance.days : weekSessions.length;
-
+  const spread = DAY_SPREAD[weekSessions.length] || DAY_SPREAD[7];
   let html = '';
-  weekSessions.slice(0, activeDays).forEach((s, i) => {
+  weekSessions.forEach((s, i) => {
     const tip = getSessionTip(s);
     html += `
       <div class="session-card" onclick="openDetailSheet(${i})" style="cursor:pointer;">
         <div class="session-body">
-          <div class="session-day">${days[i] || 'Day ' + (i+1)}</div>
+          <div class="session-day">${DAY_NAMES[spread[i]] || 'Day ' + (i+1)}</div>
           <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
           <div class="session-name" style="margin-top:6px;">${s.name}</div>
           <div class="session-detail">${s.detail}</div>
@@ -1536,14 +1670,19 @@ function renderWeek() {
     `;
   });
 
-  if (rebalance && rebalance.focus && rebalance.focus !== '') {
-    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week adjusted: ${rebalance.focusLabel}</div>`;
+  const base = (getMatchedPlan() || [])[week - 1] || [];
+  const reb = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
+  if (reb && (reb.focus || reb.days < base.length)) {
+    const note = reb.focus ? (FOCUS_LABELS[reb.focus] || '') : (reb.days + ' days this week');
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week adjusted: ${note}</div>`;
+  }
+
+  if (parseInt(profile.days) > base.length) {
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--grey1);margin-top:8px;padding:0 4px;">This plan peaks at ${base.length} quality sessions per week — extra days are best spent on easy recovery work.</div>`;
   }
 
   sEl.innerHTML = html;
 }
-
-function toggleWeekSession(i) {} // kept for safety, no longer used
 
 // ═══════════════════════════════════════════════════════
 //  WEEK DETAIL & REBALANCE
@@ -1571,14 +1710,8 @@ function getSessionTip(session) {
   return null;
 }
 
-let currentWeekSessions = [];
-
 function openDetailSheet(idx) {
-  const planSessions = getMatchedPlan();
-  const week = currentWeekNum();
-  if (!planSessions) return;
-  const sessions = planSessions[week - 1] || [];
-  currentWeekSessions = sessions;
+  const sessions = getWeekSessions(currentWeekNum()) || [];
   const s = sessions[idx];
   if (!s) return;
 
@@ -1611,11 +1744,11 @@ function closeDetailSheet(e) {
 function openRebalanceSheet() {
   const week = currentWeekNum();
   const existing = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
-  if (existing) {
-    document.getElementById('rebalance-days-slider').value = existing.days;
-    document.getElementById('rebalance-days-val').textContent = existing.days;
-    document.getElementById('rebalance-focus').value = existing.focus || '';
-  }
+  const base = (getMatchedPlan() || [])[week - 1] || [];
+  const days = existing ? existing.days : (base.length || 4);
+  document.getElementById('rebalance-days-slider').value = days;
+  document.getElementById('rebalance-days-val').textContent = days;
+  document.getElementById('rebalance-focus').value = existing ? (existing.focus || '') : '';
   document.getElementById('rebalance-sheet-bg').classList.remove('hidden');
 }
 
@@ -1641,6 +1774,7 @@ function saveRebalance() {
   }));
   closeRebalanceSheet();
   renderWeek();
+  renderHome();
   toast('Week adjusted');
 }
 
@@ -1676,33 +1810,33 @@ function saveActivity() {
 
   closeLogSheet();
   renderHome();
+  renderWeek();
   renderActivities();
   renderStats();
   toast('Activity logged ✓');
 }
 
 // ═══════════════════════════════════════════════════════
-//  HISTORY TAB
+//  ACTIVITIES & STATS
 // ═══════════════════════════════════════════════════════
 const ACT_ICONS = { run: '🏃', cycle: '🚴', hyrox: '⚡', strength: '🏋️' };
 
+// ISO week key (Monday-start) — consistent across year boundaries
 function getWeekKey(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  const jan1 = new Date(d.getFullYear(), 0, 1);
-  return d.getFullYear() + '-W' + Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  const d = new Date(dateStr + 'T12:00:00');
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + 3); // Thursday of this week
+  const isoYear = d.getFullYear();
+  const jan4 = new Date(isoYear, 0, 4, 12);
+  jan4.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + 3); // Thursday of week 1
+  const week = 1 + Math.round((d - jan4) / (7 * 86400000));
+  return isoYear + '-W' + week;
 }
 
 function fmtDist(km) {
   if (!km) return null;
   const useMiles = localStorage.getItem('mr_units') === 'miles';
-  if (useMiles) return (km * 0.621371).toFixed(1) + ' mi';
-  return km + ' km';
-}
-
-function fmtDistVal(km) {
-  if (!km) return 0;
-  const useMiles = localStorage.getItem('mr_units') === 'miles';
-  return useMiles ? (km * 0.621371).toFixed(1) : km;
+  const v = useMiles ? km * 0.621371 : km;
+  return (Math.round(v * 10) / 10) + (useMiles ? ' mi' : ' km');
 }
 
 function distUnit() {
@@ -1718,10 +1852,10 @@ function renderActivities() {
   }
   el.innerHTML = activities.map(a => `
     <div class="act-item">
-      <div class="act-icon act-icon-${a.type}">${ACT_ICONS[a.type] || '🏃'}</div>
+      <div class="act-icon act-icon-${esc(a.type)}">${ACT_ICONS[a.type] || '🏃'}</div>
       <div class="act-info">
-        <div class="act-name">${a.type.charAt(0).toUpperCase() + a.type.slice(1)}${a.distance ? ' · ' + fmtDist(a.distance) : ''}</div>
-        <div class="act-meta">${a.duration} min${a.notes ? ' · ' + a.notes.slice(0,40) : ''}</div>
+        <div class="act-name">${esc(a.type.charAt(0).toUpperCase() + a.type.slice(1))}${a.distance ? ' · ' + fmtDist(a.distance) : ''}</div>
+        <div class="act-meta">${[a.duration ? a.duration + ' min' : null, a.notes ? esc(a.notes.slice(0,40)) : null].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="act-date">${formatDate(a.date)}</div>
     </div>
@@ -1729,13 +1863,13 @@ function renderActivities() {
 }
 
 function renderStats() {
-  // Build 8-week buckets
+  // Build 8-week buckets (local dates, ISO week keys)
   const now = new Date();
   const weeks = [];
   for (let i = 7; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i * 7);
-    const key = getWeekKey(d.toISOString().slice(0,10));
+    const key = getWeekKey(localDateStr(d));
     weeks.push({ key, label: i === 0 ? 'Now' : `W-${i}`, count: 0 });
   }
 
@@ -1759,9 +1893,9 @@ function renderStats() {
 
   // Stats cards
   const totalSessions = activities.length;
-  const totalKm = activities.filter(a => a.distance).reduce((s,a) => s + (a.distance||0), 0);
+  const totalKm = activities.reduce((s,a) => s + (a.distance || 0), 0);
   const useMiles = localStorage.getItem('mr_units') === 'miles';
-  const totalDist = useMiles ? (totalKm * 0.621371).toFixed(1) : totalKm.toFixed(0);
+  const totalDist = Math.round(useMiles ? totalKm * 0.621371 : totalKm);
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-val">${totalSessions}</div><div class="stat-label">Total sessions</div></div>
     <div class="stat-card"><div class="stat-val">${totalDist}</div><div class="stat-label">Total ${distUnit()}</div></div>
@@ -1776,6 +1910,7 @@ function switchTab(tab) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('screen-' + tab).classList.add('active');
   document.getElementById('nav-' + tab).classList.add('active');
+  if (tab === 'home') renderHome();
   if (tab === 'week') renderWeek();
   if (tab === 'activities') renderActivities();
   if (tab === 'stats') renderStats();
@@ -1808,8 +1943,9 @@ function toast(msg) {
     background_color: '#0D1117',
     theme_color: '#0D1117',
     icons: [
-      { src: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#0D1117"/><polygon points="96,20 172,60 96,100 20,60" fill="#E8C840"/><polygon points="96,100 172,60 172,140 96,180" fill="#F5D96B"/><polygon points="96,100 20,60 20,140 96,180" fill="#1A2130"/><polygon points="96,100 172,140 96,180 20,140" fill="#131820"/></svg>`), sizes: '192x192', type: 'image/svg+xml' },
-      { src: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0D1117"/><polygon points="256,40 460,140 256,240 52,140" fill="#E8C840"/><polygon points="256,240 460,140 460,360 256,460" fill="#F5D96B"/><polygon points="256,240 52,140 52,360 256,460" fill="#1A2130"/><polygon points="256,240 460,360 256,460 52,360" fill="#131820"/></svg>`), sizes: '512x512', type: 'image/svg+xml' }
+      { src: '/meridian-lite/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/meridian-lite/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+      { src: 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#0D1117"/><polygon points="96,20 172,60 96,100 20,60" fill="#E8C840"/><polygon points="96,100 172,60 172,140 96,180" fill="#F5D96B"/><polygon points="96,100 20,60 20,140 96,180" fill="#1A2130"/><polygon points="96,100 172,140 96,180 20,140" fill="#131820"/></svg>`), sizes: '192x192', type: 'image/svg+xml' }
     ]
   };
   const content = encodeURIComponent(JSON.stringify(manifest));
@@ -1826,6 +1962,17 @@ function toast(msg) {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/meridian-lite/sw.js', { scope: '/meridian-lite/' })
+      .then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              toast('Update ready — reopen the app to get the latest');
+            }
+          });
+        });
+      })
       .catch(err => console.log('SW reg failed:', err));
   });
 }
@@ -1844,6 +1991,7 @@ function openSettings() {
   const useMiles = localStorage.getItem('mr_units') === 'miles';
   document.getElementById('setting-units').checked = useMiles;
   document.getElementById('units-label').textContent = useMiles ? 'miles' : 'km';
+  document.getElementById('setting-fullscreen').checked = !!document.fullscreenElement;
   document.getElementById('gpx-result').style.display = 'none';
   document.getElementById('settings-sheet-bg').classList.remove('hidden');
 }
@@ -1861,11 +2009,18 @@ function toggleFullscreen(on) {
   }
 }
 
+// Keep the toggle in sync if fullscreen is exited via system gesture
+document.addEventListener('fullscreenchange', () => {
+  const cb = document.getElementById('setting-fullscreen');
+  if (cb) cb.checked = !!document.fullscreenElement;
+});
+
 function toggleUnits(useMiles) {
   localStorage.setItem('mr_units', useMiles ? 'miles' : 'km');
   document.getElementById('units-label').textContent = useMiles ? 'miles' : 'km';
   renderActivities();
   renderStats();
+  renderHome();
   toast('Units set to ' + (useMiles ? 'miles' : 'km'));
 }
 
@@ -1912,26 +2067,41 @@ function editDays() {
 function resetPlan() {
   if (!confirm('Reset your training plan? Your activity log will be kept.')) return;
   localStorage.removeItem(KEY.profile);
+  localStorage.removeItem('mr_overrides');
+  Object.keys(localStorage).filter(k => k.startsWith('mr_rebalance_')).forEach(k => localStorage.removeItem(k));
   profile = null;
   obData = {};
   obGoals = [];
   closeSettings();
   document.getElementById('app').classList.add('hidden');
   document.getElementById('onboarding').classList.remove('hidden');
-  // Reset onboarding to step 0
+  // Reset onboarding to step 0 with a clean slate
   document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
   document.getElementById('ob-step-0').classList.add('active');
   document.querySelectorAll('.ob-dot').forEach(d => d.classList.remove('done'));
   document.querySelectorAll('.ob-option').forEach(b => { b.classList.remove('selected'); const badge = b.querySelector('.ob-priority'); if (badge) badge.remove(); });
+  // Re-disable step buttons so a fresh setup is required
+  document.getElementById('ob-next-0').disabled = true;
+  document.getElementById('ob-next-1').disabled = true;
+  obDaysChange(document.getElementById('ob-days-slider').value);
   toast('Plan reset — complete setup again');
 }
 
 function exportData() {
+  const rebalances = {};
+  Object.keys(localStorage).filter(k => k.startsWith('mr_rebalance_'))
+    .forEach(k => { try { rebalances[k] = JSON.parse(localStorage.getItem(k)); } catch {} });
   const data = {
+    app: 'meridian-lite',
+    version: 2,
     exportDate: new Date().toISOString(),
+    name: localStorage.getItem('mr_name') || null,
+    units: localStorage.getItem('mr_units') || 'km',
     profile: profile,
     activities: activities,
-    checkins: checkins
+    checkins: checkins,
+    overrides: JSON.parse(localStorage.getItem('mr_overrides') || '{}'),
+    rebalances: rebalances
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
@@ -1943,14 +2113,47 @@ function exportData() {
   toast('Data exported');
 }
 
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || (!Array.isArray(data.activities) && !data.profile)) { toast('Not a valid Meridian export'); return; }
+      if (!confirm('Import this backup? It will replace your current Meridian data.')) return;
+      if (data.profile) save(KEY.profile, data.profile);
+      if (Array.isArray(data.activities)) save(KEY.activities, data.activities);
+      if (data.checkins) save(KEY.checkins, data.checkins);
+      if (data.name) localStorage.setItem('mr_name', data.name);
+      if (data.units) localStorage.setItem('mr_units', data.units);
+      if (data.overrides) localStorage.setItem('mr_overrides', JSON.stringify(data.overrides));
+      if (data.rebalances) Object.entries(data.rebalances).forEach(([k, v]) => {
+        if (k.startsWith('mr_rebalance_')) localStorage.setItem(k, JSON.stringify(v));
+      });
+      location.reload();
+    } catch {
+      toast('Could not read that file');
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
 function eraseData() {
-  if (!confirm('Erase ALL data? This cannot be undone.')) return;
+  if (!confirm('Erase ALL Meridian data? This cannot be undone.')) return;
   if (!confirm('Are you sure? All activities, check-ins and profile will be deleted.')) return;
-  localStorage.clear();
+  // Only remove this app's keys — other apps on the same GitHub Pages
+  // domain share localStorage, so a blanket clear() would wipe them too
+  Object.keys(localStorage)
+    .filter(k => k.startsWith('mr_') || k.startsWith('home_done_'))
+    .forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
 // ── GPX IMPORT ─────────────────────────────────────────
+let pendingGPX = null;
+
 function handleGPXFile(input) {
   const file = input.files[0];
   if (!file) return;
@@ -2001,23 +2204,26 @@ function parseGPX(xmlStr, filename) {
     if (typeGuess.includes('ride') || typeGuess.includes('cycl') || typeGuess.includes('bike')) actType = 'cycle';
     else if (typeGuess.includes('hyrox')) actType = 'hyrox';
     const nameEl = doc.querySelector('name');
-    const actName = nameEl ? nameEl.textContent : filename.replace('.gpx','');
+    const actName = (nameEl ? nameEl.textContent : filename.replace('.gpx','')).slice(0, 80);
 
-    // Get date from first track point or file name
-    const actDate = firstTime ? firstTime.toISOString().slice(0,10) : todayStr();
+    // Local calendar date of the first track point
+    const actDate = firstTime ? localDateStr(firstTime) : todayStr();
+    const dur = durationMin && durationMin > 0 ? durationMin : null;
+
+    pendingGPX = { date: actDate, type: actType, distance: distRounded, duration: dur, name: actName };
 
     resultEl.style.display = 'block';
     resultEl.innerHTML = `
       <div class="gpx-result">
-        <div style="font-weight:500;margin-bottom:8px;">${actName}</div>
+        <div style="font-weight:500;margin-bottom:8px;">${esc(actName)}</div>
         <div class="gpx-result-row"><span class="gpx-result-label">TYPE</span><span>${actType}</span></div>
         <div class="gpx-result-row"><span class="gpx-result-label">DATE</span><span>${formatDate(actDate)}</span></div>
         <div class="gpx-result-row"><span class="gpx-result-label">DISTANCE</span><span>${distRounded} km</span></div>
-        ${durationMin ? `<div class="gpx-result-row"><span class="gpx-result-label">DURATION</span><span>${durationMin} min</span></div>` : ''}
+        ${dur ? `<div class="gpx-result-row"><span class="gpx-result-label">DURATION</span><span>${dur} min</span></div>` : ''}
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="confirmGPXImport('${actDate}','${actType}',${distRounded},${durationMin||0},'${actName.replace(/'/g,"\\'")}')">Import</button>
-        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('gpx-result').style.display='none'">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="applyGPXImport()">Import</button>
+        <button class="btn btn-secondary btn-sm" onclick="pendingGPX=null;document.getElementById('gpx-result').style.display='none'">Cancel</button>
       </div>
     `;
   } catch(err) {
@@ -2026,19 +2232,26 @@ function parseGPX(xmlStr, filename) {
   }
 }
 
-function confirmGPXImport(date, type, distance, duration, name) {
-  const act = { id: Date.now(), date, type, distance, duration, notes: name };
+function applyGPXImport() {
+  if (!pendingGPX) return;
+  const p = pendingGPX;
+  const dup = activities.find(a => a.date === p.date && a.distance === p.distance && a.duration === p.duration);
+  if (dup && !confirm('This looks identical to an activity you already have. Import anyway?')) return;
+
+  const act = { id: Date.now(), date: p.date, type: p.type, duration: p.duration, notes: p.name };
+  if (p.distance) act.distance = p.distance;
   activities.unshift(act);
   save(KEY.activities, activities);
+  pendingGPX = null;
   document.getElementById('gpx-result').style.display = 'none';
   renderActivities();
   renderStats();
   renderHome();
+  renderWeek();
   closeSettings();
   toast('Activity imported from GPX ✓');
 }
 
-// Drag-and-drop on GPX drop zone
 // ═══════════════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════════════
