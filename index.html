@@ -38,7 +38,8 @@
 }
 
 /* ── RESET ───────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+button, .session-card, .nav-btn, .ob-option, .rebalance-option, .gpx-drop, .settings-icon, .act-item { touch-action: manipulation; }
 html, body { height: 100%; background: var(--navy); color: var(--white); font-family: var(--font-b); overflow: hidden; }
 button { cursor: pointer; border: none; background: none; font-family: var(--font-b); color: inherit; }
 input, select, textarea { font-family: var(--font-b); color: var(--white); background: var(--navy3); border: 1px solid var(--grey2); border-radius: var(--r2); padding: 10px 14px; font-size: 14px; width: 100%; outline: none; }
@@ -91,9 +92,24 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border: none; b
 input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--grey2); }
 
 /* ── BOTTOM SHEET ────────────────────────────────────────── */
-.sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; transition: opacity .2s; }
-.sheet-bg.hidden { display: none; }
-.sheet { background: var(--navy2); border-radius: var(--r) var(--r) 0 0; padding: 20px; width: 100%; max-height: 88vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); transform: translateY(0); transition: transform .25s ease; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; opacity: 1; visibility: visible; transition: opacity .22s ease, visibility 0s; }
+.sheet-bg.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .18s ease, visibility 0s linear .18s; }
+.sheet { background: var(--navy2); border-radius: var(--r) var(--r) 0 0; padding: 20px; width: 100%; max-height: 88vh; overflow-y: auto; padding-bottom: calc(20px + var(--safe-bottom)); transform: translateY(0); transition: transform .28s cubic-bezier(.32,.72,.33,1); }
+.sheet-bg.hidden .sheet { transform: translateY(100%); transition: transform .18s ease-in; }
+.session-card { transition: background .12s; }
+.session-card[onclick]:active { background: var(--navy3); }
+.session-card.today { border-color: rgba(232,200,64,.45); }
+.session-card.past { opacity: .65; }
+.today-pill { font-family: var(--font-m); font-size: 8px; background: var(--yellow); color: var(--navy); padding: 2px 6px; border-radius: 8px; letter-spacing: .08em; margin-left: 6px; vertical-align: 1px; }
+.week-pager { display: flex; align-items: center; gap: 8px; }
+.pager-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--navy3); border: 1px solid var(--grey2); color: var(--grey1); font-size: 17px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding-bottom: 2px; }
+.pager-btn:disabled { opacity: .25; }
+.preview-bar { font-family: var(--font-m); font-size: 11px; color: var(--yellow3); background: rgba(232,200,64,.06); border: 1px solid rgba(232,200,64,.2); border-radius: var(--r2); padding: 9px 12px; margin-bottom: 10px; cursor: pointer; text-align: center; }
+.act-del { color: var(--grey2); font-size: 13px; padding: 8px; margin: -8px -6px -8px 0; flex-shrink: 0; }
+.act-del:active { color: #FF6B6B; }
+.chip-row { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 14px; border-bottom: 1px solid var(--grey3); }
+.chip-btn { font-family: var(--font-m); font-size: 11px; padding: 7px 13px; border-radius: 18px; background: var(--navy3); border: 1px solid var(--grey2); color: var(--grey1); }
+.chip-btn.sel { color: var(--navy); background: var(--yellow); border-color: var(--yellow); font-weight: 500; }
 .sheet-handle { width: 36px; height: 4px; background: var(--grey2); border-radius: 2px; margin: 0 auto 20px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .sheet-title { font-family: var(--font-d); font-size: 24px; letter-spacing: .03em; }
@@ -256,7 +272,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 .divider { height: 1px; background: var(--grey3); margin: 16px 0; }
 
 /* ── TOAST ───────────────────────────────────────────────── */
-#toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); font-family: var(--font-m); font-size: 12px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; z-index: 50; }
+#toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); font-family: var(--font-m); font-size: 12px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; z-index: 90; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── MODAL ───────────────────────────────────────────────── */
@@ -433,13 +449,22 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
   <!-- HOME screen -->
   <div class="screen active" id="screen-home">
     <div class="scroll" id="home-scroll">
+      <!-- Today's session — the answer to "what do I do today?" comes first -->
+      <div id="today-section">
+        <div class="sec-head">TODAY</div>
+        <div id="today-content"></div>
+      </div>
+
+      <div class="divider"></div>
+
       <!-- Check-in section -->
       <div id="checkin-section">
         <div class="sec-head">CHECK-IN</div>
         <div class="sec-sub" id="checkin-sub">How are you feeling today?</div>
-        <div id="checkin-done-bar" class="checkin-done-bar" style="display:none;">
+        <div id="checkin-done-bar" class="checkin-done-bar" style="display:none;cursor:pointer;" onclick="editCheckin()" role="button">
           <div class="checkin-done-dot"></div>
           <span class="checkin-done-text">Check-in complete · <span id="checkin-done-summary"></span></span>
+          <span style="margin-left:auto;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;flex-shrink:0;">edit</span>
         </div>
         <div id="checkin-form">
           <div class="card">
@@ -451,14 +476,6 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
           <button class="btn btn-primary" onclick="saveCheckin()">Save check-in</button>
         </div>
       </div>
-
-      <div class="divider"></div>
-
-      <!-- Today's session -->
-      <div id="today-section">
-        <div class="sec-head">TODAY</div>
-        <div id="today-content"></div>
-      </div>
     </div>
   </div>
 
@@ -467,7 +484,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <div class="scroll">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <div class="sec-head" style="margin-bottom:0;">THIS WEEK</div>
-        <button class="btn btn-secondary btn-sm" onclick="openRebalanceSheet()">Adjust week</button>
+        <button class="btn btn-secondary btn-sm" id="adjust-week-btn" onclick="openRebalanceSheet()">Adjust week</button>
       </div>
       <div id="week-header-card"></div>
       <div id="week-sessions"></div>
@@ -674,15 +691,33 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <div class="settings-section-label">Profile</div>
     <div class="settings-row">
       <div><div class="settings-label">Name</div><div class="settings-sub" id="settings-name-display">—</div></div>
-      <button class="settings-action" onclick="editName()">Edit</button>
+      <button class="settings-action" onclick="toggleEditName()">Edit</button>
+    </div>
+    <div id="edit-name-row" style="display:none;padding:2px 0 14px;border-bottom:1px solid var(--grey3);">
+      <div style="display:flex;gap:8px;">
+        <input id="edit-name-input" placeholder="Your name" maxlength="30" style="flex:1;">
+        <button class="settings-action" onclick="saveNameInline()">Save</button>
+      </div>
     </div>
     <div class="settings-row">
       <div><div class="settings-label">Fitness level</div><div class="settings-sub" id="settings-level-display">—</div></div>
-      <button class="settings-action" onclick="editLevel()">Change</button>
+      <button class="settings-action" onclick="toggleEditLevel()">Change</button>
+    </div>
+    <div class="chip-row" id="edit-level-row" style="display:none;">
+      <button class="chip-btn" onclick="setLevel('beginner')">Beginner</button>
+      <button class="chip-btn" onclick="setLevel('intermediate')">Intermediate</button>
+      <button class="chip-btn" onclick="setLevel('advanced')">Advanced</button>
     </div>
     <div class="settings-row">
       <div><div class="settings-label">Training days</div><div class="settings-sub" id="settings-days-display">—</div></div>
-      <button class="settings-action" onclick="editDays()">Change</button>
+      <button class="settings-action" onclick="toggleEditDays()">Change</button>
+    </div>
+    <div class="chip-row" id="edit-days-row" style="display:none;">
+      <button class="chip-btn" onclick="setDays(2)">2</button>
+      <button class="chip-btn" onclick="setDays(3)">3</button>
+      <button class="chip-btn" onclick="setDays(4)">4</button>
+      <button class="chip-btn" onclick="setDays(5)">5</button>
+      <button class="chip-btn" onclick="setDays(6)">6</button>
     </div>
     <div class="settings-row">
       <div><div class="settings-label">Reset plan</div><div class="settings-sub">Re-run setup, keep activity log</div></div>
@@ -720,7 +755,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.4 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.7 · Train at your peak</div></div>
     </div>
   </div>
 </div>
@@ -1525,6 +1560,7 @@ let lastRenderedDay = todayStr();
 
 function initApp() {
   lastRenderedDay = todayStr();
+  viewedWeek = null;
   pruneOldKeys();
 
   // Date in topbar
@@ -1580,6 +1616,18 @@ function pruneOldKeys() {
 // ═══════════════════════════════════════════════════════
 function updateSlider(name, val) {
   document.getElementById('v-' + name).textContent = val;
+}
+
+// Tap the completed bar to edit today's check-in
+function editCheckin() {
+  const ci = checkins[todayStr()];
+  if (ci) ['energy', 'sleep', 'mood', 'stress'].forEach(k => {
+    document.getElementById('s-' + k).value = ci[k];
+    document.getElementById('v-' + k).textContent = ci[k];
+  });
+  document.getElementById('checkin-done-bar').style.display = 'none';
+  document.getElementById('checkin-form').style.display = 'block';
+  document.getElementById('checkin-sub').textContent = 'Update today\'s readiness';
 }
 
 function saveCheckin() {
@@ -1813,26 +1861,50 @@ function applyEasyToday() {
 // ═══════════════════════════════════════════════════════
 //  WEEK TAB
 // ═══════════════════════════════════════════════════════
+// Week being viewed on the Week tab — null means the current week
+let viewedWeek = null;
+function viewedWeekNum() { return viewedWeek !== null ? viewedWeek : currentWeekNum(); }
+
+function navWeek(delta) {
+  if (!profile) return;
+  const plan = PLANS[profile.goal];
+  if (!plan) return;
+  const w = Math.min(Math.max(viewedWeekNum() + delta, 1), plan.totalWeeks);
+  viewedWeek = (w === currentWeekNum()) ? null : w;
+  renderWeek();
+}
+
+function goToCurrentWeek() {
+  viewedWeek = null;
+  renderWeek();
+}
+
 function renderWeek() {
   const hEl = document.getElementById('week-header-card');
   const sEl = document.getElementById('week-sessions');
+  const adjBtn = document.getElementById('adjust-week-btn');
 
   if (!profile) {
     hEl.innerHTML = '';
     sEl.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">No plan yet</div><div class="empty-text">Complete setup to see your week.</div></div>';
+    if (adjBtn) adjBtn.style.display = 'none';
     return;
   }
 
   const plan = PLANS[profile.goal];
   const info = currentWeekInfo();
-  const week = info.week;
+  const week = viewedWeek !== null ? viewedWeek : info.week;
+  const isCurrentView = viewedWeek === null;
   const weekSessions = getWeekSessions(week) || [];
 
-  if (info.complete || !plan) {
+  if ((info.complete && isCurrentView) || !plan) {
     hEl.innerHTML = '';
     sEl.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-title">Plan complete</div><div class="empty-text">Reset your plan in Settings to start the next goal.</div></div>';
+    if (adjBtn) adjBtn.style.display = 'none';
     return;
   }
+
+  if (adjBtn) adjBtn.style.display = isCurrentView ? '' : 'none';
 
   // Progress: unique days trained this week vs planned sessions
   const startDate = weekStartDate(week);
@@ -1848,9 +1920,13 @@ function renderWeek() {
       <div class="plan-info">
         <div>
           <div class="plan-name">${plan.name}</div>
-          <div class="plan-level">${profile.level.charAt(0).toUpperCase() + profile.level.slice(1)}</div>
+          <div class="plan-level">${profile.level.charAt(0).toUpperCase() + profile.level.slice(1)} · ${phaseLabel(week, plan.totalWeeks, profile.goal)}</div>
         </div>
-        <div class="week-num">W${week}</div>
+        <div class="week-pager">
+          <button class="pager-btn" onclick="navWeek(-1)" ${week <= 1 ? 'disabled' : ''} aria-label="Previous week">‹</button>
+          <div class="week-num">W${week}</div>
+          <button class="pager-btn" onclick="navWeek(1)" ${week >= plan.totalWeeks ? 'disabled' : ''} aria-label="Next week">›</button>
+        </div>
       </div>
       <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDateDisp.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
@@ -1862,18 +1938,28 @@ function renderWeek() {
 
   const spread = DAY_SPREAD[weekSessions.length] || DAY_SPREAD[7];
   let html = '';
+  const todayMi = (new Date().getDay() + 6) % 7; // 0 = Mon
+  if (!isCurrentView) {
+    html += `<div class="preview-bar" onclick="goToCurrentWeek()" role="button">${week < info.week ? 'Reviewing' : 'Previewing'} week ${week} — tap to return to this week</div>`;
+  }
   weekSessions.forEach((s, i) => {
     const tip = getSessionTip(s);
+    const dayIdx = spread[i];
+    const dayDate = new Date(startDate);
+    dayDate.setDate(dayDate.getDate() + dayIdx);
+    const logged = activities.some(a => a.date === localDateStr(dayDate));
+    const isToday = isCurrentView && dayIdx === todayMi;
+    const isPast = !logged && (week < info.week || (isCurrentView && dayIdx < todayMi));
     html += `
-      <div class="session-card" onclick="openDetailSheet(${i})" style="cursor:pointer;">
+      <div class="session-card${logged ? ' done' : ''}${isToday ? ' today' : ''}${isPast ? ' past' : ''}" onclick="openDetailSheet(${i})" style="cursor:pointer;" role="button">
         <div class="session-body">
-          <div class="session-day">${DAY_NAMES[spread[i]] || 'Day ' + (i+1)}</div>
+          <div class="session-day">${DAY_NAMES[dayIdx] || 'Day ' + (i+1)}${isToday ? ' <span class="today-pill">TODAY</span>' : ''}</div>
           <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
           <div class="session-name" style="margin-top:6px;">${s.name}</div>
           <div class="session-detail">${s.detail}</div>
           ${tip ? `<div class="detail-tip" style="margin-top:8px;">${tip}</div>` : ''}
         </div>
-        <div style="color:var(--grey2);font-size:18px;padding-left:4px;">›</div>
+        <div style="font-size:18px;padding-left:4px;${logged ? 'color:var(--green);' : 'color:var(--grey2);'}">${logged ? '✓' : '›'}</div>
       </div>
     `;
   });
@@ -1881,7 +1967,7 @@ function renderWeek() {
   const base = (getMatchedPlan() || [])[week - 1] || [];
   const reb = JSON.parse(localStorage.getItem('mr_rebalance_' + week) || 'null');
   if (reb && (reb.focus || reb.days !== base.length)) {
-    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week rebalanced: ${reb.days} day${reb.days === 1 ? '' : 's'}${reb.focus ? ' · ' + (FOCUS_LABELS[reb.focus] || '') : ''}<button onclick="clearRebalance()" style="background:none;border:none;color:var(--grey1);font-family:var(--font-m);font-size:10px;text-decoration:underline;cursor:pointer;padding:0;margin-left:8px;">clear</button></div>`;
+    html += `<div style="font-family:var(--font-m);font-size:11px;color:var(--yellow3);margin-top:4px;padding:0 4px;">⚡ Week rebalanced: ${reb.days} day${reb.days === 1 ? '' : 's'}${reb.focus ? ' · ' + (FOCUS_LABELS[reb.focus] || '') : ''}${isCurrentView ? `<button onclick="clearRebalance()" style="background:none;border:none;color:var(--grey1);font-family:var(--font-m);font-size:10px;text-decoration:underline;cursor:pointer;padding:0;margin-left:8px;">clear</button>` : ''}</div>`;
   }
 
   const authoredCount = ((PLANS[profile.goal][profile.level] || [])[week - 1] || []).filter(s => s.type !== 'rest').length;
@@ -2117,10 +2203,10 @@ function sessionDetailHTML(s, opts) {
   const peak = segs ? Math.max(...segs.map(x => x.zone))
     : ({ easy: 2, long: 2, recovery: 1, strides: 5, vo2: 5, tempo: 4, interval: 4, racepace: 4, walkrun: 3, cadence: 2, hyroxsim: 4 }[cls] || null);
   const total = segs ? Math.round(segs.reduce((a, x) => a + x.mins, 0) / 5) * 5 : primaryMins(s.detail);
-  const info = currentWeekInfo();
+  const wk = opts.week || currentWeekNum();
   const plan = profile && PLANS[profile.goal];
   const chips = [];
-  if (plan) chips.push(`<span class="chip hl">Week ${info.week}/${plan.totalWeeks} · ${phaseLabel(info.week, plan.totalWeeks, profile.goal)}</span>`);
+  if (plan) chips.push(`<span class="chip hl">Week ${wk}/${plan.totalWeeks} · ${phaseLabel(wk, plan.totalWeeks, profile.goal)}</span>`);
   if (total) chips.push(`<span class="chip">~${total} min</span>`);
   if (peak) chips.push(`<span class="chip">Peak Z${peak} · ${ZONE_NAMES[peak]}</span>`);
   const feel = (s.type === 'strength' || cls === 'hyrox') ? FEEL_STRENGTH : (peak ? FEEL[peak] : null);
@@ -2146,12 +2232,14 @@ function sessionDetailHTML(s, opts) {
 function showSessionDetail(s, opts) {
   document.getElementById('detail-sheet-title').textContent = s.name.toUpperCase();
   document.getElementById('detail-sheet-body').innerHTML = sessionDetailHTML(s, opts);
+  const sheet = document.getElementById('detail-sheet');
+  if (sheet) sheet.scrollTop = 0;
   document.getElementById('detail-sheet-bg').classList.remove('hidden');
 }
 
 function openDetailSheet(idx) {
-  const sessions = getWeekSessions(currentWeekNum()) || [];
-  if (sessions[idx]) showSessionDetail(sessions[idx]);
+  const sessions = getWeekSessions(viewedWeekNum()) || [];
+  if (sessions[idx]) showSessionDetail(sessions[idx], { week: viewedWeekNum() });
 }
 
 let lastTodaySession = null;
@@ -2203,6 +2291,7 @@ function saveRebalance() {
 }
 
 function clearRebalance() {
+  viewedWeek = null;
   localStorage.removeItem('mr_rebalance_' + currentWeekNum());
   renderWeek();
   renderHome();
@@ -2289,8 +2378,26 @@ function renderActivities() {
         <div class="act-meta">${[a.duration ? a.duration + ' min' : null, a.notes ? esc(a.notes.slice(0,40)) : null].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="act-date">${formatDate(a.date)}</div>
+      <button class="act-del" onclick="confirmDeleteActivity(${a.id})" aria-label="Delete activity">✕</button>
     </div>
   `).join('');
+}
+
+function confirmDeleteActivity(id) {
+  const a = activities.find(x => x.id === id);
+  if (!a) return;
+  const desc = a.type.charAt(0).toUpperCase() + a.type.slice(1)
+    + (a.distance ? ' · ' + fmtDist(a.distance) : '')
+    + (a.duration ? ' · ' + a.duration + ' min' : '')
+    + ' · ' + formatDate(a.date);
+  if (!confirm('Delete this activity?\n\n' + desc)) return;
+  activities = activities.filter(x => x.id !== id);
+  save(KEY.activities, activities);
+  renderActivities();
+  renderStats();
+  renderHome();
+  renderWeek();
+  toast('Activity deleted');
 }
 
 function renderStats() {
@@ -2342,7 +2449,7 @@ function switchTab(tab) {
   document.getElementById('screen-' + tab).classList.add('active');
   document.getElementById('nav-' + tab).classList.add('active');
   if (tab === 'home') renderHome();
-  if (tab === 'week') renderWeek();
+  if (tab === 'week') { viewedWeek = null; renderWeek(); }
   if (tab === 'activities') renderActivities();
   if (tab === 'stats') renderStats();
 }
@@ -2484,6 +2591,7 @@ function openSettings() {
   document.getElementById('setting-fullscreen').checked = !!document.fullscreenElement;
   document.getElementById('gpx-result').style.display = 'none';
   document.getElementById('install-howto').style.display = 'none';
+  hideProfileEditors();
   refreshInstallRow();
   document.getElementById('settings-sheet-bg').classList.remove('hidden');
 }
@@ -2516,44 +2624,79 @@ function toggleUnits(useMiles) {
   toast('Units set to ' + (useMiles ? 'miles' : 'km'));
 }
 
-function editName() {
-  const current = localStorage.getItem('mr_name') || '';
-  const name = prompt('Your name:', current);
-  if (name !== null && name.trim()) {
-    localStorage.setItem('mr_name', name.trim());
-    document.getElementById('settings-name-display').textContent = name.trim();
-    toast('Name updated');
+// ── Inline profile editors (no system prompts) ──────────
+function hideProfileEditors() {
+  ['edit-name-row', 'edit-level-row', 'edit-days-row'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function toggleEditName() {
+  const row = document.getElementById('edit-name-row');
+  const open = row.style.display === 'none';
+  hideProfileEditors();
+  if (open) {
+    document.getElementById('edit-name-input').value = localStorage.getItem('mr_name') || '';
+    row.style.display = 'block';
+    document.getElementById('edit-name-input').focus();
   }
 }
 
-function editLevel() {
+function saveNameInline() {
+  const name = document.getElementById('edit-name-input').value.trim();
+  if (!name) return;
+  localStorage.setItem('mr_name', name);
+  document.getElementById('settings-name-display').textContent = name;
+  document.getElementById('edit-name-row').style.display = 'none';
+  toast('Name updated');
+}
+
+function markChips(rowId, isSel) {
+  document.getElementById(rowId).querySelectorAll('.chip-btn').forEach(b =>
+    b.classList.toggle('sel', isSel(b)));
+}
+
+function toggleEditLevel() {
   if (!profile) return;
-  const levels = ['beginner', 'intermediate', 'advanced'];
-  const current = levels.indexOf(profile.level);
-  const choice = prompt('Fitness level (1=Beginner, 2=Intermediate, 3=Advanced):', current + 1);
-  const idx = parseInt(choice) - 1;
-  if (idx >= 0 && idx < 3) {
-    profile.level = levels[idx];
-    save(KEY.profile, profile);
-    document.getElementById('settings-level-display').textContent = levels[idx].charAt(0).toUpperCase() + levels[idx].slice(1);
-    renderHome();
-    renderWeek();
-    toast('Level updated');
+  const row = document.getElementById('edit-level-row');
+  const open = row.style.display === 'none';
+  hideProfileEditors();
+  if (open) {
+    markChips('edit-level-row', b => b.textContent.toLowerCase() === profile.level);
+    row.style.display = 'flex';
   }
 }
 
-function editDays() {
+function setLevel(lvl) {
+  profile.level = lvl;
+  save(KEY.profile, profile);
+  document.getElementById('settings-level-display').textContent = lvl.charAt(0).toUpperCase() + lvl.slice(1);
+  document.getElementById('edit-level-row').style.display = 'none';
+  renderHome();
+  renderWeek();
+  toast('Level updated — plan adjusted');
+}
+
+function toggleEditDays() {
   if (!profile) return;
-  const choice = prompt('Training days per week (2–6):', profile.days);
-  const n = parseInt(choice);
-  if (n >= 2 && n <= 6) {
-    profile.days = String(n);
-    save(KEY.profile, profile);
-    document.getElementById('settings-days-display').textContent = n + ' days/week';
-    renderHome();
-    renderWeek();
-    toast('Training days updated');
+  const row = document.getElementById('edit-days-row');
+  const open = row.style.display === 'none';
+  hideProfileEditors();
+  if (open) {
+    markChips('edit-days-row', b => b.textContent === String(profile.days));
+    row.style.display = 'flex';
   }
+}
+
+function setDays(n) {
+  profile.days = String(n);
+  save(KEY.profile, profile);
+  document.getElementById('settings-days-display').textContent = n + ' days/week';
+  document.getElementById('edit-days-row').style.display = 'none';
+  renderHome();
+  renderWeek();
+  toast('Training days updated — plan adjusted');
 }
 
 function resetPlan() {
