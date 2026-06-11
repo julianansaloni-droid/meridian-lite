@@ -110,6 +110,29 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 .chip-row { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 14px; border-bottom: 1px solid var(--grey3); }
 .chip-btn { font-family: var(--font-m); font-size: 11px; padding: 7px 13px; border-radius: 18px; background: var(--navy3); border: 1px solid var(--grey2); color: var(--grey1); }
 .chip-btn.sel { color: var(--navy); background: var(--yellow); border-color: var(--yellow); font-weight: 500; }
+
+/* ── TODAY HERO ──────────────────────────────────────────── */
+.hero-card { background: linear-gradient(165deg, var(--navy2), #0F141C 80%); border: 1px solid var(--grey3); border-radius: var(--r); padding: 18px 18px 16px; }
+.hero-eyebrow { font-family: var(--font-m); font-size: 10px; letter-spacing: .12em; color: var(--grey2); margin-bottom: 10px; }
+.hero-coach { font-size: 13px; color: var(--grey1); line-height: 1.5; margin-bottom: 14px; }
+.hero-name { font-family: var(--font-d); font-size: 38px; line-height: .95; letter-spacing: .015em; text-transform: uppercase; margin-bottom: 7px; }
+.hero-detail { font-family: var(--font-m); font-size: 12px; color: var(--grey1); margin-bottom: 12px; }
+.hero-spark { margin-bottom: 12px; }
+
+/* ── PLAN JOURNEY BAND ───────────────────────────────────── */
+.journey { display: flex; gap: 2px; margin-top: 12px; height: 8px; }
+.journey .jw { flex: 1; min-width: 4px; border-radius: 2px; opacity: .35; cursor: pointer; transition: opacity .15s; }
+.journey .jw.cur { opacity: 1; outline: 1.5px solid rgba(244,244,240,.75); outline-offset: 1px; }
+.journey-labels { display: flex; justify-content: space-between; font-family: var(--font-m); font-size: 8px; letter-spacing: .1em; color: var(--grey2); margin-top: 6px; }
+
+/* ── LOAD MOTION (one orchestrated moment) ───────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .screen.active .scroll > * { animation: fadeUp .35s ease both; }
+  .screen.active .scroll > *:nth-child(2) { animation-delay: .06s; }
+  .screen.active .scroll > *:nth-child(3) { animation-delay: .12s; }
+  .screen.active .scroll > *:nth-child(4) { animation-delay: .18s; }
+}
 .sheet-handle { width: 36px; height: 4px; background: var(--grey2); border-radius: 2px; margin: 0 auto 20px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .sheet-title { font-family: var(--font-d); font-size: 24px; letter-spacing: .03em; }
@@ -211,6 +234,18 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 .chart-bar { width: 100%; border-radius: 3px 3px 0 0; background: var(--grey3); min-height: 3px; transition: height .3s ease; }
 .chart-bar.has-data { background: var(--yellow); opacity: .8; }
 .chart-bar.current { background: var(--yellow); opacity: 1; }
+.chart-bar.dist.has-data { background: var(--blue2); opacity: .8; }
+.chart-bar.dist.current { background: var(--blue2); opacity: 1; }
+.thisweek-row { display: flex; gap: 10px; }
+.tw-item { flex: 1; }
+.tw-val { font-family: var(--font-d); font-size: 26px; color: var(--white); line-height: 1; }
+.tw-val span { font-family: var(--font-m); font-size: 11px; color: var(--grey1); margin-left: 3px; }
+.tw-label { font-family: var(--font-m); font-size: 9px; letter-spacing: .08em; color: var(--grey2); text-transform: uppercase; margin-top: 4px; }
+.mix-stack { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 2px 0 12px; background: var(--grey3); }
+.mix-seg { height: 100%; }
+.mix-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.mix-key { display: flex; align-items: center; gap: 5px; font-family: var(--font-m); font-size: 10px; color: var(--grey1); }
+.mix-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .chart-xlabels { display: flex; gap: 6px; }
 .chart-xlabel { flex: 1; text-align: center; font-family: var(--font-m); font-size: 9px; color: var(--grey2); text-transform: uppercase; }
 
@@ -505,12 +540,28 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <div class="scroll">
       <div class="sec-head">STATS</div>
       <div class="sec-sub">Last 8 weeks</div>
-      <div class="card">
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-label">This week</div>
+        <div class="thisweek-row" id="thisweek-row"></div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
         <div class="card-label">Sessions per week</div>
         <div class="chart-wrap">
           <div class="chart-bars" id="chart-bars"></div>
           <div class="chart-xlabels" id="chart-labels"></div>
         </div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-label">Distance per week · <span id="dist-unit-label">km</span></div>
+        <div class="chart-wrap">
+          <div class="chart-bars" id="chart-bars-dist"></div>
+          <div class="chart-xlabels" id="chart-labels-dist"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-label">Training mix · last 8 weeks</div>
+        <div class="mix-stack" id="mix-stack"></div>
+        <div class="mix-legend" id="mix-legend"></div>
       </div>
       <div class="stats-row" id="stats-row"></div>
     </div>
@@ -743,7 +794,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
       <button class="settings-action" onclick="exportData()">Export</button>
     </div>
     <div class="settings-row">
-      <div><div class="settings-label">Import data</div><div class="settings-sub">Restore from a JSON export</div></div>
+      <div><div class="settings-label">Import data</div><div class="settings-sub">Restore a backup or merge an activities file</div></div>
       <button class="settings-action" onclick="document.getElementById('import-file-input').click()">Import</button>
       <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" onchange="importData(this)">
     </div>
@@ -755,7 +806,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v1.7 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v2.1 · Train at your peak</div></div>
     </div>
   </div>
 </div>
@@ -1161,7 +1212,11 @@ function planStartMonday() {
     return raceMon;
   }
   const startStr = profile.startDate || (profile.createdAt || '').slice(0, 10) || todayStr();
-  return mondayOf(new Date(startStr + 'T00:00:00'));
+  const base = mondayOf(new Date(startStr + 'T00:00:00'));
+  // "Repeat last week" decisions shift the whole plan forward (never for race-anchored plans)
+  const off = parseInt(localStorage.getItem('mr_week_offset') || '0');
+  if (off > 0) base.setDate(base.getDate() + off * 7);
+  return base;
 }
 
 function currentWeekInfo() {
@@ -1318,6 +1373,96 @@ function getMatchedPlan() {
     if (days > training.length) return padSessions(training, days, profile.goal);
     return training;
   });
+}
+
+// ── Missed-week handling ─────────────────────────────────
+// One decision per calendar week, keyed by that week's Monday so plan
+// shifts can never re-trigger the same prompt
+function weekCheckKey() { return 'mr_weekcheck_' + localDateStr(mondayOf(new Date())); }
+
+function missedWeekStatus() {
+  if (!profile) return null;
+  const info = currentWeekInfo();
+  if (info.complete || info.week <= 1) return null;
+  if (localStorage.getItem(weekCheckKey())) return null;
+  const curMon = mondayOf(new Date());
+  const prevMon = new Date(curMon);
+  prevMon.setDate(prevMon.getDate() - 7);
+  const signupMon = mondayOf(new Date((profile.startDate || todayStr()) + 'T00:00:00'));
+  if (prevMon < signupMon) return null; // previous week predates the plan
+  const from = localDateStr(prevMon);
+  const to = localDateStr(new Date(curMon.getTime() - 86400000));
+  if (activities.some(a => a.date >= from && a.date <= to)) return null;
+  return { raceLocked: !!profile.raceDate };
+}
+
+function missedWeekCardHTML(m) {
+  return `<div class="card" style="margin-top:12px;border-color:rgba(232,200,64,.25);">
+    <div class="card-label" style="color:var(--yellow3);">⚡ Last week went unlogged</div>
+    <div style="font-size:13px;color:var(--grey1);line-height:1.5;margin-bottom:12px;">Life happens. How do you want to pick the plan back up?${m.raceLocked ? ' Your race date stays fixed, so the plan can\'t shift.' : ''}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      ${m.raceLocked ? '' : `<button class="chip-btn" onclick="resolveMissedWeek('repeat')">Repeat last week</button>`}
+      <button class="chip-btn" onclick="resolveMissedWeek('ease')">Ease back in</button>
+      <button class="chip-btn" onclick="resolveMissedWeek('dismiss')">Carry on</button>
+    </div>
+  </div>`;
+}
+
+function resolveMissedWeek(choice) {
+  localStorage.setItem(weekCheckKey(), choice);
+  if (choice === 'repeat') {
+    const off = parseInt(localStorage.getItem('mr_week_offset') || '0') + 1;
+    localStorage.setItem('mr_week_offset', String(off));
+    toast('Plan shifted — repeating last week');
+  } else if (choice === 'ease') {
+    const wk = currentWeekNum();
+    localStorage.setItem('mr_rebalance_' + wk, JSON.stringify({
+      days: Math.max(2, parseInt(profile.days) - 1),
+      focus: 'easy',
+      focusLabel: (typeof FOCUS_LABELS !== 'undefined' && FOCUS_LABELS.easy) || 'Lighter week'
+    }));
+    toast('This week eased — welcome back');
+  } else {
+    toast('Carrying on as planned');
+  }
+  renderHome();
+  renderWeek();
+}
+
+// ── Activity ↔ session matching ──────────────────────────
+// Computed at render time (never persisted) so matches stay correct when the
+// plan changes. Three greedy passes; each activity claims at most one session:
+//   1. same weekday + same type   → done
+//   2. same type, any day         → done (moved)
+//   3. same weekday, any type     → swapped (did something on a planned day)
+function matchWeekActivities(sessions, spread, startDate) {
+  if (!sessions || !sessions.length) return [];
+  const from = localDateStr(startDate);
+  const endD = new Date(startDate);
+  endD.setDate(endD.getDate() + 6);
+  const to = localDateStr(endD);
+  const acts = activities.filter(a => a.date >= from && a.date <= to)
+    .slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+  const dayOf = a => (new Date(a.date + 'T12:00:00').getDay() + 6) % 7;
+  const claims = new Array(sessions.length).fill(null);
+  const used = new Set();
+  const pass = (pred, sameType) => {
+    acts.forEach(a => {
+      if (used.has(a.id)) return;
+      for (let i = 0; i < sessions.length; i++) {
+        if (claims[i]) continue;
+        if (pred(a, sessions[i], spread[i])) {
+          claims[i] = { act: a, sameType, sameDay: dayOf(a) === spread[i], actDay: dayOf(a) };
+          used.add(a.id);
+          break;
+        }
+      }
+    });
+  };
+  pass((a, s, d) => dayOf(a) === d && a.type === s.type, true);
+  pass((a, s) => a.type === s.type, true);
+  pass((a, s, d) => dayOf(a) === d, false);
+  return claims;
 }
 
 // ── Weekly rebalance: transforms, not reorders ───────────
@@ -1604,6 +1749,9 @@ function pruneOldKeys() {
 
   for (const k of Object.keys(localStorage)) {
     if (k.startsWith('home_done_') || k === 'mr_week_done') localStorage.removeItem(k);
+    else if (k.startsWith('mr_weekcheck_')) {
+      if (k.slice('mr_weekcheck_'.length) < localDateStr(mondayOf(new Date()))) localStorage.removeItem(k);
+    }
     else if (k.startsWith('mr_rebalance_')) {
       const n = parseInt(k.slice('mr_rebalance_'.length));
       if (!isNaN(n) && n < week) localStorage.removeItem(k);
@@ -1747,16 +1895,25 @@ function renderHome() {
   lastTodaySession = displaySession;
   if (displaySession) {
     const tappable = displaySession.type !== 'rest';
+    const tColor = TYPE_COLORS[displaySession.type] || 'var(--white)';
+    const heroSegs = parseSegments(displaySession);
+    const heroCls = classifySession(displaySession);
+    const heroMins = heroSegs ? Math.round(heroSegs.reduce((a, x) => a + x.mins, 0) / 5) * 5 : primaryMins(displaySession.detail);
+    const heroPeak = heroSegs ? Math.max(...heroSegs.map(x => x.zone)) : null;
     html += `
-      <div class="session-card"${tappable ? ' onclick="openTodayDetail()" style="cursor:pointer;"' : ''}>
-        <div class="session-body">
-          <div class="session-day">Week ${info.week} · ${plan.name}</div>
-          <span class="tag tag-${displaySession.type}" style="margin-bottom:6px;display:inline-block;">${displaySession.type.toUpperCase()}</span>
-          <div class="session-name">${displaySession.name}</div>
-          <div class="session-detail">${displaySession.detail}</div>
-          ${adjusted ? `<div style="margin-top:8px;"><span style="font-family:var(--font-m);font-size:10px;color:var(--yellow3);letter-spacing:.5px;">⚡ ADJUSTED</span><button onclick="event.stopPropagation();clearTodayOverride()" style="background:none;border:none;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;cursor:pointer;padding:0;margin-left:10px;">revert</button></div>` : ''}
+      <div class="hero-card"${tappable ? ' onclick="openTodayDetail()" style="cursor:pointer;" role="button"' : ''}>
+        <div class="hero-eyebrow">WEEK ${info.week} · ${plan.name.toUpperCase()}</div>
+        <div class="hero-coach">${coachLine(heroCls, info.week)}</div>
+        <div class="hero-name" style="color:${tColor};">${displaySession.name}</div>
+        <div class="hero-detail">${displaySession.detail}</div>
+        ${heroSegs ? `<div class="hero-spark">${zoneSparkHTML(heroSegs, 30)}</div>` : ''}
+        <div class="meta-chips" style="margin-bottom:0;">
+          <span class="chip" style="color:${tColor};border-color:${tColor};">${displaySession.type.toUpperCase()}</span>
+          ${heroMins ? `<span class="chip">~${heroMins} min</span>` : ''}
+          ${heroPeak ? `<span class="chip">Peak Z${heroPeak} · ${ZONE_NAMES[heroPeak]}</span>` : ''}
+          ${adjusted ? `<span class="chip hl">⚡ adjusted</span>` : ''}
         </div>
-        ${tappable ? '<div style="color:var(--grey2);font-size:18px;padding-left:4px;">›</div>' : ''}
+        ${adjusted ? `<div style="margin-top:9px;"><button onclick="event.stopPropagation();clearTodayOverride()" style="background:none;border:none;font-family:var(--font-m);font-size:10px;color:var(--grey1);text-decoration:underline;cursor:pointer;padding:0;">revert to planned session</button></div>` : ''}
       </div>`;
 
     const logType = displaySession.type === 'rest' ? '' : displaySession.type;
@@ -1771,13 +1928,20 @@ function renderHome() {
         </div>`;
     }
   } else {
-    html += '<div class="card"><div class="session-name" style="color:var(--grey1);">Rest day — recover well</div><div class="session-detail" style="margin-top:4px;">Easy movement, mobility or full rest.</div></div>';
+    html += `
+      <div class="hero-card">
+        <div class="hero-eyebrow">WEEK ${info.week} · ${plan.name.toUpperCase()}</div>
+        <div class="hero-coach">Recovery is training too — easy movement, mobility or full rest.</div>
+        <div class="hero-name" style="color:var(--grey2);font-size:32px;">Rest day</div>
+      </div>`;
     if (todayLogged) {
       html += `<div class="session-logged-bar"><div class="session-logged-dot"></div><span class="session-logged-text">Logged · ${actMetaParts(todayLogged) || 'session'}</span></div>`;
     }
     html += `<button class="btn btn-secondary" onclick="openLogSheet()" style="margin-top:10px;">Log a session anyway</button>`;
   }
 
+  const missed = missedWeekStatus();
+  if (missed) html += missedWeekCardHTML(missed);
   html += upcomingEventsHTML();
   el.innerHTML = html;
 }
@@ -1912,8 +2076,10 @@ function renderWeek() {
   const endDateDisp = new Date(startDate);
   endDateDisp.setDate(endDateDisp.getDate() + 6);
   const weekEndStr = localDateStr(endDateDisp);
-  const loggedDays = new Set(activities.filter(a => a.date >= weekStart && a.date <= weekEndStr).map(a => a.date)).size;
-  const pct = weekSessions.length > 0 ? Math.min(Math.round((loggedDays / weekSessions.length) * 100), 100) : 0;
+  const spreadForMatch = DAY_SPREAD[weekSessions.length] || DAY_SPREAD[7];
+  const claims = matchWeekActivities(weekSessions, spreadForMatch, startDate);
+  const matchedCount = claims.filter(Boolean).length;
+  const pct = weekSessions.length > 0 ? Math.min(Math.round((matchedCount / weekSessions.length) * 100), 100) : 0;
 
   hEl.innerHTML = `
     <div class="week-header">
@@ -1929,9 +2095,10 @@ function renderWeek() {
         </div>
       </div>
       <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDateDisp.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
+      ${journeyBandHTML(week, plan.totalWeeks)}
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
         <div class="week-progress" style="flex:1;"><div class="week-progress-bar" style="width:${pct}%"></div></div>
-        <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${loggedDays}/${weekSessions.length}</span>
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${matchedCount}/${weekSessions.length}</span>
       </div>
     </div>
   `;
@@ -1943,23 +2110,28 @@ function renderWeek() {
     html += `<div class="preview-bar" onclick="goToCurrentWeek()" role="button">${week < info.week ? 'Reviewing' : 'Previewing'} week ${week} — tap to return to this week</div>`;
   }
   weekSessions.forEach((s, i) => {
-    const tip = getSessionTip(s);
     const dayIdx = spread[i];
-    const dayDate = new Date(startDate);
-    dayDate.setDate(dayDate.getDate() + dayIdx);
-    const logged = activities.some(a => a.date === localDateStr(dayDate));
+    const m = claims[i];
+    const matched = !!m;
     const isToday = isCurrentView && dayIdx === todayMi;
-    const isPast = !logged && (week < info.week || (isCurrentView && dayIdx < todayMi));
+    const isPast = !matched && (week < info.week || (isCurrentView && dayIdx < todayMi));
+    const cardSegs = parseSegments(s);
+    const glyph = matched ? (m.sameType ? '✓' : '⇄') : '›';
+    const glyphColor = matched ? (m.sameType ? 'var(--green)' : 'var(--yellow)') : 'var(--grey2)';
+    const movedNote = matched && m.sameType && !m.sameDay
+      ? ` <span style="font-family:var(--font-m);font-size:9px;color:var(--green);">✓ done ${DAY_NAMES[m.actDay]}</span>` : '';
+    const swapNote = matched && !m.sameType
+      ? ` <span style="font-family:var(--font-m);font-size:9px;color:var(--yellow3);">⇄ logged ${esc(m.act.type)}</span>` : '';
     html += `
-      <div class="session-card${logged ? ' done' : ''}${isToday ? ' today' : ''}${isPast ? ' past' : ''}" onclick="openDetailSheet(${i})" style="cursor:pointer;" role="button">
+      <div class="session-card${matched ? ' done' : ''}${isToday ? ' today' : ''}${isPast ? ' past' : ''}" onclick="openDetailSheet(${i})" style="cursor:pointer;border-left:3px solid ${TYPE_COLORS[s.type] || 'var(--grey3)'};" role="button">
         <div class="session-body">
-          <div class="session-day">${DAY_NAMES[dayIdx] || 'Day ' + (i+1)}${isToday ? ' <span class="today-pill">TODAY</span>' : ''}</div>
+          <div class="session-day">${DAY_NAMES[dayIdx] || 'Day ' + (i+1)}${isToday ? ' <span class="today-pill">TODAY</span>' : ''}${movedNote}${swapNote}</div>
           <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
           <div class="session-name" style="margin-top:6px;">${s.name}</div>
           <div class="session-detail">${s.detail}</div>
-          ${tip ? `<div class="detail-tip" style="margin-top:8px;">${tip}</div>` : ''}
+          ${cardSegs ? `<div style="margin-top:9px;">${zoneSparkHTML(cardSegs, 18)}</div>` : ''}
         </div>
-        <div style="font-size:18px;padding-left:4px;${logged ? 'color:var(--green);' : 'color:var(--grey2);'}">${logged ? '✓' : '›'}</div>
+        <div style="font-size:18px;padding-left:4px;color:${glyphColor};">${glyph}</div>
       </div>
     `;
   });
@@ -2010,6 +2182,28 @@ function getSessionTip(session) {
 // ═══════════════════════════════════════════════════════
 const ZONE_COLORS = { 1: '#3D4A5C', 2: '#2E6BE6', 3: '#2ECC8A', 4: '#E8C840', 5: '#FF6B6B' };
 const ZONE_NAMES  = { 1: 'Recovery', 2: 'Easy', 3: 'Steady', 4: 'Threshold', 5: 'Max' };
+const TYPE_COLORS = { run: 'var(--blue2)', cycle: 'var(--green)', hyrox: 'var(--yellow)', strength: 'var(--grey1)', rest: 'var(--grey2)' };
+// Phases share the zone ramp — one coherent intensity language across the app
+const PHASE_COLORS = { 'Base': '#2E6BE6', 'Build': '#2ECC8A', 'Peak': '#E8C840', 'Taper': '#F5D96B', 'Race week': '#FF6B6B', 'Final week': '#FF6B6B' };
+
+const COACH_HINTS = {
+  easy: 'keep it conversational', long: 'settle in early and remember to fuel',
+  tempo: 'comfortably hard — nothing more', vo2: 'make the last rep match the first',
+  interval: 'hit the rhythm, not the wall', racepace: 'lock in goal rhythm',
+  strides: 'smooth and quick, never strained', walkrun: 'consistency beats intensity',
+  cadence: 'light and smooth on the pedals', recovery: 'discipline today pays off at the weekend',
+  strength: 'form before load', hyrox: 'efficiency at the stations wins races',
+  hyroxsim: 'practice running on heavy legs', race: 'the work is done — go enjoy it'
+};
+
+function coachLine(cls, week) {
+  const plan = profile && PLANS[profile.goal];
+  if (!plan) return '';
+  const phase = phaseLabel(week, plan.totalWeeks, profile.goal);
+  const hint = COACH_HINTS[cls] || 'train at your peak';
+  const name = (localStorage.getItem('mr_name') || '').trim().split(' ')[0];
+  return esc(`${phase}${/week/i.test(phase) ? '' : ' phase'} — ${hint}${name ? ', ' + name : ''}.`);
+}
 
 function classifySession(s) {
   const t = s.name + ' ' + s.detail;
@@ -2184,15 +2378,39 @@ function phaseLabel(week, total, goal) {
   return total - week <= 1 ? 'Taper' : 'Peak';
 }
 
+// Bars only — the shared visual language for hero, week cards, and the detail sheet
+function zoneSparkHTML(segs, h) {
+  const total = segs.reduce((a, x) => a + x.mins, 0);
+  if (!total) return '';
+  return `<div class="zone-graph" style="height:${h}px;">` + segs.map(x =>
+    `<div class="zone-seg" style="width:${Math.max(1.4, x.mins / total * 100).toFixed(2)}%;height:${x.zone * 20}%;background:${ZONE_COLORS[x.zone]};"></div>`
+  ).join('') + `</div>`;
+}
+
 function zoneGraphHTML(segs) {
   const total = segs.reduce((a, x) => a + x.mins, 0);
   if (!total) return '';
-  const bars = segs.map(x =>
-    `<div class="zone-seg" style="width:${Math.max(1.4, x.mins / total * 100).toFixed(2)}%;height:${x.zone * 20}%;background:${ZONE_COLORS[x.zone]};" title="${esc(x.label)} · ${Math.round(x.mins)} min"></div>`
-  ).join('');
   const legend = [...new Set(segs.map(x => x.zone))].sort()
     .map(z => `<span class="zone-key"><span class="zone-dot" style="background:${ZONE_COLORS[z]}"></span>Z${z} ${ZONE_NAMES[z]}</span>`).join('');
-  return `<div class="zone-graph">${bars}</div><div class="zone-axis"><span>0 min</span><span>~${Math.round(total / 5) * 5} min</span></div><div class="zone-legend">${legend}</div>`;
+  return zoneSparkHTML(segs, 64) + `<div class="zone-axis"><span>0 min</span><span>~${Math.round(total / 5) * 5} min</span></div><div class="zone-legend">${legend}</div>`;
+}
+
+function journeyBandHTML(week, total) {
+  let segs = '';
+  for (let w = 1; w <= total; w++) {
+    const col = PHASE_COLORS[phaseLabel(w, total, profile.goal)] || 'var(--grey2)';
+    segs += `<div class="jw${w === week ? ' cur' : ''}" style="background:${col};" onclick="jumpWeek(${w})" role="button" aria-label="Week ${w}"></div>`;
+  }
+  return `<div class="journey">${segs}</div><div class="journey-labels"><span>W1</span><span>${profile.goal === 'strength' ? 'FINAL' : 'RACE'} · W${total}</span></div>`;
+}
+
+function jumpWeek(w) {
+  if (!profile) return;
+  const plan = PLANS[profile.goal];
+  if (!plan) return;
+  const target = Math.min(Math.max(w, 1), plan.totalWeeks);
+  viewedWeek = (target === currentWeekNum()) ? null : target;
+  renderWeek();
 }
 
 function sessionDetailHTML(s, opts) {
@@ -2408,35 +2626,72 @@ function renderStats() {
     const d = new Date(now);
     d.setDate(d.getDate() - i * 7);
     const key = getWeekKey(localDateStr(d));
-    weeks.push({ key, label: i === 0 ? 'Now' : `W-${i}`, count: 0 });
+    weeks.push({ key, label: i === 0 ? 'Now' : `W-${i}`, count: 0, dist: 0, mins: 0 });
   }
+
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  const toUnit = km => useMiles ? km * 0.621371 : km;
+  const windowStart = localDateStr(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 55));
+  const typeTotals = {};
 
   activities.forEach(a => {
     const key = getWeekKey(a.date);
     const w = weeks.find(w => w.key === key);
-    if (w) w.count++;
+    if (w) {
+      w.count++;
+      w.dist += toUnit(a.distance || 0);
+      w.mins += a.duration || 0;
+    }
+    if (a.date >= windowStart) typeTotals[a.type] = (typeTotals[a.type] || 0) + 1;
   });
 
-  const maxCount = Math.max(...weeks.map(w => w.count), 1);
-  const barsEl = document.getElementById('chart-bars');
-  const labelsEl = document.getElementById('chart-labels');
-
   const currentWeekKey = getWeekKey(todayStr());
-  barsEl.innerHTML = weeks.map(w => {
-    const pct = Math.round((w.count / maxCount) * 100);
-    const isCurrent = w.key === currentWeekKey;
-    return `<div class="chart-bar-col"><div class="chart-bar ${w.count > 0 ? 'has-data' : ''} ${isCurrent ? 'current' : ''}" style="height:${Math.max(pct,3)}%"></div></div>`;
-  }).join('');
-  labelsEl.innerHTML = weeks.map(w => `<div class="chart-xlabel">${w.label}</div>`).join('');
 
-  // Stats cards
+  // This week strip
+  const tw = weeks.find(w => w.key === currentWeekKey) || { count: 0, dist: 0, mins: 0 };
+  const twHours = Math.round(tw.mins / 6) / 10;
+  document.getElementById('thisweek-row').innerHTML = `
+    <div class="tw-item"><div class="tw-val">${tw.count}</div><div class="tw-label">Sessions</div></div>
+    <div class="tw-item"><div class="tw-val">${Math.round(tw.dist * 10) / 10}<span>${distUnit()}</span></div><div class="tw-label">Distance</div></div>
+    <div class="tw-item"><div class="tw-val">${twHours}<span>h</span></div><div class="tw-label">Time</div></div>
+  `;
+
+  // Two charts from the same buckets: sessions (yellow) and distance (blue)
+  const chart = (field, barsId, labelsId, extraClass) => {
+    const max = Math.max(...weeks.map(w => w[field]), 1);
+    document.getElementById(barsId).innerHTML = weeks.map(w => {
+      const pct = Math.round((w[field] / max) * 100);
+      const isCurrent = w.key === currentWeekKey;
+      return `<div class="chart-bar-col"><div class="chart-bar ${extraClass} ${w[field] > 0 ? 'has-data' : ''} ${isCurrent ? 'current' : ''}" style="height:${Math.max(pct, 3)}%"></div></div>`;
+    }).join('');
+    document.getElementById(labelsId).innerHTML = weeks.map(w => `<div class="chart-xlabel">${w.label}</div>`).join('');
+  };
+  chart('count', 'chart-bars', 'chart-labels', '');
+  chart('dist', 'chart-bars-dist', 'chart-labels-dist', 'dist');
+  document.getElementById('dist-unit-label').textContent = distUnit();
+
+  // Training mix — type proportions over the 8-week window
+  const mixTypes = Object.entries(typeTotals).sort((a, b) => b[1] - a[1]);
+  const mixTotal = mixTypes.reduce((s, [, n]) => s + n, 0);
+  document.getElementById('mix-stack').innerHTML = mixTotal
+    ? mixTypes.map(([type, n]) =>
+        `<div class="mix-seg" style="width:${Math.max(2, n / mixTotal * 100).toFixed(1)}%;background:${TYPE_COLORS[type] || 'var(--grey2)'};"></div>`).join('')
+    : '';
+  document.getElementById('mix-legend').innerHTML = mixTotal
+    ? mixTypes.map(([type, n]) =>
+        `<span class="mix-key"><span class="mix-dot" style="background:${TYPE_COLORS[type] || 'var(--grey2)'};"></span>${type.charAt(0).toUpperCase() + type.slice(1)} · ${n}</span>`).join('')
+    : '<span class="mix-key">No sessions in the last 8 weeks yet</span>';
+
+  // Lifetime cards
   const totalSessions = activities.length;
-  const totalKm = activities.reduce((s,a) => s + (a.distance || 0), 0);
-  const useMiles = localStorage.getItem('mr_units') === 'miles';
-  const totalDist = Math.round(useMiles ? totalKm * 0.621371 : totalKm);
+  const totalKm = activities.reduce((s, a) => s + (a.distance || 0), 0);
+  const totalDist = Math.round(toUnit(totalKm));
+  const totalH = Math.round(activities.reduce((s, a) => s + (a.duration || 0), 0) / 6) / 10;
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-val">${totalSessions}</div><div class="stat-label">Total sessions</div></div>
     <div class="stat-card"><div class="stat-val">${totalDist}</div><div class="stat-label">Total ${distUnit()}</div></div>
+    <div class="stat-card"><div class="stat-val">${totalH}</div><div class="stat-label">Total hours</div></div>
+    <div class="stat-card"><div class="stat-val">${Math.max(...weeks.map(w => w.count), 0)}</div><div class="stat-label">Best week · sessions</div></div>
   `;
 }
 
@@ -2703,7 +2958,8 @@ function resetPlan() {
   if (!confirm('Reset your training plan? Your activity log will be kept.')) return;
   localStorage.removeItem(KEY.profile);
   localStorage.removeItem('mr_overrides');
-  Object.keys(localStorage).filter(k => k.startsWith('mr_rebalance_')).forEach(k => localStorage.removeItem(k));
+  localStorage.removeItem('mr_week_offset');
+  Object.keys(localStorage).filter(k => k.startsWith('mr_rebalance_') || k.startsWith('mr_weekcheck_')).forEach(k => localStorage.removeItem(k));
   profile = null;
   obData = {};
   obGoals = [];
@@ -2736,6 +2992,7 @@ function exportData() {
     activities: activities,
     checkins: checkins,
     overrides: JSON.parse(localStorage.getItem('mr_overrides') || '{}'),
+    weekOffset: localStorage.getItem('mr_week_offset') || null,
     rebalances: rebalances
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -2756,6 +3013,8 @@ function importData(input) {
     try {
       const data = JSON.parse(e.target.result);
       if (!data || (!Array.isArray(data.activities) && !data.profile)) { toast('Not a valid Meridian export'); return; }
+      // Companion activity files (e.g. Strava conversions) merge instead of replacing
+      if (data.kind === 'activities' && Array.isArray(data.activities)) { mergeActivities(data.activities); return; }
       if (!confirm('Import this backup? It will replace your current Meridian data.')) return;
       if (data.profile) save(KEY.profile, data.profile);
       if (Array.isArray(data.activities)) save(KEY.activities, data.activities);
@@ -2763,6 +3022,7 @@ function importData(input) {
       if (data.name) localStorage.setItem('mr_name', data.name);
       if (data.units) localStorage.setItem('mr_units', data.units);
       if (data.overrides) localStorage.setItem('mr_overrides', JSON.stringify(data.overrides));
+      if (data.weekOffset) localStorage.setItem('mr_week_offset', String(data.weekOffset));
       if (data.rebalances) Object.entries(data.rebalances).forEach(([k, v]) => {
         if (k.startsWith('mr_rebalance_')) localStorage.setItem(k, JSON.stringify(v));
       });
@@ -2773,6 +3033,41 @@ function importData(input) {
   };
   reader.readAsText(file);
   input.value = '';
+}
+
+const VALID_TYPES = ['run', 'cycle', 'hyrox', 'strength'];
+
+function mergeActivities(list) {
+  let added = 0, skipped = 0;
+  const t0 = Date.now();
+  list.forEach((raw, i) => {
+    if (!raw || !/^\d{4}-\d{2}-\d{2}/.test(String(raw.date || '')) || !VALID_TYPES.includes(raw.type)) { skipped++; return; }
+    const a = {
+      id: t0 + i,
+      date: String(raw.date).slice(0, 10),
+      type: raw.type,
+      duration: raw.duration ? Math.round(raw.duration) : null,
+      notes: raw.notes ? String(raw.notes).slice(0, 80) : ''
+    };
+    if (raw.distance) a.distance = Math.round(raw.distance * 10) / 10;
+    if (raw.extId) a.extId = String(raw.extId);
+    const dup = activities.some(x =>
+      (a.extId && x.extId === a.extId) ||
+      (x.date === a.date && x.type === a.type &&
+        Math.abs((x.distance || 0) - (a.distance || 0)) < 0.15 &&
+        Math.abs((x.duration || 0) - (a.duration || 0)) <= 2));
+    if (dup) { skipped++; return; }
+    activities.push(a);
+    added++;
+  });
+  activities.sort((a, b) => (a.date < b.date ? 1 : -1));
+  save(KEY.activities, activities);
+  closeSettings();
+  renderActivities();
+  renderStats();
+  renderHome();
+  renderWeek();
+  toast(added + ' activit' + (added === 1 ? 'y' : 'ies') + ' imported' + (skipped ? ' · ' + skipped + ' skipped' : ''));
 }
 
 function eraseData() {
