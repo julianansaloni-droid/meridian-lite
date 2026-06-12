@@ -125,6 +125,23 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 .journey .jw.cur { opacity: 1; outline: 1.5px solid rgba(244,244,240,.75); outline-offset: 1px; }
 .journey-labels { display: flex; justify-content: space-between; font-family: var(--font-m); font-size: 8px; letter-spacing: .1em; color: var(--grey2); margin-top: 6px; }
 
+/* ── CELEBRATION OVERLAY ─────────────────────────────────── */
+.celebrate { position: fixed; inset: 0; z-index: 120; background: rgba(13,17,23,.97); display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; transition: opacity .25s ease, visibility 0s; }
+.celebrate.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .2s ease, visibility 0s linear .2s; }
+.celebrate-inner { text-align: center; padding: 28px; max-width: 340px; width: 100%; }
+.cel-diamond { width: 76px; height: 76px; margin: 0 auto 20px; display: block; filter: drop-shadow(0 0 26px rgba(232,200,64,.4)); }
+.cel-eyebrow { font-family: var(--font-m); font-size: 10px; letter-spacing: .18em; color: var(--yellow3); margin-bottom: 10px; }
+.cel-name { font-family: var(--font-d); font-size: 42px; line-height: .95; text-transform: uppercase; color: var(--white); margin-bottom: 16px; }
+.cel-stats { display: flex; justify-content: center; gap: 26px; margin-bottom: 18px; }
+.cel-stat-val { font-family: var(--font-d); font-size: 30px; color: var(--yellow); line-height: 1; }
+.cel-stat-label { font-family: var(--font-m); font-size: 9px; letter-spacing: .1em; color: var(--grey1); margin-top: 4px; }
+.cel-week-bar { height: 6px; border-radius: 3px; background: var(--grey3); overflow: hidden; }
+.cel-week-fill { height: 100%; width: 0; border-radius: 3px; background: var(--yellow); transition: width .8s cubic-bezier(.22,1,.36,1) .35s; }
+.cel-week-label { font-family: var(--font-m); font-size: 10px; color: var(--grey1); margin-top: 8px; }
+.cel-line { font-size: 14px; color: var(--grey1); margin-top: 20px; line-height: 1.5; }
+.cel-tap { font-family: var(--font-m); font-size: 9px; letter-spacing: .14em; color: var(--grey2); margin-top: 26px; }
+.week-progress-bar { transition: width .7s cubic-bezier(.22,1,.36,1); }
+
 /* ── LOAD MOTION (one orchestrated moment) ───────────────── */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -132,6 +149,14 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
   .screen.active .scroll > *:nth-child(2) { animation-delay: .06s; }
   .screen.active .scroll > *:nth-child(3) { animation-delay: .12s; }
   .screen.active .scroll > *:nth-child(4) { animation-delay: .18s; }
+  @keyframes celPop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .celebrate:not(.hidden) .cel-diamond { animation: celPop .55s cubic-bezier(.34,1.56,.64,1) both; }
+  .celebrate:not(.hidden) .celebrate-inner > *:not(.cel-diamond) { animation: fadeUp .4s ease both; }
+  .celebrate:not(.hidden) .celebrate-inner > *:nth-child(3) { animation-delay: .1s; }
+  .celebrate:not(.hidden) .celebrate-inner > *:nth-child(4) { animation-delay: .18s; }
+  .celebrate:not(.hidden) .celebrate-inner > *:nth-child(5) { animation-delay: .26s; }
+  .celebrate:not(.hidden) .celebrate-inner > *:nth-child(6) { animation-delay: .34s; }
+  .celebrate:not(.hidden) .celebrate-inner > *:nth-child(7) { animation-delay: .42s; }
 }
 .sheet-handle { width: 36px; height: 4px; background: var(--grey2); border-radius: 2px; margin: 0 auto 20px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -309,6 +334,7 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
 /* ── TOAST ───────────────────────────────────────────────── */
 #toast { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(10px); background: var(--navy3); border: 1px solid var(--grey2); color: var(--white); font-family: var(--font-m); font-size: 12px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; z-index: 90; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.update-pill { position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--yellow); color: var(--navy); font-family: var(--font-m); font-size: 11px; font-weight: 500; padding: 10px 16px; border-radius: 20px; z-index: 95; box-shadow: 0 4px 16px rgba(0,0,0,.45); display: none; white-space: nowrap; }
 
 /* ── MODAL ───────────────────────────────────────────────── */
 .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 80; display: flex; align-items: flex-end; }
@@ -806,13 +832,33 @@ input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; backgroun
     <!-- ABOUT -->
     <div class="settings-section-label">About</div>
     <div class="settings-row">
-      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v2.1 · Train at your peak</div></div>
+      <div><div class="settings-label">Meridian Lite</div><div class="settings-sub">v2.3 · Train at your peak</div></div>
     </div>
   </div>
 </div>
 
 <!-- Toast -->
+<div id="celebrate" class="celebrate hidden" onclick="closeCelebrate()" role="button" aria-label="Dismiss">
+  <div class="celebrate-inner">
+    <svg class="cel-diamond" viewBox="0 0 192 192" aria-hidden="true">
+      <polygon points="96,20 172,60 96,100 20,60" fill="#E8C840" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="96,100 172,60 172,140 96,180" fill="#F5D96B" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="96,100 20,60 20,140 96,180" fill="#1A2130" stroke="#3D4A5C" stroke-width="1"/>
+      <polygon points="96,100 172,140 96,180 20,140" fill="#131820" stroke="#3D4A5C" stroke-width="1"/>
+    </svg>
+    <div class="cel-eyebrow" id="cel-eyebrow">SESSION COMPLETE</div>
+    <div class="cel-name" id="cel-name"></div>
+    <div class="cel-stats" id="cel-stats"></div>
+    <div id="cel-week-wrap">
+      <div class="cel-week-bar"><div class="cel-week-fill" id="cel-week-fill"></div></div>
+      <div class="cel-week-label" id="cel-week-label"></div>
+    </div>
+    <div class="cel-line" id="cel-line"></div>
+    <div class="cel-tap">TAP TO CONTINUE</div>
+  </div>
+</div>
 <div id="toast"></div>
+<button class="update-pill" id="update-pill" onclick="location.reload()">● Update ready — tap to refresh</button>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -1728,6 +1774,7 @@ function initApp() {
 
 // Installed PWAs stay open for days — re-render when the day changes
 document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && swReg) swReg.update().catch(() => {});
   if (document.visibilityState === 'visible' && profile && todayStr() !== lastRenderedDay) {
     initApp();
   }
@@ -1822,29 +1869,40 @@ function actMetaParts(a) {
 
 function upcomingEventsHTML() {
   if (!profile || !Array.isArray(profile.goalData)) return '';
-  const items = profile.goalData
+  const data = profile.goalData
     .map((g, i) => ({ ...g, pri: i + 1 }))
     .filter(g => g.targetDate || g.eventName)
-    .map(g => {
-      let when = '';
-      if (g.targetDate) {
-        const days = Math.ceil((new Date(g.targetDate + 'T12:00:00') - new Date()) / 86400000);
-        when = days < 0 ? 'passed' : days === 0 ? 'today' : days + (days === 1 ? ' day' : ' days');
-      }
-      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--grey3);">
-        <span style="font-family:var(--font-d);font-size:12px;background:var(--yellow);color:var(--navy);width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${g.pri}</span>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:500;">${esc(g.eventName || g.name)}</div>
-          ${g.eventName ? `<div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);margin-top:1px;">${esc(g.name)}</div>` : ''}
-        </div>
-        ${g.targetDate ? `<div style="text-align:right;">
-          <div style="font-family:var(--font-m);font-size:11px;color:var(--yellow);">${when}</div>
-          <div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${formatDate(g.targetDate)}</div>
-        </div>` : ''}
-      </div>`;
-    });
-  if (!items.length) return '';
-  return `<div class="card" style="margin-top:14px;"><div class="card-label">Your goals</div>${items.join('')}</div>`;
+    .map(g => ({
+      ...g,
+      days: g.targetDate ? Math.ceil((new Date(g.targetDate + 'T12:00:00') - new Date()) / 86400000) : null
+    }));
+  if (!data.length) return '';
+
+  // The nearest future-dated goal becomes a visceral countdown
+  const next = data.filter(g => g.days !== null && g.days >= 0).sort((a, b) => a.days - b.days)[0] || null;
+  const raceWeek = next && next.days <= 7;
+  const countdown = next ? `
+    <div style="display:flex;align-items:baseline;gap:12px;padding:6px 0 14px;${data.length > 1 ? 'border-bottom:1px solid var(--grey3);margin-bottom:4px;' : ''}">
+      <span style="font-family:var(--font-d);font-size:48px;line-height:.9;color:${raceWeek ? '#FF6B6B' : 'var(--yellow)'};">${next.days}</span>
+      <span style="font-family:var(--font-m);font-size:10px;letter-spacing:.12em;color:var(--grey1);line-height:1.6;">${next.days === 0 ? 'TODAY' : raceWeek ? 'DAYS — RACE WEEK' : 'DAYS TO GO'}<br><span style="color:var(--white);font-size:11px;">${esc((next.eventName || next.name).toUpperCase())}</span></span>
+    </div>` : '';
+
+  const rows = data.filter(g => g !== next).map(g => {
+    const when = g.days === null ? '' : g.days < 0 ? 'passed' : g.days === 0 ? 'today' : g.days + (g.days === 1 ? ' day' : ' days');
+    return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--grey3);">
+      <span style="font-family:var(--font-d);font-size:12px;background:var(--yellow);color:var(--navy);width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${g.pri}</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;">${esc(g.eventName || g.name)}</div>
+        ${g.eventName ? `<div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);margin-top:1px;">${esc(g.name)}</div>` : ''}
+      </div>
+      ${g.targetDate ? `<div style="text-align:right;">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--yellow);">${when}</div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${formatDate(g.targetDate)}</div>
+      </div>` : ''}
+    </div>`;
+  });
+
+  return `<div class="card" style="margin-top:14px;"><div class="card-label">Your goals</div>${countdown}${rows.join('')}</div>`;
 }
 
 function renderHome() {
@@ -2097,11 +2155,17 @@ function renderWeek() {
       <div class="week-of">${startDate.toLocaleDateString('en-IE',{day:'numeric',month:'short'})} — ${endDateDisp.toLocaleDateString('en-IE',{day:'numeric',month:'short'})}</div>
       ${journeyBandHTML(week, plan.totalWeeks)}
       <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
-        <div class="week-progress" style="flex:1;"><div class="week-progress-bar" style="width:${pct}%"></div></div>
+        <div class="week-progress" style="flex:1;"><div class="week-progress-bar" id="week-progress-bar" style="width:0%"></div></div>
         <span style="font-family:var(--font-m);font-size:10px;color:var(--grey1);">${matchedCount}/${weekSessions.length}</span>
       </div>
     </div>
   `;
+
+  // Animate the progress fill in after paint
+  raf(() => raf(() => {
+    const bar = document.getElementById('week-progress-bar');
+    if (bar) bar.style.width = pct + '%';
+  }));
 
   const spread = DAY_SPREAD[weekSessions.length] || DAY_SPREAD[7];
   let html = '';
@@ -2187,22 +2251,138 @@ const TYPE_COLORS = { run: 'var(--blue2)', cycle: 'var(--green)', hyrox: 'var(--
 const PHASE_COLORS = { 'Base': '#2E6BE6', 'Build': '#2ECC8A', 'Peak': '#E8C840', 'Taper': '#F5D96B', 'Race week': '#FF6B6B', 'Final week': '#FF6B6B' };
 
 const COACH_HINTS = {
-  easy: 'keep it conversational', long: 'settle in early and remember to fuel',
-  tempo: 'comfortably hard — nothing more', vo2: 'make the last rep match the first',
-  interval: 'hit the rhythm, not the wall', racepace: 'lock in goal rhythm',
-  strides: 'smooth and quick, never strained', walkrun: 'consistency beats intensity',
-  cadence: 'light and smooth on the pedals', recovery: 'discipline today pays off at the weekend',
-  strength: 'form before load', hyrox: 'efficiency at the stations wins races',
-  hyroxsim: 'practice running on heavy legs', race: 'the work is done — go enjoy it'
+  easy: ['keep it conversational', 'slow is the point today', 'easy pace, easy mind', 'the base grows quietly'],
+  long: ['settle in early and remember to fuel', 'patience for the first half, strength for the second', 'long and unhurried — that\'s the work'],
+  tempo: ['comfortably hard — nothing more', 'strong, controlled, repeatable', 'find the edge and hold it lightly'],
+  vo2: ['make the last rep match the first', 'full recovery, full quality', 'short, sharp, honest'],
+  interval: ['hit the rhythm, not the wall', 'every rep at goal rhythm', 'precision over heroics'],
+  racepace: ['lock in goal rhythm', 'rehearse the day, own the pace', 'make goal pace feel like home'],
+  strides: ['smooth and quick, never strained', 'fast and relaxed — both at once'],
+  walkrun: ['consistency beats intensity', 'showing up is the whole game today'],
+  cadence: ['light and smooth on the pedals', 'spin easy, think smooth'],
+  recovery: ['discipline today pays off at the weekend', 'recovery is where you actually get fitter'],
+  strength: ['form before load', 'strong joints, long career', 'leave one rep in the tank'],
+  hyrox: ['efficiency at the stations wins races', 'smooth stations, saved minutes'],
+  hyroxsim: ['practice running on heavy legs', 'heavy legs are the skill — train them'],
+  race: ['the work is done — go enjoy it', 'trust the taper, run your plan']
 };
+
+// rAF with a safe fallback for environments that lack it
+function raf(fn) {
+  if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(fn);
+  else fn();
+}
+
+// Stable per-day pick — the same all day, fresh tomorrow
+function dailyPick(arr, salt) {
+  if (!Array.isArray(arr)) return arr || '';
+  if (!arr.length) return '';
+  let h = salt || 0;
+  const d = todayStr();
+  for (let i = 0; i < d.length; i++) h = ((h * 31) + d.charCodeAt(i)) >>> 0;
+  return arr[h % arr.length];
+}
 
 function coachLine(cls, week) {
   const plan = profile && PLANS[profile.goal];
   if (!plan) return '';
   const phase = phaseLabel(week, plan.totalWeeks, profile.goal);
-  const hint = COACH_HINTS[cls] || 'train at your peak';
+  const hint = dailyPick(COACH_HINTS[cls], cls.length) || 'train at your peak';
   const name = (localStorage.getItem('mr_name') || '').trim().split(' ')[0];
   return esc(`${phase}${/week/i.test(phase) ? '' : ' phase'} — ${hint}${name ? ', ' + name : ''}.`);
+}
+
+// ── Completion moment ────────────────────────────────────
+const CELEBRATE_LINES = {
+  easy: ['The base gets deeper.', 'Easy money, banked.', 'Aerobic engine: growing.'],
+  long: ['That distance lives in your legs now.', 'Endurance is built, not found.'],
+  tempo: ['Threshold: raised.', 'Comfortably hard, perfectly executed.'],
+  vo2: ['Ceiling: lifted.', 'Top end, sharpened.'],
+  interval: ['Speed endurance, stacked.', 'Goal rhythm, rehearsed.'],
+  racepace: ['Goal pace is becoming home.'],
+  strides: ['Faster, for free.'],
+  walkrun: ['Consistency compounds.'],
+  cadence: ['Smooth is fast.'],
+  recovery: ['Recovery is where you grow.'],
+  strength: ['Stronger than yesterday.', 'Armour, built.'],
+  hyrox: ['Stations won. Minutes saved.'],
+  hyroxsim: ['Heavy legs, strong run.'],
+  race: ['You did the thing. Savour it.'],
+  default: ['Logged. Forward.']
+};
+const WEEK_DONE_LINES = ['Every session done. Recover proud.', 'A full week, banked.', 'Plan executed. Body upgraded.'];
+
+function weekProgressNow() {
+  const info = currentWeekInfo();
+  if (info.complete) return null;
+  const sessions = getWeekSessions(info.week) || [];
+  if (!sessions.length) return null;
+  const spread = DAY_SPREAD[sessions.length] || DAY_SPREAD[7];
+  const claims = matchWeekActivities(sessions, spread, weekStartDate(info.week));
+  return { matched: claims.filter(Boolean).length, total: sessions.length };
+}
+
+function showCelebration(act) {
+  const overlay = document.getElementById('celebrate');
+  if (!overlay) return;
+  const session = (lastTodaySession && lastTodaySession.type === act.type && lastTodaySession.type !== 'rest') ? lastTodaySession : null;
+  const cls = session ? classifySession(session) : ({ strength: 'strength', hyrox: 'hyrox', cycle: 'easy', run: 'easy' }[act.type] || 'default');
+  const prog = weekProgressNow();
+  const weekDone = !!(prog && prog.total > 0 && prog.matched >= prog.total);
+
+  document.getElementById('cel-eyebrow').textContent = weekDone ? '⚡ WEEK COMPLETE ⚡' : 'SESSION COMPLETE';
+  const nameEl = document.getElementById('cel-name');
+  nameEl.textContent = session ? session.name : act.type.charAt(0).toUpperCase() + act.type.slice(1);
+  nameEl.style.color = TYPE_COLORS[act.type] || 'var(--white)';
+
+  const stats = [];
+  if (act.distance) stats.push({ v: toDisplayDist(act.distance), label: distUnit().toUpperCase(), dec: 1 });
+  if (act.duration) stats.push({ v: act.duration, label: 'MIN', dec: 0 });
+  document.getElementById('cel-stats').innerHTML = stats.map((st, i) =>
+    `<div><div class="cel-stat-val" id="cel-sv-${i}">0</div><div class="cel-stat-label">${st.label}</div></div>`).join('');
+
+  const wrap = document.getElementById('cel-week-wrap');
+  const fill = document.getElementById('cel-week-fill');
+  if (prog) {
+    wrap.style.display = 'block';
+    fill.style.width = '0%';
+    document.getElementById('cel-week-label').textContent = prog.matched + ' of ' + prog.total + ' sessions this week';
+  } else {
+    wrap.style.display = 'none';
+  }
+
+  const lines = weekDone ? WEEK_DONE_LINES : (CELEBRATE_LINES[cls] || CELEBRATE_LINES.default);
+  document.getElementById('cel-line').textContent = dailyPick(lines, (act.id || 1) % 97);
+
+  overlay.classList.remove('hidden');
+  if (navigator.vibrate) { try { navigator.vibrate(weekDone ? [18, 70, 18, 70, 34] : [14, 60, 22]); } catch (e) {} }
+
+  raf(() => {
+    if (prog) fill.style.width = Math.min(100, Math.round(prog.matched / prog.total * 100)) + '%';
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const dur = 700;
+    const step = () => {
+      const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      const k = reduce ? 1 : Math.min(1, (now - t0) / dur);
+      const e2 = 1 - Math.pow(1 - k, 3);
+      stats.forEach((st, i) => {
+        const el = document.getElementById('cel-sv-' + i);
+        if (el) el.textContent = st.dec ? (st.v * e2).toFixed(1) : String(Math.round(st.v * e2));
+      });
+      if (k < 1) raf(step);
+    };
+    raf(step);
+  });
+}
+
+function toDisplayDist(km) {
+  const useMiles = localStorage.getItem('mr_units') === 'miles';
+  return Math.round((useMiles ? km * 0.621371 : km) * 10) / 10;
+}
+
+function closeCelebrate() {
+  document.getElementById('celebrate').classList.add('hidden');
 }
 
 function classifySession(s) {
@@ -2551,7 +2731,9 @@ function saveActivity() {
   renderWeek();
   renderActivities();
   renderStats();
-  toast('Activity logged ✓');
+  // Today's training earns the moment; backdated logs get a quiet confirm
+  if (act.date === todayStr()) showCelebration(act);
+  else toast('Activity logged ✓');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2752,16 +2934,19 @@ function toast(msg) {
 // ═══════════════════════════════════════════════════════
 //  SERVICE WORKER REGISTRATION
 // ═══════════════════════════════════════════════════════
+let swReg = null;
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/meridian-lite/sw.js', { scope: '/meridian-lite/' })
       .then(reg => {
+        swReg = reg;
         reg.addEventListener('updatefound', () => {
           const nw = reg.installing;
           if (!nw) return;
           nw.addEventListener('statechange', () => {
             if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              toast('Update ready — reopen the app to get the latest');
+              // Actionable prompt — one tap loads the new version
+              document.getElementById('update-pill').style.display = 'block';
             }
           });
         });
@@ -3179,7 +3364,8 @@ function applyGPXImport() {
   renderHome();
   renderWeek();
   closeSettings();
-  toast('Activity imported from GPX ✓');
+  if (act.date === todayStr()) showCelebration(act);
+  else toast('Activity imported from GPX ✓');
 }
 
 // ═══════════════════════════════════════════════════════
